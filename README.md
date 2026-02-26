@@ -2,6 +2,8 @@
 
 StudyTide Trainer is a local-first MSSA training app built with Blazor Server, EF Core, and SQLite. It is designed for verbatim retype practice: you retype source material exactly, get instant mismatch feedback, and the app schedules your next review.
 
+Current app version: `1.1.0`
+
 ## Tech Stack
 
 - .NET 8
@@ -164,8 +166,15 @@ Notes:
 - For production-grade Azure hosting, move from SQLite to Azure SQL and update `DefaultConnection`.
 - If Azure returns `ReadOnlyDisabledSubscription`, the subscription must be re-enabled first.
 
+## Release History
+
+- `v1.1.0`: App version metadata + release iteration workflow updates.
+- `v1.0.1`: Deployment documentation updates.
+- `v1.0.0`: Initial public MVP release.
+
 ## Notes
 
 - Database file: `studytide-trainer.db`
 - Local-first by default (no auth, no external APIs)
 - Source text is stored as-is so newlines and indentation are preserved for verbatim practice
+- Change history is tracked in `CHANGELOG.md`
