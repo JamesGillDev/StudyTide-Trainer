@@ -1,180 +1,189 @@
-# StudyTide Trainer (.NET 8, Local-First)
+# StudyTide Forge
 
-StudyTide Trainer is a local-first MSSA training app built with Blazor Server, EF Core, and SQLite. It is designed for verbatim retype practice: you retype source material exactly, get instant mismatch feedback, and the app schedules your next review.
+StudyTide Forge is a local desktop training app for structured cognitive reinforcement. Learners retype training blocks verbatim and practice flashcards to strengthen recall over time.
 
-Current app version: `1.1.0`
+## Purpose
 
-## Tech Stack
+- Build durable technical memory through structured repetition.
+- Practice exact retyping against source content.
+- Reinforce question-and-answer recall with flashcards.
+
+## Architecture
 
 - .NET 8
-- ASP.NET Core Blazor Server
-- EF Core + SQLite
-- EF Core migrations
+- .NET MAUI Blazor Hybrid (desktop app)
+- EF Core 8
+- SQLite
+- Single `DbContext`: `ForgeDbContext`
+- Migration-first schema management
+
+## Domain Model
+
+- `TrainingModule`
+  - `Id, Name, Category, CreatedAt`
+- `TrainingLesson`
+  - `Id, ModuleId, Title, OrderIndex, CreatedAt`
+- `TrainingBlock`
+  - `Id, LessonId, Title, Content, Difficulty, TimesPracticed, TimesPerfect, LastPracticedAt, NextDueAt`
+- `Flashcard`
+  - `Id, LessonId, Question, Answer, Difficulty, TimesCorrect, TimesIncorrect`
+- `PracticeAttempt`
+  - `Id, TrainingBlockId, AttemptedAt, TypedText, AccuracyPercent, ErrorCount, FirstMismatchIndex`
+
+## Features
+
+- Structured curriculum browser (`/modules`)
+  - Modules -> lessons -> blocks and flashcards
+- Verbatim practice mode (`/practice`)
+  - Scope by module/lesson
+  - Character-level scoring and line diff summary
+  - Scheduling rules:
+    - `100%` accuracy -> due in `3 days`
+    - `>=95%` accuracy -> due in `1 day`
+    - Otherwise -> due in `1 hour`
+- Flashcard mode (`/flashcards`)
+  - Load random due card
+  - Reveal answer
+  - Mark correct/incorrect
+- Dashboard (`/`)
+  - Total modules
+  - Blocks due
+  - Flashcards due
+  - Accuracy last 7 days
+  - Weakest blocks
+  - Weakest flashcards
+
+## Training Data Import Rules Implemented
+
+- Source records are treated as generic Q/A training data.
+- Imported fields: `Question`, `Answer`.
+- Ignored fields and mechanics: points, timers, score logic, and game-specific behavior.
+- Each Q/A pair creates:
+  - one `Flashcard`
+  - one `TrainingBlock` with clean content:
+    - `Question:`
+    - `Answer:`
 
 ## Project Structure
 
-- `StudyTide Trainer/Program.cs`: app startup, service registration, and database initialization
-- `StudyTide Trainer/Data/TrainingDbContext.cs`: EF Core DbContext
-- `StudyTide Trainer/Models/*`: `Topic`, `Snippet`, `PracticeAttempt`
-- `StudyTide Trainer/Services/PracticeService.cs`: scoring + scheduling logic
-- `StudyTide Trainer/Services/DashboardService.cs`: dashboard metrics
-- `StudyTide Trainer/Data/TrainingPackCatalog.cs`: built-in curated packs and seed snippets
-- `StudyTide Trainer/Pages/*`: dashboard, topic CRUD, snippet CRUD, practice UI, snippet details/history
+- `StudyTide Forge/StudyTideForge.csproj` - MAUI app project
+- `StudyTide Forge/MauiProgram.cs` - startup and service registration
+- `StudyTide Forge/Data/ForgeDbContext.cs` - EF Core context
+- `StudyTide Forge/Data/DatabaseInitializer.cs` - migration + seeding bootstrap
+- `StudyTide Forge/Data/TrainingSeedCatalog.cs` - static Q/A seed records
+- `StudyTide Forge/Models/*` - domain entities
+- `StudyTide Forge/Services/*` - practice, flashcards, dashboard logic
+- `StudyTide Forge/Components/Pages/*` - UI screens
+- `StudyTide Forge/wwwroot/css/app.css` - dark navy + teal theme
 
-## Data Model
+## Local Run
 
-- `Topic`
-  - `Id, Name, Category, Difficulty, CreatedAt`
-- `Snippet`
-  - `Id, TopicId, Title, SourceText, Tags, CreatedAt`
-  - `TimesPracticed, TimesPerfect, LastPracticedAt, NextDueAt`
-- `PracticeAttempt`
-  - `Id, SnippetId, AttemptedAt, TypedText`
-  - `AccuracyPercent, ErrorCount, MissingChars, ExtraChars, FirstMismatchIndex`
+From repo root:
 
-## Verbatim Practice Scoring
-
-On submit, the app compares `TypedText` to `SourceText` using:
-
-1. Character-level comparison
-- Counts character mismatches
-- Counts missing and extra characters
-- Captures first mismatch index
-
-2. Line-level comparison
-- Builds a diff list of lines that do not match
-- Shows source line and typed line side-by-side
-
-### Metrics
-
-- `AccuracyPercent`
-- `ErrorCount`
-- `MissingCharacters`
-- `ExtraCharacters`
-- `FirstMismatchIndex`
-
-Accuracy formula:
-
-- If source length is `0`, accuracy is `100` only when typed length is also `0`
-- Otherwise: `((sourceLength - errorCount) / sourceLength) * 100`, clamped to `0..100`
-
-## Scheduling Rules
-
-After each attempt:
-
-- Always increment `TimesPracticed`
-- Always set `LastPracticedAt = now`
-- If `AccuracyPercent == 100`
-  - `NextDueAt = now + 3 days`
-  - increment `TimesPerfect`
-- Else if `AccuracyPercent >= 95`
-  - `NextDueAt = now + 1 day`
-- Else
-  - `NextDueAt = now + 1 hour`
-
-Practice selection:
-
-- Prefer snippets where `NextDueAt <= now` (or no due date yet)
-- If none are due, pick least-recently-practiced snippet
-
-## Built-In Curated Packs
-
-The seed catalog includes these packs, each with 20+ interview-depth multi-line snippets:
-
-- C# Deep Dive
-- ASP.NET Core Internals
-- Azure for Cloud Developers
-- SQL for Backend Engineers
-- Git & DevOps Essentials
-- Interview Behavioral Mastery
-- System Design for Junior Engineers
-
-It also includes the requested examples for:
-
-- C# loops
-- String interpolation
-- Parsing with `TryParse`
-
-## Deployment
-
-### Non-Azure Deployment (Local)
-
-From the repo root:
-
-```bash
+```powershell
 dotnet restore
+```
+
+Run desktop app on Windows:
+
+```powershell
+dotnet run --project ".\StudyTide Forge\StudyTideForge.csproj" -f net8.0-windows10.0.19041.0
+```
+
+## EF Core Migration Commands
+
+From repo root:
+
+```powershell
 dotnet tool restore
+
+dotnet dotnet-ef migrations add InitialForge \
+  --project ".\StudyTide Forge\StudyTideForge.csproj" \
+  --framework net8.0-windows10.0.19041.0 \
+  --output-dir Data\Migrations
+
+dotnet dotnet-ef database update \
+  --project ".\StudyTide Forge\StudyTideForge.csproj" \
+  --framework net8.0-windows10.0.19041.0
 ```
 
-From the project folder (`StudyTide Trainer/StudyTide Trainer`):
+## Release Commands
 
-```bash
-dotnet dotnet-ef database update
-dotnet run
+Create a publish package for Windows:
+
+```powershell
+dotnet publish ".\StudyTide Forge\StudyTideForge.csproj" \
+  -c Release \
+  -f net8.0-windows10.0.19041.0 \
+  -o .\artifacts\publish
 ```
 
-The app runs locally and uses SQLite (`studytide-trainer.db`) in the project directory.
+## Git Workflow
 
-Optional (only for first-time schema creation in a new clone if no migration exists yet):
+If this is a new repository:
 
-```bash
-dotnet dotnet-ef migrations add InitialCreate
-dotnet dotnet-ef database update
+```powershell
+git init
+git add .
+git commit -m "Initial release - StudyTide Forge v1.0"
+git branch -M main
+git remote add origin https://github.com/<your-user>/<your-repo>.git
+git push -u origin main
+git tag v1.0
+git push origin v1.0
 ```
 
-### Azure Deployment (App Service)
+If git is already initialized, skip `git init`.
 
-Use this when your Azure subscription allows write operations.
+## GitHub Repository Creation
 
-1. Login and select subscription:
+1. Create an empty repository on GitHub.
+2. Copy the HTTPS URL.
+3. Run `git remote add origin <url>`.
+4. Push `main` and `v1.0` tag.
 
-```bash
+## Azure App Service Guidance
+
+A MAUI desktop app is not hosted directly in App Service. Use these options:
+
+1. Deploy a companion ASP.NET Core web/API service to App Service.
+2. Keep desktop app local and call hosted APIs if needed.
+
+Example App Service deploy flow for a companion web app:
+
+```powershell
 az login
-az account set --subscription "<your-subscription-id-or-name>"
-```
-
-2. Deploy from the project folder (`StudyTide Trainer/StudyTide Trainer`):
-
-```bash
+az account set --subscription "<subscription>"
 az webapp up \
-  --name "<globally-unique-app-name>" \
-  --resource-group "<resource-group-name>" \
-  --plan "<app-service-plan-name>" \
-  --location "eastus" \
+  --name "<unique-app-name>" \
+  --resource-group "<resource-group>" \
+  --plan "<app-service-plan>" \
   --runtime "DOTNETCORE:8.0" \
-  --os-type Linux \
-  --sku F1
+  --os-type Linux
 ```
 
-3. Set app settings if needed:
+## Environment Variables
 
-```bash
-az webapp config appsettings set \
-  --name "<globally-unique-app-name>" \
-  --resource-group "<resource-group-name>" \
-  --settings ASPNETCORE_ENVIRONMENT=Production
-```
+Desktop app:
 
-4. Browse deployed app:
+- `FORGE_DB_PATH` (optional future override for database location)
+- `ASPNETCORE_ENVIRONMENT` (if reused by shared libraries)
 
-```bash
-az webapp browse --name "<globally-unique-app-name>" --resource-group "<resource-group-name>"
-```
+Companion web app (if deployed):
 
-Notes:
-- The app uses SQLite by default (`Data Source=studytide-trainer.db`).
-- For production-grade Azure hosting, move from SQLite to Azure SQL and update `DefaultConnection`.
-- If Azure returns `ReadOnlyDisabledSubscription`, the subscription must be re-enabled first.
+- `ConnectionStrings__DefaultConnection`
+- `ASPNETCORE_ENVIRONMENT`
 
-## Release History
+## SQLite Deployment Considerations
 
-- `v1.1.0`: App version metadata + release iteration workflow updates.
-- `v1.0.1`: Deployment documentation updates.
-- `v1.0.0`: Initial public MVP release.
+- SQLite is ideal for local-first desktop use.
+- Keep database file in app data folder for user-scoped storage.
+- Back up the `.db` file during upgrades.
+- For multi-user cloud workloads, migrate to a server database (for example Azure SQL).
 
-## Notes
+## Screenshots
 
-- Database file: `studytide-trainer.db`
-- Local-first by default (no auth, no external APIs)
-- Source text is stored as-is so newlines and indentation are preserved for verbatim practice
-- Change history is tracked in `CHANGELOG.md`
+- Dashboard: _placeholder_
+- Modules: _placeholder_
+- Practice: _placeholder_
+- Flashcards: _placeholder_

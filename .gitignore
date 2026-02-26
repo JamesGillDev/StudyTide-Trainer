@@ -1,31 +1,55 @@
-# Build
-**/bin/
-**/obj/
+## Build output
+bin/
+obj/
+out/
 
-# User files
+## User-specific files
 *.user
+*.rsuser
 *.suo
-*.userosscache
+*.userprefs
 *.sln.docstates
 
-# Logs
+## IDE
+.vs/
+.idea/
+.vscode/
+
+## Logs
 *.log
 
-# OS
-.DS_Store
-Thumbs.db
+## NuGet
+*.nupkg
+*.snupkg
+packages/
 
-# Database artifacts
+## Test
+TestResults/
+
+## Rider
+_ReSharper*/
+*.DotSettings.user
+
+## Dotnet tooling
+.dotnet/
+
+## MAUI generated artifacts
+*.aps
+*.msix
+*.msixupload
+*.appx
+*.appxupload
+*.appxbundle
+
+## Local database files
 *.db
 *.db-shm
 *.db-wal
 
-# IDE
-.vs/
-.vscode/
+## OS files
+Thumbs.db
+Desktop.ini
+.DS_Store
 
-# Azure
-.publishsettings
-
-# Local tools
-.dotnet/
+## Temp project folders
+.tmp-*/

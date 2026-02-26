@@ -1,0 +1,252 @@
+:root {
+    color-scheme: dark;
+    --bg: #07101a;
+    --bg-soft: #0d1b2a;
+    --panel: #132235;
+    --ink: #e7f1ff;
+    --muted: #9cb4cc;
+    --line: #22405a;
+    --accent: #1bb3a6;
+    --accent-strong: #16c7b9;
+    --danger: #e05367;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    font-family: "Segoe UI", "Inter", Tahoma, Geneva, Verdana, sans-serif;
+    background: radial-gradient(circle at top right, #13253c 0%, var(--bg) 50%);
+    color: var(--ink);
+}
+
+a {
+    color: var(--accent-strong);
+}
+
+h1,
+h2,
+h3 {
+    margin-top: 0;
+}
+
+.app-shell {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    min-height: 100vh;
+}
+
+.sidebar {
+    background: linear-gradient(180deg, #0b1727 0%, #07101a 100%);
+    border-right: 1px solid var(--line);
+    padding: 1rem;
+}
+
+.main-panel {
+    padding: 1.2rem;
+}
+
+.nav-root {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+}
+
+.brand-block {
+    border-bottom: 1px solid #1e3348;
+    padding-bottom: 0.8rem;
+    margin-bottom: 0.35rem;
+}
+
+.brand-title {
+    font-size: 1.24rem;
+    font-weight: 700;
+    color: #e4fbff;
+}
+
+.brand-subtitle {
+    color: var(--muted);
+    font-size: 0.85rem;
+}
+
+.nav-link {
+    color: #c8deef;
+    text-decoration: none;
+    padding: 0.5rem 0.7rem;
+    border-radius: 0.45rem;
+    border: 1px solid transparent;
+}
+
+.nav-link.active {
+    background: rgba(27, 179, 166, 0.14);
+    border-color: rgba(27, 179, 166, 0.4);
+    color: #e8fffd;
+}
+
+.panel {
+    background: linear-gradient(180deg, #15273b 0%, #122338 100%);
+    border: 1px solid var(--line);
+    border-radius: 0.75rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+.metric-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 0.85rem;
+    margin-bottom: 1rem;
+}
+
+.metric-card {
+    background: #0f1d2f;
+    border: 1px solid var(--line);
+    border-radius: 0.75rem;
+    padding: 0.85rem;
+}
+
+.metric-card p {
+    margin: 0;
+    font-size: 1.38rem;
+    font-weight: 700;
+}
+
+input,
+textarea,
+select {
+    width: 100%;
+    border-radius: 0.4rem;
+    border: 1px solid #2f4d67;
+    background: #0a1725;
+    color: #e5f3ff;
+    font: inherit;
+    padding: 0.5rem;
+}
+
+textarea {
+    resize: vertical;
+    font-family: Consolas, "Cascadia Code", "Courier New", monospace;
+}
+
+button,
+.button-link {
+    display: inline-block;
+    background: linear-gradient(180deg, #1bb3a6 0%, #12897f 100%);
+    border: 1px solid #29c8ba;
+    color: #e7fffd;
+    border-radius: 0.45rem;
+    padding: 0.45rem 0.78rem;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+button:hover,
+.button-link:hover {
+    background: linear-gradient(180deg, #21c5b8 0%, #16a89a 100%);
+}
+
+button.danger {
+    background: linear-gradient(180deg, #de5c6f 0%, #b74456 100%);
+    border-color: #f28797;
+}
+
+.actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.filter-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 0.8rem;
+    margin-bottom: 0.8rem;
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+}
+
+.data-table th,
+.data-table td {
+    border: 1px solid #294964;
+    padding: 0.48rem 0.56rem;
+    vertical-align: top;
+}
+
+.data-table th {
+    background: #0d2034;
+    text-align: left;
+}
+
+.status-message {
+    border: 1px solid #2a726c;
+    background: rgba(20, 120, 112, 0.24);
+    border-radius: 0.45rem;
+    padding: 0.55rem 0.7rem;
+    margin-bottom: 0.9rem;
+}
+
+.warning-message {
+    border: 1px solid #86503b;
+    background: rgba(148, 85, 55, 0.22);
+    border-radius: 0.45rem;
+    padding: 0.55rem 0.7rem;
+    margin-bottom: 0.9rem;
+}
+
+.training-content {
+    margin: 0;
+    border-radius: 0.55rem;
+    border: 1px solid #325a78;
+    background: #06111d;
+    padding: 0.95rem;
+    white-space: pre-wrap;
+    font-family: Consolas, "Cascadia Code", "Courier New", monospace;
+    overflow-x: auto;
+}
+
+.practice-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1rem;
+    margin-bottom: 0.85rem;
+}
+
+.flashcard-box {
+    border: 1px solid var(--line);
+    border-radius: 0.65rem;
+    background: #0b1a2b;
+    padding: 1rem;
+}
+
+.card-face {
+    min-height: 100px;
+    margin-bottom: 0.9rem;
+}
+
+.meta-text {
+    color: var(--muted);
+}
+
+code {
+    color: #d8f7f2;
+}
+
+@media (max-width: 900px) {
+    .app-shell {
+        grid-template-columns: 1fr;
+    }
+
+    .sidebar {
+        border-right: none;
+        border-bottom: 1px solid var(--line);
+    }
+}
