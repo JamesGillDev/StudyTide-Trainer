@@ -93,22 +93,76 @@ It also includes the requested examples for:
 - String interpolation
 - Parsing with `TryParse`
 
-## Run Commands
+## Deployment
+
+### Non-Azure Deployment (Local)
+
+From the repo root:
+
+```bash
+dotnet restore
+dotnet tool restore
+```
 
 From the project folder (`StudyTide Trainer/StudyTide Trainer`):
 
 ```bash
-dotnet restore
-dotnet ef migrations add InitialCreate
-dotnet ef database update
+dotnet dotnet-ef database update
 dotnet run
 ```
 
-If `dotnet ef` is not available globally, install the tool:
+The app runs locally and uses SQLite (`studytide-trainer.db`) in the project directory.
+
+Optional (only for first-time schema creation in a new clone if no migration exists yet):
 
 ```bash
-dotnet tool install --global dotnet-ef
+dotnet dotnet-ef migrations add InitialCreate
+dotnet dotnet-ef database update
 ```
+
+### Azure Deployment (App Service)
+
+Use this when your Azure subscription allows write operations.
+
+1. Login and select subscription:
+
+```bash
+az login
+az account set --subscription "<your-subscription-id-or-name>"
+```
+
+2. Deploy from the project folder (`StudyTide Trainer/StudyTide Trainer`):
+
+```bash
+az webapp up \
+  --name "<globally-unique-app-name>" \
+  --resource-group "<resource-group-name>" \
+  --plan "<app-service-plan-name>" \
+  --location "eastus" \
+  --runtime "DOTNETCORE:8.0" \
+  --os-type Linux \
+  --sku F1
+```
+
+3. Set app settings if needed:
+
+```bash
+az webapp config appsettings set \
+  --name "<globally-unique-app-name>" \
+  --resource-group "<resource-group-name>" \
+  --settings ASPNETCORE_ENVIRONMENT=Production
+```
+
+4. Browse deployed app:
+
+```bash
+az webapp browse --name "<globally-unique-app-name>" --resource-group "<resource-group-name>"
+```
+
+Notes:
+- The app uses SQLite by default (`Data Source=studytide-trainer.db`).
+- For production-grade Azure hosting, move from SQLite to Azure SQL and update `DefaultConnection`.
+- If Azure returns `ReadOnlyDisabledSubscription`, the subscription must be re-enabled first.
 
 ## Notes
 
