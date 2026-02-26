@@ -1,0 +1,90 @@
+@page "/snippets/{Id:int}"
+@inject IDbContextFactory<TrainingDbContext> DbFactory
+
+<PageTitle>Snippet Details</PageTitle>
+
+@if (_snippet is null)
+{
+    <h1>Snippet not found</h1>
+    <p>The requested snippet could not be found.</p>
+}
+else
+{
+    <h1>@_snippet.Title</h1>
+
+    <section class="panel">
+        <h2>Snippet details</h2>
+        <p><strong>Topic:</strong> @_snippet.Topic?.Name</p>
+        <p><strong>Tags:</strong> @_snippet.Tags</p>
+        <p><strong>Created:</strong> @_snippet.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm")</p>
+        <p><strong>Times practiced:</strong> @_snippet.TimesPracticed</p>
+        <p><strong>Times perfect:</strong> @_snippet.TimesPerfect</p>
+        <p><strong>Last practiced:</strong> @(_snippet.LastPracticedAt?.ToLocalTime().ToString("yyyy-MM-dd HH:mm") ?? "Never")</p>
+        <p><strong>Next due:</strong> @(_snippet.NextDueAt?.ToLocalTime().ToString("yyyy-MM-dd HH:mm") ?? "Now")</p>
+
+        <h3>Source text</h3>
+        <pre class="source-panel">@_snippet.SourceText</pre>
+    </section>
+
+    <section class="panel">
+        <h2>Practice history</h2>
+
+        @if (_attempts.Count == 0)
+        {
+            <p>No attempts yet for this snippet.</p>
+        }
+        else
+        {
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Attempted at</th>
+                        <th>Accuracy</th>
+                        <th>Errors</th>
+                        <th>Missing</th>
+                        <th>Extra</th>
+                        <th>First mismatch</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var attempt in _attempts)
+                    {
+                        <tr>
+                            <td>@attempt.AttemptedAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm")</td>
+                            <td>@attempt.AccuracyPercent.ToString("0.00")%</td>
+                            <td>@attempt.ErrorCount</td>
+                            <td>@attempt.MissingChars</td>
+                            <td>@attempt.ExtraChars</td>
+                            <td>@(attempt.FirstMismatchIndex >= 0 ? attempt.FirstMismatchIndex : -1)</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </section>
+}
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private Snippet? _snippet;
+    private readonly List<PracticeAttempt> _attempts = new();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await using var db = await DbFactory.CreateDbContextAsync();
+
+        _snippet = await db.Snippets
+            .AsNoTracking()
+            .Include(x => x.Topic)
+            .FirstOrDefaultAsync(x => x.Id == Id);
+
+        _attempts.Clear();
+        _attempts.AddRange(await db.PracticeAttempts
+            .AsNoTracking()
+            .Where(x => x.SnippetId == Id)
+            .OrderByDescending(x => x.AttemptedAt)
+            .ToListAsync());
+    }
+}

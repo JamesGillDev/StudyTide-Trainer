@@ -1,0 +1,31 @@
+# Build
+**/bin/
+**/obj/
+
+# User files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Database artifacts
+*.db
+*.db-shm
+*.db-wal
+
+# IDE
+.vs/
+.vscode/
+
+# Azure
+.publishsettings
+
+# Local tools
+.dotnet/

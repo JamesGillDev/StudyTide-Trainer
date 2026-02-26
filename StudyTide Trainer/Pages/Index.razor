@@ -1,0 +1,74 @@
+@page "/"
+@inject DashboardService DashboardService
+
+<PageTitle>Dashboard</PageTitle>
+
+<h1>Dashboard</h1>
+
+@if (_snapshot is null)
+{
+    <p>Loading dashboard metrics...</p>
+}
+else
+{
+    <div class="metric-grid">
+        <article class="metric-card">
+            <h2>Total snippets</h2>
+            <p>@_snapshot.TotalSnippets</p>
+        </article>
+        <article class="metric-card">
+            <h2>Snippets due now</h2>
+            <p>@_snapshot.SnippetsDueNow</p>
+        </article>
+        <article class="metric-card">
+            <h2>Attempts today</h2>
+            <p>@_snapshot.AttemptsToday</p>
+        </article>
+        <article class="metric-card">
+            <h2>Avg accuracy (7 days)</h2>
+            <p>@_snapshot.AvgAccuracyLast7Days.ToString("0.00")%</p>
+        </article>
+    </div>
+
+    <section class="panel">
+        <h2>Top 5 weakest snippets</h2>
+
+        @if (_snapshot.WeakestSnippets.Count == 0)
+        {
+            <p>No practice attempts yet. Start in the practice page.</p>
+        }
+        else
+        {
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Snippet</th>
+                        <th>Topic</th>
+                        <th>Avg accuracy</th>
+                        <th>Attempts</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var weak in _snapshot.WeakestSnippets)
+                    {
+                        <tr>
+                            <td><a href="/snippets/@weak.SnippetId">@weak.SnippetTitle</a></td>
+                            <td>@weak.TopicName</td>
+                            <td>@weak.AverageAccuracy.ToString("0.00")%</td>
+                            <td>@weak.AttemptCount</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </section>
+}
+
+@code {
+    private DashboardSnapshot? _snapshot;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _snapshot = await DashboardService.GetSnapshotAsync();
+    }
+}

@@ -1,0 +1,225 @@
+@page "/topics"
+@inject IDbContextFactory<TrainingDbContext> DbFactory
+
+<PageTitle>Topics</PageTitle>
+
+<h1>Topics</h1>
+
+@if (!string.IsNullOrWhiteSpace(_statusMessage))
+{
+    <p class="status-message">@_statusMessage</p>
+}
+
+<section class="panel">
+    <h2>Create topic</h2>
+
+    <EditForm Model="_newTopic" OnValidSubmit="CreateTopicAsync">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="form-grid">
+            <label>Name</label>
+            <InputText @bind-Value="_newTopic.Name" />
+
+            <label>Category</label>
+            <InputText @bind-Value="_newTopic.Category" />
+
+            <label>Difficulty (1-5)</label>
+            <InputNumber @bind-Value="_newTopic.Difficulty" />
+        </div>
+
+        <button type="submit">Create Topic</button>
+    </EditForm>
+</section>
+
+<section class="panel">
+    <h2>Topic library</h2>
+
+    @if (_topics.Count == 0)
+    {
+        <p>No topics yet.</p>
+    }
+    else
+    {
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Category</th>
+                    <th>Difficulty</th>
+                    <th>Created</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var topic in _topics)
+                {
+                    <tr>
+                        <td>@topic.Name</td>
+                        <td>@topic.Category</td>
+                        <td>@topic.Difficulty</td>
+                        <td>@topic.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm")</td>
+                        <td class="actions">
+                            <button @onclick="() => StartEdit(topic)">Edit</button>
+                            <button class="danger" @onclick="() => DeleteTopicAsync(topic.Id)">Delete</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</section>
+
+@if (_editingTopicId.HasValue)
+{
+    <section class="panel">
+        <h2>Edit topic</h2>
+
+        <EditForm Model="_editTopic" OnValidSubmit="SaveEditAsync">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <div class="form-grid">
+                <label>Name</label>
+                <InputText @bind-Value="_editTopic.Name" />
+
+                <label>Category</label>
+                <InputText @bind-Value="_editTopic.Category" />
+
+                <label>Difficulty (1-5)</label>
+                <InputNumber @bind-Value="_editTopic.Difficulty" />
+            </div>
+
+            <div class="actions">
+                <button type="submit">Save</button>
+                <button type="button" @onclick="CancelEdit">Cancel</button>
+            </div>
+        </EditForm>
+    </section>
+}
+
+@code {
+    private readonly List<Topic> _topics = new();
+    private TopicFormModel _newTopic = new();
+    private TopicFormModel _editTopic = new();
+    private int? _editingTopicId;
+    private string? _statusMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadTopicsAsync();
+    }
+
+    private async Task LoadTopicsAsync()
+    {
+        await using var db = await DbFactory.CreateDbContextAsync();
+
+        _topics.Clear();
+        _topics.AddRange(await db.Topics
+            .AsNoTracking()
+            .OrderBy(x => x.Category)
+            .ThenBy(x => x.Name)
+            .ToListAsync());
+    }
+
+    private async Task CreateTopicAsync()
+    {
+        await using var db = await DbFactory.CreateDbContextAsync();
+
+        db.Topics.Add(new Topic
+        {
+            Name = _newTopic.Name.Trim(),
+            Category = _newTopic.Category.Trim(),
+            Difficulty = _newTopic.Difficulty,
+            CreatedAt = DateTime.UtcNow
+        });
+
+        await db.SaveChangesAsync();
+
+        _newTopic = new TopicFormModel();
+        _statusMessage = "Topic created.";
+
+        await LoadTopicsAsync();
+    }
+
+    private void StartEdit(Topic topic)
+    {
+        _editingTopicId = topic.Id;
+        _editTopic = new TopicFormModel
+        {
+            Name = topic.Name,
+            Category = topic.Category,
+            Difficulty = topic.Difficulty
+        };
+    }
+
+    private async Task SaveEditAsync()
+    {
+        if (!_editingTopicId.HasValue)
+        {
+            return;
+        }
+
+        await using var db = await DbFactory.CreateDbContextAsync();
+        var topic = await db.Topics.FirstOrDefaultAsync(x => x.Id == _editingTopicId.Value);
+
+        if (topic is null)
+        {
+            _statusMessage = "Topic no longer exists.";
+            return;
+        }
+
+        topic.Name = _editTopic.Name.Trim();
+        topic.Category = _editTopic.Category.Trim();
+        topic.Difficulty = _editTopic.Difficulty;
+
+        await db.SaveChangesAsync();
+
+        _editingTopicId = null;
+        _statusMessage = "Topic updated.";
+
+        await LoadTopicsAsync();
+    }
+
+    private async Task DeleteTopicAsync(int topicId)
+    {
+        await using var db = await DbFactory.CreateDbContextAsync();
+        var topic = await db.Topics.FirstOrDefaultAsync(x => x.Id == topicId);
+
+        if (topic is null)
+        {
+            _statusMessage = "Topic no longer exists.";
+            return;
+        }
+
+        db.Topics.Remove(topic);
+        await db.SaveChangesAsync();
+
+        if (_editingTopicId == topicId)
+        {
+            _editingTopicId = null;
+        }
+
+        _statusMessage = "Topic deleted.";
+        await LoadTopicsAsync();
+    }
+
+    private void CancelEdit()
+    {
+        _editingTopicId = null;
+    }
+
+    private sealed class TopicFormModel
+    {
+        [Required]
+        [StringLength(120)]
+        public string Name { get; set; } = string.Empty;
+
+        [Required]
+        [StringLength(60)]
+        public string Category { get; set; } = string.Empty;
+
+        [Range(1, 5)]
+        public int Difficulty { get; set; } = 3;
+    }
+}

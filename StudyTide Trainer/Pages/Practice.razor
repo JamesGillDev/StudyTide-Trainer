@@ -1,0 +1,186 @@
+@page "/practice"
+@inject IDbContextFactory<TrainingDbContext> DbFactory
+@inject PracticeService PracticeService
+
+<PageTitle>Practice</PageTitle>
+
+<h1>Verbatim Retype Practice</h1>
+
+@if (!string.IsNullOrWhiteSpace(_statusMessage))
+{
+    <p class="status-message">@_statusMessage</p>
+}
+
+<section class="panel">
+    <h2>Session scope</h2>
+
+    <div class="filter-row">
+        <label for="topicScope">Topic</label>
+        <select id="topicScope" value="@(_selectedTopicId?.ToString() ?? "all")" @onchange="OnTopicChangedAsync">
+            <option value="all">All topics</option>
+            @foreach (var topic in _topics)
+            {
+                <option value="@topic.Id">@topic.Name (@topic.Category)</option>
+            }
+        </select>
+
+        <button @onclick="LoadNextSnippetAsync">Load Due Snippet</button>
+    </div>
+</section>
+
+@if (_currentSnippet is null)
+{
+    <section class="panel">
+        <p>No snippets found for the selected scope.</p>
+    </section>
+}
+else
+{
+    <section class="panel">
+        <h2>@_currentSnippet.Title</h2>
+        <p><strong>Topic:</strong> @_currentSnippet.Topic?.Name</p>
+        <p><strong>Tags:</strong> @_currentSnippet.Tags</p>
+
+        <div class="practice-grid">
+            <article>
+                <h3>Source (read-only)</h3>
+                <pre class="source-panel">@_currentSnippet.SourceText</pre>
+            </article>
+
+            <article>
+                <h3>Your retype</h3>
+                <InputTextArea @bind-Value="_typedText" rows="18" class="typing-box" />
+            </article>
+        </div>
+
+        <div class="actions">
+            <button @onclick="SubmitAttemptAsync">Submit Attempt</button>
+            <button @onclick="LoadNextSnippetAsync">Practice Another Snippet</button>
+        </div>
+    </section>
+}
+
+@if (_evaluation is not null)
+{
+    <section class="panel">
+        <h2>Attempt feedback</h2>
+
+        <div class="metric-grid">
+            <article class="metric-card">
+                <h3>Accuracy</h3>
+                <p>@_evaluation.AccuracyPercent.ToString("0.00")%</p>
+            </article>
+            <article class="metric-card">
+                <h3>Error count</h3>
+                <p>@_evaluation.ErrorCount</p>
+            </article>
+            <article class="metric-card">
+                <h3>Missing chars</h3>
+                <p>@_evaluation.MissingCharacters</p>
+            </article>
+            <article class="metric-card">
+                <h3>Extra chars</h3>
+                <p>@_evaluation.ExtraCharacters</p>
+            </article>
+            <article class="metric-card">
+                <h3>First mismatch index</h3>
+                <p>@(_evaluation.FirstMismatchIndex?.ToString() ?? "None")</p>
+            </article>
+        </div>
+
+        <h3>Line diff</h3>
+
+        @if (_evaluation.MismatchedLines.Count == 0)
+        {
+            <p>No line differences. Perfect copy.</p>
+        }
+        else
+        {
+            <table class="data-table diff-table">
+                <thead>
+                    <tr>
+                        <th>Line</th>
+                        <th>Source line</th>
+                        <th>Your line</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var mismatch in _evaluation.MismatchedLines)
+                    {
+                        <tr>
+                            <td>@mismatch.LineNumber</td>
+                            <td><code>@mismatch.SourceLine</code></td>
+                            <td><code>@mismatch.TypedLine</code></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </section>
+}
+
+@code {
+    private readonly List<Topic> _topics = new();
+    private int? _selectedTopicId;
+    private Snippet? _currentSnippet;
+    private string _typedText = string.Empty;
+    private PracticeEvaluation? _evaluation;
+    private string? _statusMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadTopicsAsync();
+        await LoadNextSnippetAsync();
+    }
+
+    private async Task LoadTopicsAsync()
+    {
+        await using var db = await DbFactory.CreateDbContextAsync();
+
+        _topics.Clear();
+        _topics.AddRange(await db.Topics
+            .AsNoTracking()
+            .OrderBy(x => x.Name)
+            .ToListAsync());
+    }
+
+    private async Task LoadNextSnippetAsync()
+    {
+        _currentSnippet = await PracticeService.GetNextSnippetAsync(_selectedTopicId);
+        _typedText = string.Empty;
+        _evaluation = null;
+        _statusMessage = _currentSnippet is null
+            ? "No snippets available in this scope."
+            : "Snippet loaded. Retype it exactly, then submit.";
+    }
+
+    private async Task OnTopicChangedAsync(ChangeEventArgs eventArgs)
+    {
+        var value = eventArgs.Value?.ToString();
+
+        if (string.Equals(value, "all", StringComparison.OrdinalIgnoreCase) || string.IsNullOrWhiteSpace(value))
+        {
+            _selectedTopicId = null;
+        }
+        else if (int.TryParse(value, out var topicId))
+        {
+            _selectedTopicId = topicId;
+        }
+
+        await LoadNextSnippetAsync();
+    }
+
+    private async Task SubmitAttemptAsync()
+    {
+        if (_currentSnippet is null)
+        {
+            _statusMessage = "Load a snippet first.";
+            return;
+        }
+
+        _evaluation = PracticeService.Evaluate(_currentSnippet.SourceText, _typedText);
+        await PracticeService.SaveAttemptAsync(_currentSnippet.Id, _typedText, _evaluation);
+
+        _statusMessage = "Attempt saved. Review mismatches below or load another snippet.";
+    }
+}

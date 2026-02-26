@@ -1,0 +1,317 @@
+@page "/snippets"
+@inject IDbContextFactory<TrainingDbContext> DbFactory
+
+<PageTitle>Snippets</PageTitle>
+
+<h1>Snippets</h1>
+
+@if (!string.IsNullOrWhiteSpace(_statusMessage))
+{
+    <p class="status-message">@_statusMessage</p>
+}
+
+<section class="panel">
+    <h2>Create snippet</h2>
+
+    @if (_topics.Count == 0)
+    {
+        <p>Create at least one topic before adding snippets.</p>
+    }
+    else
+    {
+        <EditForm Model="_newSnippet" OnValidSubmit="CreateSnippetAsync">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <div class="form-grid">
+                <label>Topic</label>
+                <InputSelect @bind-Value="_newSnippet.TopicId">
+                    @foreach (var topic in _topics)
+                    {
+                        <option value="@topic.Id">@topic.Name (@topic.Category)</option>
+                    }
+                </InputSelect>
+
+                <label>Title</label>
+                <InputText @bind-Value="_newSnippet.Title" />
+
+                <label>Tags (comma-separated)</label>
+                <InputText @bind-Value="_newSnippet.Tags" />
+
+                <label>Source text</label>
+                <InputTextArea @bind-Value="_newSnippet.SourceText" rows="14" />
+            </div>
+
+            <button type="submit">Create Snippet</button>
+        </EditForm>
+    }
+</section>
+
+<section class="panel">
+    <h2>Snippet library</h2>
+
+    <div class="filter-row">
+        <label for="topicFilter">Filter by topic</label>
+        <select id="topicFilter" value="@(_filterTopicId?.ToString() ?? "all")" @onchange="OnTopicFilterChanged">
+            <option value="all">All topics</option>
+            @foreach (var topic in _topics)
+            {
+                <option value="@topic.Id">@topic.Name (@topic.Category)</option>
+            }
+        </select>
+    </div>
+
+    @if (_snippets.Count == 0)
+    {
+        <p>No snippets match this filter.</p>
+    }
+    else
+    {
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Topic</th>
+                    <th>Tags</th>
+                    <th>Practiced</th>
+                    <th>Next due</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var snippet in _snippets)
+                {
+                    <tr>
+                        <td>@snippet.Title</td>
+                        <td>@snippet.Topic?.Name</td>
+                        <td>@snippet.Tags</td>
+                        <td>@snippet.TimesPracticed</td>
+                        <td>@(snippet.NextDueAt.HasValue ? snippet.NextDueAt.Value.ToLocalTime().ToString("yyyy-MM-dd HH:mm") : "Now")</td>
+                        <td class="actions">
+                            <a class="button-link" href="/snippets/@snippet.Id">Details</a>
+                            <button @onclick="() => StartEdit(snippet)">Edit</button>
+                            <button class="danger" @onclick="() => DeleteSnippetAsync(snippet.Id)">Delete</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</section>
+
+@if (_editingSnippetId.HasValue)
+{
+    <section class="panel">
+        <h2>Edit snippet</h2>
+
+        <EditForm Model="_editSnippet" OnValidSubmit="SaveEditAsync">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <div class="form-grid">
+                <label>Topic</label>
+                <InputSelect @bind-Value="_editSnippet.TopicId">
+                    @foreach (var topic in _topics)
+                    {
+                        <option value="@topic.Id">@topic.Name (@topic.Category)</option>
+                    }
+                </InputSelect>
+
+                <label>Title</label>
+                <InputText @bind-Value="_editSnippet.Title" />
+
+                <label>Tags (comma-separated)</label>
+                <InputText @bind-Value="_editSnippet.Tags" />
+
+                <label>Source text</label>
+                <InputTextArea @bind-Value="_editSnippet.SourceText" rows="14" />
+            </div>
+
+            <div class="actions">
+                <button type="submit">Save</button>
+                <button type="button" @onclick="CancelEdit">Cancel</button>
+            </div>
+        </EditForm>
+    </section>
+}
+
+@code {
+    private readonly List<Topic> _topics = new();
+    private readonly List<Snippet> _snippets = new();
+    private SnippetFormModel _newSnippet = new();
+    private SnippetFormModel _editSnippet = new();
+    private int? _filterTopicId;
+    private int? _editingSnippetId;
+    private string? _statusMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadTopicsAsync();
+        await LoadSnippetsAsync();
+    }
+
+    private async Task LoadTopicsAsync()
+    {
+        await using var db = await DbFactory.CreateDbContextAsync();
+
+        _topics.Clear();
+        _topics.AddRange(await db.Topics
+            .AsNoTracking()
+            .OrderBy(x => x.Name)
+            .ToListAsync());
+
+        if (_topics.Count > 0)
+        {
+            _newSnippet.TopicId = _topics.First().Id;
+        }
+    }
+
+    private async Task LoadSnippetsAsync()
+    {
+        await using var db = await DbFactory.CreateDbContextAsync();
+
+        var query = db.Snippets
+            .AsNoTracking()
+            .Include(x => x.Topic)
+            .AsQueryable();
+
+        if (_filterTopicId.HasValue)
+        {
+            query = query.Where(x => x.TopicId == _filterTopicId.Value);
+        }
+
+        _snippets.Clear();
+        _snippets.AddRange(await query
+            .OrderBy(x => x.Topic!.Name)
+            .ThenBy(x => x.Title)
+            .ToListAsync());
+    }
+
+    private async Task CreateSnippetAsync()
+    {
+        await using var db = await DbFactory.CreateDbContextAsync();
+
+        db.Snippets.Add(new Snippet
+        {
+            TopicId = _newSnippet.TopicId,
+            Title = _newSnippet.Title.Trim(),
+            SourceText = _newSnippet.SourceText,
+            Tags = _newSnippet.Tags.Trim(),
+            CreatedAt = DateTime.UtcNow,
+            NextDueAt = DateTime.UtcNow,
+            TimesPracticed = 0,
+            TimesPerfect = 0
+        });
+
+        await db.SaveChangesAsync();
+
+        var selectedTopicId = _newSnippet.TopicId;
+        _newSnippet = new SnippetFormModel
+        {
+            TopicId = selectedTopicId
+        };
+
+        _statusMessage = "Snippet created.";
+        await LoadSnippetsAsync();
+    }
+
+    private void StartEdit(Snippet snippet)
+    {
+        _editingSnippetId = snippet.Id;
+        _editSnippet = new SnippetFormModel
+        {
+            TopicId = snippet.TopicId,
+            Title = snippet.Title,
+            SourceText = snippet.SourceText,
+            Tags = snippet.Tags
+        };
+    }
+
+    private async Task SaveEditAsync()
+    {
+        if (!_editingSnippetId.HasValue)
+        {
+            return;
+        }
+
+        await using var db = await DbFactory.CreateDbContextAsync();
+        var snippet = await db.Snippets.FirstOrDefaultAsync(x => x.Id == _editingSnippetId.Value);
+
+        if (snippet is null)
+        {
+            _statusMessage = "Snippet no longer exists.";
+            return;
+        }
+
+        snippet.TopicId = _editSnippet.TopicId;
+        snippet.Title = _editSnippet.Title.Trim();
+        snippet.SourceText = _editSnippet.SourceText;
+        snippet.Tags = _editSnippet.Tags.Trim();
+
+        await db.SaveChangesAsync();
+
+        _editingSnippetId = null;
+        _statusMessage = "Snippet updated.";
+        await LoadSnippetsAsync();
+    }
+
+    private async Task DeleteSnippetAsync(int snippetId)
+    {
+        await using var db = await DbFactory.CreateDbContextAsync();
+        var snippet = await db.Snippets.FirstOrDefaultAsync(x => x.Id == snippetId);
+
+        if (snippet is null)
+        {
+            _statusMessage = "Snippet no longer exists.";
+            return;
+        }
+
+        db.Snippets.Remove(snippet);
+        await db.SaveChangesAsync();
+
+        if (_editingSnippetId == snippetId)
+        {
+            _editingSnippetId = null;
+        }
+
+        _statusMessage = "Snippet deleted.";
+        await LoadSnippetsAsync();
+    }
+
+    private void CancelEdit()
+    {
+        _editingSnippetId = null;
+    }
+
+    private async Task OnTopicFilterChanged(ChangeEventArgs eventArgs)
+    {
+        var value = eventArgs.Value?.ToString();
+
+        if (string.Equals(value, "all", StringComparison.OrdinalIgnoreCase) || string.IsNullOrWhiteSpace(value))
+        {
+            _filterTopicId = null;
+        }
+        else if (int.TryParse(value, out var parsedTopicId))
+        {
+            _filterTopicId = parsedTopicId;
+        }
+
+        await LoadSnippetsAsync();
+    }
+
+    private sealed class SnippetFormModel
+    {
+        [Range(1, int.MaxValue)]
+        public int TopicId { get; set; }
+
+        [Required]
+        [StringLength(200)]
+        public string Title { get; set; } = string.Empty;
+
+        [Required]
+        public string SourceText { get; set; } = string.Empty;
+
+        [StringLength(300)]
+        public string Tags { get; set; } = string.Empty;
+    }
+}
