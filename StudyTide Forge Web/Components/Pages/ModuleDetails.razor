@@ -1,0 +1,99 @@
+@page "/modules/{ModuleId:int}"
+@inject IDbContextFactory<ForgeDbContext> DbFactory
+
+<PageTitle>Module Details</PageTitle>
+
+@if (_module is null)
+{
+    <h1>Module not found</h1>
+}
+else
+{
+    <h1>@_module.Name</h1>
+
+    <p class="meta-text">Category: @_module.Category</p>
+
+    <section class="panel">
+        <h2>Lessons</h2>
+
+        @if (_lessons.Count == 0)
+        {
+            <p>No lessons available for this module.</p>
+        }
+        else
+        {
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Order</th>
+                        <th>Title</th>
+                        <th>Training Items</th>
+                        <th>Flashcards</th>
+                        <th>Open</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var lesson in _lessons)
+                    {
+                        <tr>
+                            <td>@lesson.OrderIndex</td>
+                            <td>@lesson.Title</td>
+                            <td>@lesson.BlockCount</td>
+                            <td>@lesson.FlashcardCount</td>
+                            <td>
+                                <a class="button-link" href="/modules/@ModuleId/lessons/@lesson.Id">View</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </section>
+}
+
+@code {
+    [Parameter]
+    public int ModuleId { get; set; }
+
+    private TrainingModule? _module;
+    private readonly List<LessonSummary> _lessons = [];
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await using var db = await DbFactory.CreateDbContextAsync();
+
+        _module = await db.TrainingModules
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.Id == ModuleId);
+
+        var lessons = await db.TrainingLessons
+            .AsNoTracking()
+            .Where(x => x.ModuleId == ModuleId)
+            .OrderBy(x => x.OrderIndex)
+            .Select(x => new LessonSummary
+            {
+                Id = x.Id,
+                Title = x.Title,
+                OrderIndex = x.OrderIndex,
+                BlockCount = x.TrainingBlocks.Count,
+                FlashcardCount = x.Flashcards.Count
+            })
+            .ToListAsync();
+
+        _lessons.Clear();
+        _lessons.AddRange(lessons);
+    }
+
+    private sealed class LessonSummary
+    {
+        public int Id { get; init; }
+
+        public string Title { get; init; } = string.Empty;
+
+        public int OrderIndex { get; init; }
+
+        public int BlockCount { get; init; }
+
+        public int FlashcardCount { get; init; }
+    }
+}

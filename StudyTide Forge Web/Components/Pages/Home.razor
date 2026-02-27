@@ -1,0 +1,119 @@
+@page "/"
+@inject DashboardService DashboardService
+
+<PageTitle>Dashboard</PageTitle>
+
+<h1>Dashboard</h1>
+
+@if (_snapshot is null)
+{
+    <p>Loading dashboard metrics...</p>
+}
+else
+{
+    <div class="metric-grid">
+        <article class="metric-card">
+            <h2>Total modules</h2>
+            <p>@_snapshot.TotalModules</p>
+        </article>
+        <article class="metric-card">
+            <h2>Items due</h2>
+            <p>@_snapshot.BlocksDue</p>
+        </article>
+        <article class="metric-card">
+            <h2>Flashcards due</h2>
+            <p>@_snapshot.FlashcardsDue</p>
+        </article>
+        <article class="metric-card">
+            <h2>Accuracy (7 days)</h2>
+            <p>@_snapshot.AccuracyLast7Days.ToString("0.00")%</p>
+        </article>
+        <article class="metric-card">
+            <h2>Imported content</h2>
+            <p>Imported flashcards: @_snapshot.ImportedFlashcards</p>
+            <p>Imported training items: @_snapshot.ImportedTrainingItems</p>
+        </article>
+    </div>
+
+    <section class="panel">
+        <h2>Weakest training items</h2>
+
+        @if (_snapshot.WeakestBlocks.Count == 0)
+        {
+            <p>No practice attempts recorded yet.</p>
+        }
+        else
+        {
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Training item</th>
+                        <th>Lesson</th>
+                        <th>Avg accuracy</th>
+                        <th>Attempts</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var block in _snapshot.WeakestBlocks)
+                    {
+                        <tr>
+                            <td>@block.Title</td>
+                            <td>@block.LessonTitle</td>
+                            <td>@block.AverageAccuracy.ToString("0.00")%</td>
+                            <td>@block.Attempts</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </section>
+
+    <section class="panel">
+        <h2>Weakest flashcards</h2>
+
+        @if (_snapshot.WeakestFlashcards.Count == 0)
+        {
+            <p>No flashcard results recorded yet.</p>
+        }
+        else
+        {
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Question</th>
+                        <th>Lesson</th>
+                        <th>Success rate</th>
+                        <th>Attempts</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var card in _snapshot.WeakestFlashcards)
+                    {
+                        <tr>
+                            <td>@Truncate(card.Question, 100)</td>
+                            <td>@card.LessonTitle</td>
+                            <td>@card.SuccessRate.ToString("0.00")%</td>
+                            <td>@card.Attempts</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </section>
+}
+
+@code {
+    private DashboardSnapshot? _snapshot;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _snapshot = await DashboardService.GetSnapshotAsync();
+    }
+
+    private static string Truncate(string value, int maxLength)
+    {
+        return value.Length <= maxLength
+            ? value
+            : $"{value[..maxLength]}...";
+    }
+}

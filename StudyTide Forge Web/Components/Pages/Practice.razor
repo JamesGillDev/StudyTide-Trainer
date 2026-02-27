@@ -1,0 +1,276 @@
+@page "/practice"
+@inject IDbContextFactory<ForgeDbContext> DbFactory
+@inject PracticeService PracticeService
+
+<PageTitle>Practice</PageTitle>
+
+<h1>Verbatim Practice</h1>
+
+@if (!string.IsNullOrWhiteSpace(_statusMessage))
+{
+    <p class="status-message">@_statusMessage</p>
+}
+
+<section class="panel">
+    <h2>Scope</h2>
+
+    <div class="filter-grid">
+        <div>
+            <label for="moduleScope">Module</label>
+            <select id="moduleScope" value="@(_selectedModuleId?.ToString() ?? "all")" @onchange="OnModuleChangedAsync">
+                <option value="all">All modules</option>
+                @foreach (var module in _modules)
+                {
+                    <option value="@module.Id">@module.Name</option>
+                }
+            </select>
+        </div>
+
+        <div>
+            <label for="lessonScope">Lesson</label>
+            <select id="lessonScope" value="@(_selectedLessonId?.ToString() ?? "all")" @onchange="OnLessonChangedAsync">
+                <option value="all">All lessons</option>
+                @foreach (var lesson in _lessons)
+                {
+                    <option value="@lesson.Id">@(_selectedModuleId.HasValue ? lesson.Title : lesson.DisplayTitle)</option>
+                }
+            </select>
+        </div>
+    </div>
+
+    <div class="actions">
+        <button @onclick="LoadNextBlockAsync">Load Next Due Item</button>
+    </div>
+</section>
+
+@if (_currentBlock is null)
+{
+    <section class="panel">
+        <p>No training item found in the selected scope.</p>
+    </section>
+}
+else
+{
+    <section class="panel">
+        <h2>@_currentBlock.Title</h2>
+        <p class="meta-text">
+            Lesson: @_currentBlock.Lesson?.Title |
+            Difficulty: @_currentBlock.Difficulty
+        </p>
+
+        <div class="practice-grid">
+            <article>
+                <h3>Training content</h3>
+                <pre class="training-content">@_currentBlock.Content</pre>
+            </article>
+
+            <article>
+                <h3>Your verbatim retype</h3>
+                <InputTextArea @bind-Value="_typedText" rows="18" />
+            </article>
+        </div>
+
+        <div class="actions">
+            <button @onclick="SubmitAttemptAsync">Submit Attempt</button>
+            <button @onclick="LoadNextBlockAsync">Load Another Item</button>
+        </div>
+    </section>
+}
+
+@if (_evaluation is not null)
+{
+    <section class="panel">
+        <h2>Diff Summary</h2>
+
+        <div class="metric-grid">
+            <article class="metric-card">
+                <h3>Accuracy</h3>
+                <p>@_evaluation.AccuracyPercent.ToString("0.00")%</p>
+            </article>
+            <article class="metric-card">
+                <h3>Error count</h3>
+                <p>@_evaluation.ErrorCount</p>
+            </article>
+            <article class="metric-card">
+                <h3>Missing chars</h3>
+                <p>@_evaluation.MissingCharacters</p>
+            </article>
+            <article class="metric-card">
+                <h3>Extra chars</h3>
+                <p>@_evaluation.ExtraCharacters</p>
+            </article>
+            <article class="metric-card">
+                <h3>First mismatch index</h3>
+                <p>@(_evaluation.FirstMismatchIndex?.ToString() ?? "None")</p>
+            </article>
+        </div>
+
+        <h3>Line differences</h3>
+
+        @if (_evaluation.MismatchedLines.Count == 0)
+        {
+            <p>No line-level differences detected.</p>
+        }
+        else
+        {
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Line</th>
+                        <th>Expected</th>
+                        <th>Typed</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var mismatch in _evaluation.MismatchedLines)
+                    {
+                        <tr>
+                            <td>@mismatch.LineNumber</td>
+                            <td><code>@mismatch.SourceLine</code></td>
+                            <td><code>@mismatch.TypedLine</code></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </section>
+}
+
+@code {
+    private readonly List<ModuleOption> _modules = [];
+    private readonly List<LessonOption> _lessons = [];
+
+    private int? _selectedModuleId;
+    private int? _selectedLessonId;
+
+    private TrainingBlock? _currentBlock;
+    private PracticeEvaluation? _evaluation;
+    private string _typedText = string.Empty;
+    private string? _statusMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadModulesAsync();
+        await LoadLessonsAsync();
+        await LoadNextBlockAsync();
+    }
+
+    private async Task LoadModulesAsync()
+    {
+        await using var db = await DbFactory.CreateDbContextAsync();
+
+        var modules = await db.TrainingModules
+            .AsNoTracking()
+            .OrderBy(x => x.Category)
+            .ThenBy(x => x.Name)
+            .Select(x => new ModuleOption
+            {
+                Id = x.Id,
+                Name = x.Name
+            })
+            .ToListAsync();
+
+        _modules.Clear();
+        _modules.AddRange(modules);
+    }
+
+    private async Task LoadLessonsAsync()
+    {
+        _lessons.Clear();
+
+        await using var db = await DbFactory.CreateDbContextAsync();
+
+        var query = db.TrainingLessons
+            .AsNoTracking()
+            .Include(x => x.Module)
+            .AsQueryable();
+
+        if (_selectedModuleId.HasValue)
+        {
+            query = query.Where(x => x.ModuleId == _selectedModuleId.Value);
+        }
+
+        var lessons = await query
+            .OrderBy(x => x.Module!.Name)
+            .ThenBy(x => x.OrderIndex)
+            .Select(x => new LessonOption
+            {
+                Id = x.Id,
+                Title = x.Title,
+                ModuleName = x.Module!.Name
+            })
+            .ToListAsync();
+
+        _lessons.AddRange(lessons);
+    }
+
+    private async Task OnModuleChangedAsync(ChangeEventArgs eventArgs)
+    {
+        _selectedModuleId = ParseNullableInt(eventArgs.Value?.ToString());
+        _selectedLessonId = null;
+
+        await LoadLessonsAsync();
+        await LoadNextBlockAsync();
+    }
+
+    private async Task OnLessonChangedAsync(ChangeEventArgs eventArgs)
+    {
+        _selectedLessonId = ParseNullableInt(eventArgs.Value?.ToString());
+        await LoadNextBlockAsync();
+    }
+
+    private async Task LoadNextBlockAsync()
+    {
+        _currentBlock = await PracticeService.GetNextDueBlockAsync(_selectedModuleId, _selectedLessonId);
+        _typedText = string.Empty;
+        _evaluation = null;
+
+        _statusMessage = _currentBlock is null
+            ? "No due training item available in this scope."
+            : "Training item loaded. Retype the content exactly.";
+    }
+
+    private async Task SubmitAttemptAsync()
+    {
+        if (_currentBlock is null)
+        {
+            _statusMessage = "Load a training item first.";
+            return;
+        }
+
+        _evaluation = PracticeService.Evaluate(_currentBlock.Content, _typedText);
+        await PracticeService.SaveAttemptAsync(_currentBlock.Id, _typedText, _evaluation);
+
+        _statusMessage = "Attempt saved and schedule updated.";
+    }
+
+    private static int? ParseNullableInt(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value) || string.Equals(value, "all", StringComparison.OrdinalIgnoreCase))
+        {
+            return null;
+        }
+
+        return int.TryParse(value, out var parsed)
+            ? parsed
+            : null;
+    }
+
+    private sealed class ModuleOption
+    {
+        public int Id { get; init; }
+
+        public string Name { get; init; } = string.Empty;
+    }
+
+    private sealed class LessonOption
+    {
+        public int Id { get; init; }
+
+        public string Title { get; init; } = string.Empty;
+
+        public string ModuleName { get; init; } = string.Empty;
+
+        public string DisplayTitle => $"{ModuleName} / {Title}";
+    }
+}

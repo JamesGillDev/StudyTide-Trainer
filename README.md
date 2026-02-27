@@ -1,19 +1,17 @@
 # StudyTide Forge
 
-StudyTide Forge is a structured cognitive reinforcement app for verbatim retyping and flashcard recall.
+StudyTide Forge is structured cognitive reinforcement training with verbatim retyping, flashcards, spaced repetition, and importer-based curriculum seeding.
 
-## Purpose
+## Solution Layout
 
-- Encode technical knowledge through exact typing practice.
-- Reinforce recall with reversed flashcards and contextual examples.
-- Track weak areas with measurable training stats.
+This repository now contains two **parallel** apps:
 
-## Architecture
+1. `StudyTide Forge`  
+   Primary desktop app (`.NET MAUI Blazor Hybrid`, local runtime).
+2. `StudyTide Forge Web`  
+   Completely separate web app (`.NET 8 Blazor Server`) intended for container hosting.
 
-- .NET 10
-- MAUI Blazor Hybrid (local desktop runtime)
-- EF Core 8 + SQLite
-- Single DbContext: `ForgeDbContext`
+Both use EF Core + SQLite and the same domain model terminology (`TrainingModule`, `TrainingLesson`, `TrainingItem`, `Flashcard`, `PracticeAttempt`).
 
 ## Importer Workflow
 
@@ -21,58 +19,44 @@ Importer file: `Data/LegacyQaSourceImporter.cs`
 
 Runtime behavior:
 
-1. Reads a legacy shared source file from disk at app startup.
-2. Extracts only question and answer string literals.
-3. Drops blank entries and deduplicates exact duplicates.
-4. Reverses imported direction for flashcards:
+1. Reads a legacy shared C# source file at startup.
+2. Extracts only question/answer string literals.
+3. Drops blanks and deduplicates exact duplicates.
+4. Reverses direction for reinforcement:
    - `Flashcard.Question` <- legacy answer text
    - `Flashcard.Answer` <- legacy question text
-5. Creates training items with this content format:
+5. Builds `TrainingItem.Content` as:
    - `Prompt:`
    - `Response:`
    - `Example:`
-6. Distributes content across multiple modules and multiple lessons per module.
-7. Repairs blank-module states by reseeding when required.
+6. Distributes entries across multiple modules/lessons and repairs blank-module states during reseed.
 
 ## Source File Placement
 
-Preferred:
+Set environment variable:
 
 ```powershell
-$env:FORGE_IMPORT_SOURCE_FILE = "C:\path\to\legacy\Shared\<your-source-file>.cs"
+$env:FORGE_IMPORT_SOURCE_FILE = "C:\path\to\legacy\Shared\legacy-source.cs"
 ```
 
-Fallback search also scans parent folders for files ending with:
+For the web container build, a bundled copy is included at:
 
-```text
-GameService.Shared.cs
-```
+`StudyTide Forge Web/seed-source/legacy-source.cs`
 
-## Imported Modules
+## Dashboard Metrics
 
-Seeding targets these modules:
-
-- `Legacy Import - C# Skill Forge`
-- `Legacy Import - Azure Skill Forge`
-- `Legacy Import - SQL Skill Forge`
-- `Legacy Import - DevOps Skill Forge`
-- `Legacy Import - System Design Skill Forge`
-- `Legacy Import - Behavioral Skill Forge`
-
-Dashboard shows:
+Dashboard includes:
 
 - `Imported flashcards: X`
 - `Imported training items: Y`
 
 ## Spaced Repetition Rules
 
-Practice scheduling:
+- `100%` accuracy -> next due in `3 days`
+- `>=95%` accuracy -> next due in `1 day`
+- `<95%` accuracy -> next due in `1 hour`
 
-- `100%` -> due in `3 days`
-- `>=95%` -> due in `1 day`
-- `<95%` -> due in `1 hour`
-
-## Run Locally
+## Run Local Desktop App
 
 ```powershell
 dotnet restore
@@ -81,68 +65,95 @@ dotnet dotnet-ef database update --project ".\StudyTide Forge\StudyTideForge.csp
 dotnet run --project ".\StudyTide Forge\StudyTideForge.csproj" --framework net10.0-windows10.0.19041.0
 ```
 
+## Run Local Web App (Separate Project)
+
+```powershell
+dotnet restore ".\StudyTide Forge Web\StudyTide Forge Web.csproj"
+dotnet run --project ".\StudyTide Forge Web\StudyTide Forge Web.csproj"
+```
+
+Default local URL from launch settings: `http://localhost:5173`
+
+## Container Image (Separate and Parallel)
+
+The web app is published as a standalone container image:
+
+- Image: `ghcr.io/jamesgilldev/studytide-forge-web:latest`
+- Package page (share this in Teams):  
+  `https://github.com/JamesGillDev/StudyTide-Trainer/pkgs/container/studytide-forge-web`
+
+Pull and run:
+
+```powershell
+docker pull ghcr.io/jamesgilldev/studytide-forge-web:latest
+docker run -d --name studytide-forge-web -p 8080:8080 -v studytide-forge-web-data:/data ghcr.io/jamesgilldev/studytide-forge-web:latest
+```
+
+Or with compose:
+
+```powershell
+docker compose -f .\docker-compose.web.yml up -d
+```
+
+Then browse: `http://localhost:8080`
+
+## GHCR Publishing Automation
+
+Workflow: `.github/workflows/publish-web-container.yml`
+
+- Triggers on push to `main` for web-container paths.
+- Builds from `StudyTide Forge Web/Dockerfile`.
+- Pushes:
+  - `ghcr.io/<owner>/studytide-forge-web:latest`
+  - `ghcr.io/<owner>/studytide-forge-web:sha-<short>`
+
 ## EF Core Commands
 
-Add migration:
+Desktop project:
 
 ```powershell
 dotnet dotnet-ef migrations add <MigrationName> --project ".\StudyTide Forge\StudyTideForge.csproj" --startup-project ".\StudyTide Forge\StudyTideForge.csproj" --framework net10.0-windows10.0.19041.0 --output-dir Data\Migrations
-```
-
-Apply migration:
-
-```powershell
 dotnet dotnet-ef database update --project ".\StudyTide Forge\StudyTideForge.csproj" --startup-project ".\StudyTide Forge\StudyTideForge.csproj" --framework net10.0-windows10.0.19041.0
 ```
 
-## Git Commands
+Web project:
 
 ```powershell
-git init
+dotnet ef migrations add <MigrationName> --project ".\StudyTide Forge Web\StudyTide Forge Web.csproj" --startup-project ".\StudyTide Forge Web\StudyTide Forge Web.csproj" --output-dir Data\Migrations
+dotnet ef database update --project ".\StudyTide Forge Web\StudyTide Forge Web.csproj" --startup-project ".\StudyTide Forge Web\StudyTide Forge Web.csproj"
+```
+
+## Git and Release Commands
+
+```powershell
 git add .
-git commit -m "Initial release - StudyTide Forge v1.0"
-```
-
-Push:
-
-```powershell
-git branch -M main
-git remote add origin https://github.com/<your-account>/<your-repo>.git
-git push -u origin main
-```
-
-Create release tag:
-
-```powershell
+git commit -m "Add separate StudyTide Forge Web container app and GHCR pipeline"
+git push origin main
 git tag -a v1.0 -m "StudyTide Forge v1.0"
 git push origin v1.0
 ```
 
-## Azure App Service Steps
+## Azure App Service (Container) Steps
 
-For a web-host deployment variant:
+Deploy the separate web container image:
 
-1. Publish:
-   ```powershell
-   dotnet publish ".\StudyTide Forge\StudyTideForge.csproj" -c Release -o ".\artifacts\publish"
-   Compress-Archive -Path ".\artifacts\publish\*" -DestinationPath ".\artifacts\publish.zip" -Force
-   ```
-2. Provision:
+1. Create resource group and App Service plan:
    ```powershell
    az group create --name <rg> --location <region>
    az appservice plan create --name <plan> --resource-group <rg> --sku B1 --is-linux
-   az webapp create --name <app-name> --resource-group <rg> --plan <plan> --runtime "DOTNETCORE|8.0"
    ```
-3. Deploy package:
+2. Create web app from container:
    ```powershell
-   az webapp deploy --resource-group <rg> --name <app-name> --src-path ".\artifacts\publish.zip" --type zip
+   az webapp create --resource-group <rg> --plan <plan> --name <app-name> --deployment-container-image-name ghcr.io/jamesgilldev/studytide-forge-web:latest
    ```
-4. Configure settings:
-   - `ASPNETCORE_ENVIRONMENT=Production`
-   - `FORGE_IMPORT_SOURCE_FILE=<absolute-path-to-legacy-source-file>`
+3. Configure app settings:
+   ```powershell
+   az webapp config appsettings set --resource-group <rg> --name <app-name> --settings ASPNETCORE_ENVIRONMENT=Production FORGE_WEB_DB_PATH=/home/site/data/studytide-forge-web.db
+   ```
+4. If registry auth is required, set container registry credentials for GHCR (or use public package visibility).
 
-### SQLite Notes (App Service)
+### SQLite Notes
 
-- Local filesystem may be ephemeral.
-- Use mounted persistent storage for database durability.
-- For multi-instance production, move to a server database.
+- Persist DB using a mounted volume (`/data`) in Docker.
+- App Service local filesystem can be ephemeral.
+- For scaled production, prefer a server database instead of SQLite.

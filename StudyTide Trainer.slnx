@@ -1,3 +1,4 @@
 <Solution>
   <Project Path="StudyTide Forge/StudyTideForge.csproj" />
+  <Project Path="StudyTide Forge Web/StudyTide Forge Web.csproj" />
 </Solution>

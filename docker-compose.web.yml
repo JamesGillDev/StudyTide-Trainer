@@ -1,0 +1,17 @@
+services:
+  studytide-forge-web:
+    image: ghcr.io/jamesgilldev/studytide-forge-web:latest
+    container_name: studytide-forge-web
+    ports:
+      - "8080:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      FORGE_WEB_DB_PATH: /data/studytide-forge-web.db
+      FORGE_IMPORT_SOURCE_FILE: /app/seed-source/legacy-source.cs
+    volumes:
+      - studytide-forge-web-data:/data
+    restart: unless-stopped
+
+volumes:
+  studytide-forge-web-data:
+

@@ -1,0 +1,233 @@
+@page "/flashcards"
+@inject IDbContextFactory<ForgeDbContext> DbFactory
+@inject FlashcardService FlashcardService
+
+<PageTitle>Flashcards</PageTitle>
+
+<h1>Flashcard Mode</h1>
+
+@if (!string.IsNullOrWhiteSpace(_statusMessage))
+{
+    <p class="status-message">@_statusMessage</p>
+}
+
+<section class="panel">
+    <h2>Scope</h2>
+
+    <div class="filter-grid">
+        <div>
+            <label for="cardModuleScope">Module</label>
+            <select id="cardModuleScope" value="@(_selectedModuleId?.ToString() ?? "all")" @onchange="OnModuleChangedAsync">
+                <option value="all">All modules</option>
+                @foreach (var module in _modules)
+                {
+                    <option value="@module.Id">@module.Name</option>
+                }
+            </select>
+        </div>
+
+        <div>
+            <label for="cardLessonScope">Lesson</label>
+            <select id="cardLessonScope" value="@(_selectedLessonId?.ToString() ?? "all")" @onchange="OnLessonChangedAsync">
+                <option value="all">All lessons</option>
+                @foreach (var lesson in _lessons)
+                {
+                    <option value="@lesson.Id">@(_selectedModuleId.HasValue ? lesson.Title : lesson.DisplayTitle)</option>
+                }
+            </select>
+        </div>
+    </div>
+
+    <div class="actions">
+        <button @onclick="LoadRandomCardAsync">Load Due Card</button>
+    </div>
+</section>
+
+@if (_currentCard is null)
+{
+    <section class="panel">
+        <p>No flashcard available in this scope.</p>
+    </section>
+}
+else
+{
+    <section class="panel flashcard-box">
+        <h2>@_currentCard.Lesson?.Title</h2>
+
+        <div class="card-face">
+            <h3>Question</h3>
+            <p>@_currentCard.Question</p>
+        </div>
+
+        @if (_isAnswerVisible)
+        {
+            <div class="card-face">
+                <h3>Answer</h3>
+                <p>@_currentCard.Answer</p>
+            </div>
+        }
+
+        <p class="meta-text">
+            Difficulty: @_currentCard.Difficulty |
+            Correct: @_currentCard.TimesCorrect |
+            Incorrect: @_currentCard.TimesIncorrect
+        </p>
+
+        <div class="actions">
+            <button @onclick="RevealAnswer">Reveal Answer</button>
+            <button @onclick="MarkCorrectAsync">Mark Correct</button>
+            <button class="danger" @onclick="MarkIncorrectAsync">Mark Incorrect</button>
+            <button @onclick="LoadRandomCardAsync">Next Card</button>
+        </div>
+    </section>
+}
+
+@code {
+    private readonly List<ModuleOption> _modules = [];
+    private readonly List<LessonOption> _lessons = [];
+
+    private int? _selectedModuleId;
+    private int? _selectedLessonId;
+
+    private Flashcard? _currentCard;
+    private bool _isAnswerVisible;
+    private string? _statusMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadModulesAsync();
+        await LoadLessonsAsync();
+        await LoadRandomCardAsync();
+    }
+
+    private async Task LoadModulesAsync()
+    {
+        await using var db = await DbFactory.CreateDbContextAsync();
+
+        var modules = await db.TrainingModules
+            .AsNoTracking()
+            .OrderBy(x => x.Category)
+            .ThenBy(x => x.Name)
+            .Select(x => new ModuleOption
+            {
+                Id = x.Id,
+                Name = x.Name
+            })
+            .ToListAsync();
+
+        _modules.Clear();
+        _modules.AddRange(modules);
+    }
+
+    private async Task LoadLessonsAsync()
+    {
+        _lessons.Clear();
+
+        await using var db = await DbFactory.CreateDbContextAsync();
+
+        var query = db.TrainingLessons
+            .AsNoTracking()
+            .Include(x => x.Module)
+            .AsQueryable();
+
+        if (_selectedModuleId.HasValue)
+        {
+            query = query.Where(x => x.ModuleId == _selectedModuleId.Value);
+        }
+
+        var lessons = await query
+            .OrderBy(x => x.Module!.Name)
+            .ThenBy(x => x.OrderIndex)
+            .Select(x => new LessonOption
+            {
+                Id = x.Id,
+                Title = x.Title,
+                ModuleName = x.Module!.Name
+            })
+            .ToListAsync();
+
+        _lessons.AddRange(lessons);
+    }
+
+    private async Task OnModuleChangedAsync(ChangeEventArgs eventArgs)
+    {
+        _selectedModuleId = ParseNullableInt(eventArgs.Value?.ToString());
+        _selectedLessonId = null;
+
+        await LoadLessonsAsync();
+        await LoadRandomCardAsync();
+    }
+
+    private async Task OnLessonChangedAsync(ChangeEventArgs eventArgs)
+    {
+        _selectedLessonId = ParseNullableInt(eventArgs.Value?.ToString());
+        await LoadRandomCardAsync();
+    }
+
+    private async Task LoadRandomCardAsync()
+    {
+        _currentCard = await FlashcardService.GetRandomCardAsync(_selectedModuleId, _selectedLessonId, dueOnly: true);
+        _isAnswerVisible = false;
+
+        _statusMessage = _currentCard is null
+            ? "No due card available for this scope."
+            : "Card loaded.";
+    }
+
+    private void RevealAnswer()
+    {
+        _isAnswerVisible = true;
+    }
+
+    private async Task MarkCorrectAsync()
+    {
+        if (_currentCard is null)
+        {
+            return;
+        }
+
+        await FlashcardService.SaveResultAsync(_currentCard.Id, isCorrect: true);
+        await LoadRandomCardAsync();
+    }
+
+    private async Task MarkIncorrectAsync()
+    {
+        if (_currentCard is null)
+        {
+            return;
+        }
+
+        await FlashcardService.SaveResultAsync(_currentCard.Id, isCorrect: false);
+        await LoadRandomCardAsync();
+    }
+
+    private static int? ParseNullableInt(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value) || string.Equals(value, "all", StringComparison.OrdinalIgnoreCase))
+        {
+            return null;
+        }
+
+        return int.TryParse(value, out var parsed)
+            ? parsed
+            : null;
+    }
+
+    private sealed class ModuleOption
+    {
+        public int Id { get; init; }
+
+        public string Name { get; init; } = string.Empty;
+    }
+
+    private sealed class LessonOption
+    {
+        public int Id { get; init; }
+
+        public string Title { get; init; } = string.Empty;
+
+        public string ModuleName { get; init; } = string.Empty;
+
+        public string DisplayTitle => $"{ModuleName} / {Title}";
+    }
+}

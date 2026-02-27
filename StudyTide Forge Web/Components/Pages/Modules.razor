@@ -1,0 +1,92 @@
+@page "/modules"
+@inject IDbContextFactory<ForgeDbContext> DbFactory
+
+<PageTitle>Training Materials</PageTitle>
+
+<h1>Structured Curriculum</h1>
+
+<section class="panel">
+    <h2>Training Materials</h2>
+
+    @if (_modules.Count == 0)
+    {
+        <p>No modules available.</p>
+    }
+    else
+    {
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Category</th>
+                    <th>Lessons</th>
+                    <th>Training Items</th>
+                    <th>Flashcards</th>
+                    <th>Created</th>
+                    <th>Open</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var module in _modules)
+                {
+                    <tr>
+                        <td>@module.Name</td>
+                        <td>@module.Category</td>
+                        <td>@module.LessonCount</td>
+                        <td>@module.BlockCount</td>
+                        <td>@module.FlashcardCount</td>
+                        <td>@module.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm")</td>
+                        <td>
+                            <a class="button-link" href="/modules/@module.Id">View</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</section>
+
+@code {
+    private readonly List<ModuleSummary> _modules = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        await using var db = await DbFactory.CreateDbContextAsync();
+
+        var rows = await db.TrainingModules
+            .AsNoTracking()
+            .Select(x => new ModuleSummary
+            {
+                Id = x.Id,
+                Name = x.Name,
+                Category = x.Category,
+                CreatedAt = x.CreatedAt,
+                LessonCount = x.Lessons.Count,
+                BlockCount = x.Lessons.SelectMany(lesson => lesson.TrainingBlocks).Count(),
+                FlashcardCount = x.Lessons.SelectMany(lesson => lesson.Flashcards).Count()
+            })
+            .OrderBy(x => x.Category)
+            .ThenBy(x => x.Name)
+            .ToListAsync();
+
+        _modules.Clear();
+        _modules.AddRange(rows);
+    }
+
+    private sealed class ModuleSummary
+    {
+        public int Id { get; init; }
+
+        public string Name { get; init; } = string.Empty;
+
+        public string Category { get; init; } = string.Empty;
+
+        public DateTime CreatedAt { get; init; }
+
+        public int LessonCount { get; init; }
+
+        public int BlockCount { get; init; }
+
+        public int FlashcardCount { get; init; }
+    }
+}

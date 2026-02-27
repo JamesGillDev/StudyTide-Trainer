@@ -1,0 +1,127 @@
+@page "/modules/{ModuleId:int}/lessons/{LessonId:int}"
+@inject IDbContextFactory<ForgeDbContext> DbFactory
+
+<PageTitle>Lesson Details</PageTitle>
+
+@if (_lesson is null)
+{
+    <h1>Lesson not found</h1>
+}
+else
+{
+    <h1>@_lesson.Title</h1>
+    <p class="meta-text">Module: @_lesson.Module?.Name</p>
+
+    <section class="panel">
+        <h2>Training items</h2>
+
+        @if (_blocks.Count == 0)
+        {
+            <p>No training items in this lesson.</p>
+        }
+        else
+        {
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Difficulty</th>
+                        <th>Practiced</th>
+                        <th>Next due</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var block in _blocks)
+                    {
+                        <tr>
+                            <td>@block.Title</td>
+                            <td>@block.Difficulty</td>
+                            <td>@block.TimesPracticed</td>
+                            <td>@(block.NextDueAt.HasValue ? block.NextDueAt.Value.ToLocalTime().ToString("yyyy-MM-dd HH:mm") : "Now")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </section>
+
+    <section class="panel">
+        <h2>Flashcards</h2>
+
+        @if (_flashcards.Count == 0)
+        {
+            <p>No flashcards in this lesson.</p>
+        }
+        else
+        {
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Question</th>
+                        <th>Difficulty</th>
+                        <th>Correct</th>
+                        <th>Incorrect</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var card in _flashcards)
+                    {
+                        <tr>
+                            <td>@Trim(card.Question, 110)</td>
+                            <td>@card.Difficulty</td>
+                            <td>@card.TimesCorrect</td>
+                            <td>@card.TimesIncorrect</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </section>
+}
+
+@code {
+    [Parameter]
+    public int ModuleId { get; set; }
+
+    [Parameter]
+    public int LessonId { get; set; }
+
+    private TrainingLesson? _lesson;
+    private readonly List<TrainingBlock> _blocks = [];
+    private readonly List<Flashcard> _flashcards = [];
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await using var db = await DbFactory.CreateDbContextAsync();
+
+        _lesson = await db.TrainingLessons
+            .AsNoTracking()
+            .Include(x => x.Module)
+            .FirstOrDefaultAsync(x => x.Id == LessonId && x.ModuleId == ModuleId);
+
+        var blocks = await db.TrainingBlocks
+            .AsNoTracking()
+            .Where(x => x.LessonId == LessonId)
+            .OrderBy(x => x.Id)
+            .ToListAsync();
+
+        var flashcards = await db.Flashcards
+            .AsNoTracking()
+            .Where(x => x.LessonId == LessonId)
+            .OrderBy(x => x.Id)
+            .ToListAsync();
+
+        _blocks.Clear();
+        _blocks.AddRange(blocks);
+
+        _flashcards.Clear();
+        _flashcards.AddRange(flashcards);
+    }
+
+    private static string Trim(string value, int maxLength)
+    {
+        return value.Length <= maxLength
+            ? value
+            : $"{value[..maxLength]}...";
+    }
+}
