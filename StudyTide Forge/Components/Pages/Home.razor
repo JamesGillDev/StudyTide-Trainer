@@ -17,7 +17,7 @@ else
             <p>@_snapshot.TotalModules</p>
         </article>
         <article class="metric-card">
-            <h2>Blocks due</h2>
+            <h2>Items due</h2>
             <p>@_snapshot.BlocksDue</p>
         </article>
         <article class="metric-card">
@@ -28,10 +28,15 @@ else
             <h2>Accuracy (7 days)</h2>
             <p>@_snapshot.AccuracyLast7Days.ToString("0.00")%</p>
         </article>
+        <article class="metric-card">
+            <h2>Imported content</h2>
+            <p>Imported flashcards: @_snapshot.ImportedFlashcards</p>
+            <p>Imported training items: @_snapshot.ImportedTrainingItems</p>
+        </article>
     </div>
 
     <section class="panel">
-        <h2>Weakest blocks</h2>
+        <h2>Weakest training items</h2>
 
         @if (_snapshot.WeakestBlocks.Count == 0)
         {
@@ -42,7 +47,7 @@ else
             <table class="data-table">
                 <thead>
                     <tr>
-                        <th>Block</th>
+                        <th>Training item</th>
                         <th>Lesson</th>
                         <th>Avg accuracy</th>
                         <th>Attempts</th>

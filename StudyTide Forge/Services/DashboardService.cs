@@ -15,6 +15,15 @@ public sealed class DashboardService(IDbContextFactory<ForgeDbContext> dbFactory
         var totalModules = await db.TrainingModules.CountAsync();
         var blocksDue = await db.TrainingBlocks.CountAsync(x => !x.NextDueAt.HasValue || x.NextDueAt <= now);
         var flashcardsDue = await db.Flashcards.CountAsync(x => (x.TimesCorrect + x.TimesIncorrect) == 0 || x.TimesIncorrect >= x.TimesCorrect);
+        var importedModuleNames = LegacyImportConstants.ModuleDefinitions
+            .Select(x => $"{LegacyImportConstants.ModuleNamePrefix}{x.Name}")
+            .ToList();
+        var importedFlashcards = await db.Flashcards
+            .CountAsync(x =>
+                importedModuleNames.Contains(x.Lesson!.Module!.Name));
+        var importedTrainingItems = await db.TrainingBlocks
+            .CountAsync(x =>
+                importedModuleNames.Contains(x.Lesson!.Module!.Name));
 
         var accuracyLast7Days = await db.PracticeAttempts
             .Where(x => x.AttemptedAt >= sevenDaysAgo)
@@ -68,6 +77,8 @@ public sealed class DashboardService(IDbContextFactory<ForgeDbContext> dbFactory
             TotalModules = totalModules,
             BlocksDue = blocksDue,
             FlashcardsDue = flashcardsDue,
+            ImportedFlashcards = importedFlashcards,
+            ImportedTrainingItems = importedTrainingItems,
             AccuracyLast7Days = Math.Round(accuracyLast7Days, 2),
             WeakestBlocks = weakestBlocks,
             WeakestFlashcards = weakestFlashcards
@@ -82,6 +93,10 @@ public sealed class DashboardSnapshot
     public int BlocksDue { get; init; }
 
     public int FlashcardsDue { get; init; }
+
+    public int ImportedFlashcards { get; init; }
+
+    public int ImportedTrainingItems { get; init; }
 
     public double AccuracyLast7Days { get; init; }
 

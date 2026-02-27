@@ -1,12 +1,12 @@
 @page "/modules"
 @inject IDbContextFactory<ForgeDbContext> DbFactory
 
-<PageTitle>Modules</PageTitle>
+<PageTitle>Training Materials</PageTitle>
 
 <h1>Structured Curriculum</h1>
 
 <section class="panel">
-    <h2>Modules</h2>
+    <h2>Training Materials</h2>
 
     @if (_modules.Count == 0)
     {
@@ -20,7 +20,7 @@
                     <th>Name</th>
                     <th>Category</th>
                     <th>Lessons</th>
-                    <th>Blocks</th>
+                    <th>Training Items</th>
                     <th>Flashcards</th>
                     <th>Created</th>
                     <th>Open</th>

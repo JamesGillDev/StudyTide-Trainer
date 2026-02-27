@@ -39,14 +39,14 @@
     </div>
 
     <div class="actions">
-        <button @onclick="LoadNextBlockAsync">Load Next Due Block</button>
+        <button @onclick="LoadNextBlockAsync">Load Next Due Item</button>
     </div>
 </section>
 
 @if (_currentBlock is null)
 {
     <section class="panel">
-        <p>No training block found in the selected scope.</p>
+        <p>No training item found in the selected scope.</p>
     </section>
 }
 else
@@ -72,7 +72,7 @@ else
 
         <div class="actions">
             <button @onclick="SubmitAttemptAsync">Submit Attempt</button>
-            <button @onclick="LoadNextBlockAsync">Load Another Block</button>
+            <button @onclick="LoadNextBlockAsync">Load Another Item</button>
         </div>
     </section>
 }
@@ -226,15 +226,15 @@ else
         _evaluation = null;
 
         _statusMessage = _currentBlock is null
-            ? "No due block available in this scope."
-            : "Block loaded. Retype the content exactly.";
+            ? "No due training item available in this scope."
+            : "Training item loaded. Retype the content exactly.";
     }
 
     private async Task SubmitAttemptAsync()
     {
         if (_currentBlock is null)
         {
-            _statusMessage = "Load a block first.";
+            _statusMessage = "Load a training item first.";
             return;
         }
 

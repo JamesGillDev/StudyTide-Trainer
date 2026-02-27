@@ -1,202 +1,148 @@
 # StudyTide Forge
 
-StudyTide Forge is a .NET 8 Blazor Server training platform for structured cognitive reinforcement.  
-It is built to help learners encode knowledge by retyping structured material verbatim and drilling flashcards over time.
+StudyTide Forge is a structured cognitive reinforcement app for verbatim retyping and flashcard recall.
 
 ## Purpose
 
-- Train deep recall through exact retyping of structured content.
-- Reinforce knowledge with module-based lessons and flashcards.
-- Track weak areas with practice and flashcard performance metrics.
+- Encode technical knowledge through exact typing practice.
+- Reinforce recall with reversed flashcards and contextual examples.
+- Track weak areas with measurable training stats.
 
 ## Architecture
 
-- .NET 8
-- Blazor Server
-- EF Core 8
-- SQLite
+- .NET 10
+- MAUI Blazor Hybrid (local desktop runtime)
+- EF Core 8 + SQLite
 - Single DbContext: `ForgeDbContext`
-- EF Core migrations for schema lifecycle
 
-## Core Domain
+## Importer Workflow
 
-- `TrainingModule`
-  - `Id, Name, Category, CreatedAt`
-- `TrainingLesson`
-  - `Id, ModuleId, Title, OrderIndex, CreatedAt`
-- `TrainingBlock`
-  - `Id, LessonId, Title, Content, Difficulty, TimesPracticed, TimesPerfect, LastPracticedAt, NextDueAt`
-- `Flashcard`
-  - `Id, LessonId, Question, Answer, Difficulty, TimesCorrect, TimesIncorrect`
-- `PracticeAttempt`
-  - `Id, TrainingBlockId, AttemptedAt, TypedText, AccuracyPercent, ErrorCount, FirstMismatchIndex`
+Importer file: `Data/LegacyQaSourceImporter.cs`
 
-## Feature Set
+Runtime behavior:
 
-- Structured curriculum at `/modules`
-  - Module list
-  - Module detail -> lessons
-  - Lesson detail -> blocks + flashcards
-- Verbatim practice at `/practice`
-  - Scope by module or lesson (including lesson-only global scope)
-  - Load next due block
-  - Full retype submission
-  - Diff summary with mismatch stats
-- Flashcards at `/flashcards`
-  - Random due card with module or lesson filtering
-  - Reveal answer
-  - Mark correct/incorrect with tracked stats
-- Dashboard at `/`
-  - Total modules
-  - Blocks due
-  - Flashcards due
-  - Accuracy over last 7 days
-  - Weakest blocks
-  - Weakest flashcards
+1. Reads a legacy shared source file from disk at app startup.
+2. Extracts only question and answer string literals.
+3. Drops blank entries and deduplicates exact duplicates.
+4. Reverses imported direction for flashcards:
+   - `Flashcard.Question` <- legacy answer text
+   - `Flashcard.Answer` <- legacy question text
+5. Creates training items with this content format:
+   - `Prompt:`
+   - `Response:`
+   - `Example:`
+6. Distributes content across multiple modules and multiple lessons per module.
+7. Repairs blank-module states by reseeding when required.
+
+## Source File Placement
+
+Preferred:
+
+```powershell
+$env:FORGE_IMPORT_SOURCE_FILE = "C:\path\to\legacy\Shared\<your-source-file>.cs"
+```
+
+Fallback search also scans parent folders for files ending with:
+
+```text
+GameService.Shared.cs
+```
+
+## Imported Modules
+
+Seeding targets these modules:
+
+- `Legacy Import - C# Skill Forge`
+- `Legacy Import - Azure Skill Forge`
+- `Legacy Import - SQL Skill Forge`
+- `Legacy Import - DevOps Skill Forge`
+- `Legacy Import - System Design Skill Forge`
+- `Legacy Import - Behavioral Skill Forge`
+
+Dashboard shows:
+
+- `Imported flashcards: X`
+- `Imported training items: Y`
 
 ## Spaced Repetition Rules
 
-Training block due scheduling on each submission:
+Practice scheduling:
 
-- `100%` accuracy -> next due in `3 days`
-- `>= 95%` accuracy -> next due in `1 day`
-- `< 95%` accuracy -> next due in `1 hour`
-
-## Flashcard Scoring
-
-- `Mark Correct` increments `TimesCorrect`
-- `Mark Incorrect` increments `TimesIncorrect`
-- Due-card loading prioritizes cards with no attempts or weaker performance trends
-
-## Training Data Seeding
-
-- Static seed source is stored in `StudyTide Forge/Data/TrainingSeedCatalog.cs`.
-- Only question and answer text are used.
-- Each pair creates:
-  - one `Flashcard`
-  - one `TrainingBlock` with clean structured content:
-    - `Question: ...`
-    - `Answer: ...`
-- The seed contains more than 50 flashcards.
-
-## Project Structure
-
-```text
-StudyTide Forge/
-  Components/
-    App.razor
-    Routes.razor
-    Layout/
-    Pages/
-  Data/
-    ForgeDbContext.cs
-    ForgeDbContextFactory.cs
-    DatabaseInitializer.cs
-    TrainingSeedCatalog.cs
-    Migrations/
-  Models/
-  Services/
-  wwwroot/css/app.css
-  Program.cs
-  StudyTideForge.csproj
-  appsettings.json
-  appsettings.Development.json
-```
+- `100%` -> due in `3 days`
+- `>=95%` -> due in `1 day`
+- `<95%` -> due in `1 hour`
 
 ## Run Locally
-
-From repository root:
 
 ```powershell
 dotnet restore
 dotnet tool restore
-dotnet dotnet-ef database update --project ".\StudyTide Forge\StudyTideForge.csproj" --startup-project ".\StudyTide Forge\StudyTideForge.csproj"
-dotnet run --project ".\StudyTide Forge\StudyTideForge.csproj"
+dotnet dotnet-ef database update --project ".\StudyTide Forge\StudyTideForge.csproj" --startup-project ".\StudyTide Forge\StudyTideForge.csproj" --framework net10.0-windows10.0.19041.0
+dotnet run --project ".\StudyTide Forge\StudyTideForge.csproj" --framework net10.0-windows10.0.19041.0
 ```
 
-## EF Core Migration Commands
+## EF Core Commands
 
-Create a new migration:
+Add migration:
 
 ```powershell
-dotnet dotnet-ef migrations add <MigrationName> --project ".\StudyTide Forge\StudyTideForge.csproj" --startup-project ".\StudyTide Forge\StudyTideForge.csproj" --output-dir Data\Migrations
+dotnet dotnet-ef migrations add <MigrationName> --project ".\StudyTide Forge\StudyTideForge.csproj" --startup-project ".\StudyTide Forge\StudyTideForge.csproj" --framework net10.0-windows10.0.19041.0 --output-dir Data\Migrations
 ```
 
-Apply migrations:
+Apply migration:
 
 ```powershell
-dotnet dotnet-ef database update --project ".\StudyTide Forge\StudyTideForge.csproj" --startup-project ".\StudyTide Forge\StudyTideForge.csproj"
+dotnet dotnet-ef database update --project ".\StudyTide Forge\StudyTideForge.csproj" --startup-project ".\StudyTide Forge\StudyTideForge.csproj" --framework net10.0-windows10.0.19041.0
 ```
 
-## Git Workflow
-
-If starting from a fresh local repository:
+## Git Commands
 
 ```powershell
 git init
 git add .
 git commit -m "Initial release - StudyTide Forge v1.0"
-git branch -M main
 ```
 
-If repository already exists, skip `git init`.
-
-## Create GitHub Repository
-
-1. Create an empty repository on GitHub.
-2. Copy the repository URL.
-3. Run:
+Push:
 
 ```powershell
-git remote add origin https://github.com/<your-user>/<your-repo>.git
+git branch -M main
+git remote add origin https://github.com/<your-account>/<your-repo>.git
 git push -u origin main
-git tag v1.0
+```
+
+Create release tag:
+
+```powershell
+git tag -a v1.0 -m "StudyTide Forge v1.0"
 git push origin v1.0
 ```
 
-## Publish
+## Azure App Service Steps
 
-```powershell
-dotnet publish ".\StudyTide Forge\StudyTideForge.csproj" -c Release -o ".\artifacts\publish"
-```
+For a web-host deployment variant:
 
-## Azure App Service Deployment
+1. Publish:
+   ```powershell
+   dotnet publish ".\StudyTide Forge\StudyTideForge.csproj" -c Release -o ".\artifacts\publish"
+   Compress-Archive -Path ".\artifacts\publish\*" -DestinationPath ".\artifacts\publish.zip" -Force
+   ```
+2. Provision:
+   ```powershell
+   az group create --name <rg> --location <region>
+   az appservice plan create --name <plan> --resource-group <rg> --sku B1 --is-linux
+   az webapp create --name <app-name> --resource-group <rg> --plan <plan> --runtime "DOTNETCORE|8.0"
+   ```
+3. Deploy package:
+   ```powershell
+   az webapp deploy --resource-group <rg> --name <app-name> --src-path ".\artifacts\publish.zip" --type zip
+   ```
+4. Configure settings:
+   - `ASPNETCORE_ENVIRONMENT=Production`
+   - `FORGE_IMPORT_SOURCE_FILE=<absolute-path-to-legacy-source-file>`
 
-1. Create Azure resources (resource group + App Service Plan + Web App).
-2. Deploy published output.
+### SQLite Notes (App Service)
 
-Example CLI flow:
-
-```powershell
-az login
-az account set --subscription "<subscription-id>"
-az group create --name "<rg-name>" --location "eastus"
-az appservice plan create --name "<plan-name>" --resource-group "<rg-name>" --sku B1 --is-linux
-az webapp create --name "<unique-app-name>" --resource-group "<rg-name>" --plan "<plan-name>" --runtime "DOTNETCORE:8.0"
-az webapp deploy --resource-group "<rg-name>" --name "<unique-app-name>" --src-path ".\artifacts\publish.zip" --type zip
-```
-
-## Environment Variables
-
-Typical App Service settings:
-
-- `ASPNETCORE_ENVIRONMENT=Production`
-- `ConnectionStrings__ForgeDb=<optional override connection string>`
-
-Local defaults use:
-
-- `ConnectionStrings:ForgeDb=Data Source=studytide-forge.db`
-
-## SQLite Deployment Considerations
-
-- SQLite is file-based and best for low-concurrency or single-instance scenarios.
-- For App Service scale-out, shared write access to one local SQLite file is not suitable.
-- For production scale or multi-instance hosting, move to a managed relational database.
-- If using SQLite in App Service anyway, pin to a single instance and persist the DB file to mounted storage.
-
-## Screenshots
-
-- Dashboard: _placeholder_
-- Modules: _placeholder_
-- Practice: _placeholder_
-- Flashcards: _placeholder_
+- Local filesystem may be ephemeral.
+- Use mounted persistent storage for database durability.
+- For multi-instance production, move to a server database.
