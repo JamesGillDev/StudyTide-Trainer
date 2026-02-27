@@ -65,6 +65,30 @@ dotnet dotnet-ef database update --project ".\StudyTide Forge\StudyTideForge.csp
 dotnet run --project ".\StudyTide Forge\StudyTideForge.csproj" --framework net10.0-windows10.0.19041.0
 ```
 
+## Build Local Desktop `.exe` (Release)
+
+```powershell
+dotnet publish ".\StudyTide Forge\StudyTideForge.csproj" -c Release -f net10.0-windows10.0.19041.0 -r win-x64
+```
+
+Primary desktop executable:
+
+`StudyTide Forge\bin\Release\net10.0-windows10.0.19041.0\win-x64\StudyTideForge.exe`
+
+Published executable:
+
+`StudyTide Forge\bin\Release\net10.0-windows10.0.19041.0\win-x64\publish\StudyTideForge.exe`
+
+### Windows Icon Cache Note
+
+If File Explorer still shows the old/default icon after rebuilding, clear icon cache:
+
+```powershell
+Stop-Process -Name explorer -Force
+Remove-Item "$env:LOCALAPPDATA\Microsoft\Windows\Explorer\iconcache*" -Force -ErrorAction SilentlyContinue
+Start-Process explorer.exe
+```
+
 ## Run Local Web App (Separate Project)
 
 ```powershell
@@ -73,6 +97,16 @@ dotnet run --project ".\StudyTide Forge Web\StudyTide Forge Web.csproj"
 ```
 
 Default local URL from launch settings: `http://localhost:5173`
+
+## Build Local Web `.exe` (Release)
+
+```powershell
+dotnet publish ".\StudyTide Forge Web\StudyTide Forge Web.csproj" -c Release -r win-x64 --self-contained false -o ".\artifacts\publish\studytide-forge-web-win-x64"
+```
+
+Web executable:
+
+`artifacts\publish\studytide-forge-web-win-x64\StudyTideForgeWeb.exe`
 
 ## Container Image (Separate and Parallel)
 

@@ -3,9 +3,11 @@
   <path
     d="M74 294C120 258 170 304 228 268C286 232 334 252 382 208L382 260C334 296 286 280 228 316C170 352 120 316 74 352Z"
     fill="#ffffff" />
+  <circle cx="228" cy="212" r="96" fill="none" stroke="#ffffff" stroke-width="16" stroke-opacity="0.9" />
   <path
     d="M196 94H288L252 172H312L180 334L222 228H152Z"
-    fill="#ffd166" />
+    fill="#ffcf4d" />
+  <circle cx="320" cy="128" r="16" fill="#ffcf4d" />
   <path
     d="M74 358C120 322 170 366 228 332C286 298 334 316 382 276V332C334 366 286 352 228 386C170 420 120 386 74 420Z"
     fill="#ffffff"

@@ -4,6 +4,16 @@ All notable changes to this project are documented in this file.
 
 The format is based on semantic versioning (`MAJOR.MINOR.PATCH`).
 
+## [2.2.1] - 2026-02-27
+
+### Added
+- Release publish commands and output paths in README for local Windows desktop/web executables.
+- Windows icon cache reset steps in README for local verification after icon updates.
+
+### Changed
+- Refreshed StudyTide Forge application icon assets with a new tide/spark design.
+- App version bumped to `2.2.1` (`ApplicationVersion` `2201`).
+
 ## [2.2.0] - 2026-02-27
 
 ### Added
