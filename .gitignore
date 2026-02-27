@@ -33,23 +33,15 @@ _ReSharper*/
 ## Dotnet tooling
 .dotnet/
 
-## MAUI generated artifacts
-*.aps
-*.msix
-*.msixupload
-*.appx
-*.appxupload
-*.appxbundle
-
-## Local database files
+## Local SQLite databases
 *.db
 *.db-shm
 *.db-wal
+
+## Temp project folders
+.tmp-*/
 
 ## OS files
 Thumbs.db
 Desktop.ini
 .DS_Store
-
-## Temp project folders
-.tmp-*/

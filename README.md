@@ -1,23 +1,24 @@
 # StudyTide Forge
 
-StudyTide Forge is a local desktop training app for structured cognitive reinforcement. Learners retype training blocks verbatim and practice flashcards to strengthen recall over time.
+StudyTide Forge is a .NET 8 Blazor Server training platform for structured cognitive reinforcement.  
+It is built to help learners encode knowledge by retyping structured material verbatim and drilling flashcards over time.
 
 ## Purpose
 
-- Build durable technical memory through structured repetition.
-- Practice exact retyping against source content.
-- Reinforce question-and-answer recall with flashcards.
+- Train deep recall through exact retyping of structured content.
+- Reinforce knowledge with module-based lessons and flashcards.
+- Track weak areas with practice and flashcard performance metrics.
 
 ## Architecture
 
 - .NET 8
-- .NET MAUI Blazor Hybrid (desktop app)
+- Blazor Server
 - EF Core 8
 - SQLite
-- Single `DbContext`: `ForgeDbContext`
-- Migration-first schema management
+- Single DbContext: `ForgeDbContext`
+- EF Core migrations for schema lifecycle
 
-## Domain Model
+## Core Domain
 
 - `TrainingModule`
   - `Id, Name, Category, CreatedAt`
@@ -30,156 +31,168 @@ StudyTide Forge is a local desktop training app for structured cognitive reinfor
 - `PracticeAttempt`
   - `Id, TrainingBlockId, AttemptedAt, TypedText, AccuracyPercent, ErrorCount, FirstMismatchIndex`
 
-## Features
+## Feature Set
 
-- Structured curriculum browser (`/modules`)
-  - Modules -> lessons -> blocks and flashcards
-- Verbatim practice mode (`/practice`)
+- Structured curriculum at `/modules`
+  - Module list
+  - Module detail -> lessons
+  - Lesson detail -> blocks + flashcards
+- Verbatim practice at `/practice`
   - Scope by module/lesson
-  - Character-level scoring and line diff summary
-  - Scheduling rules:
-    - `100%` accuracy -> due in `3 days`
-    - `>=95%` accuracy -> due in `1 day`
-    - Otherwise -> due in `1 hour`
-- Flashcard mode (`/flashcards`)
-  - Load random due card
+  - Load next due block
+  - Full retype submission
+  - Diff summary with mismatch stats
+- Flashcards at `/flashcards`
+  - Random due card
   - Reveal answer
-  - Mark correct/incorrect
-- Dashboard (`/`)
+  - Mark correct/incorrect with tracked stats
+- Dashboard at `/`
   - Total modules
   - Blocks due
   - Flashcards due
-  - Accuracy last 7 days
+  - Accuracy over last 7 days
   - Weakest blocks
   - Weakest flashcards
 
-## Training Data Import Rules Implemented
+## Spaced Repetition Rules
 
-- Source records are treated as generic Q/A training data.
-- Imported fields: `Question`, `Answer`.
-- Ignored fields and mechanics: points, timers, score logic, and game-specific behavior.
-- Each Q/A pair creates:
+Training block due scheduling on each submission:
+
+- `100%` accuracy -> next due in `3 days`
+- `>= 95%` accuracy -> next due in `1 day`
+- `< 95%` accuracy -> next due in `1 hour`
+
+## Flashcard Scoring
+
+- `Mark Correct` increments `TimesCorrect`
+- `Mark Incorrect` increments `TimesIncorrect`
+- Due-card loading prioritizes cards with no attempts or weaker performance trends
+
+## Training Data Seeding
+
+- Static seed source is stored in `StudyTide Forge/Data/TrainingSeedCatalog.cs`.
+- Only question and answer text are used.
+- Each pair creates:
   - one `Flashcard`
-  - one `TrainingBlock` with clean content:
-    - `Question:`
-    - `Answer:`
+  - one `TrainingBlock` with clean structured content:
+    - `Question: ...`
+    - `Answer: ...`
+- The seed contains more than 50 flashcards.
 
 ## Project Structure
 
-- `StudyTide Forge/StudyTideForge.csproj` - MAUI app project
-- `StudyTide Forge/MauiProgram.cs` - startup and service registration
-- `StudyTide Forge/Data/ForgeDbContext.cs` - EF Core context
-- `StudyTide Forge/Data/DatabaseInitializer.cs` - migration + seeding bootstrap
-- `StudyTide Forge/Data/TrainingSeedCatalog.cs` - static Q/A seed records
-- `StudyTide Forge/Models/*` - domain entities
-- `StudyTide Forge/Services/*` - practice, flashcards, dashboard logic
-- `StudyTide Forge/Components/Pages/*` - UI screens
-- `StudyTide Forge/wwwroot/css/app.css` - dark navy + teal theme
+```text
+StudyTide Forge/
+  Components/
+    App.razor
+    Routes.razor
+    Layout/
+    Pages/
+  Data/
+    ForgeDbContext.cs
+    ForgeDbContextFactory.cs
+    DatabaseInitializer.cs
+    TrainingSeedCatalog.cs
+    Migrations/
+  Models/
+  Services/
+  wwwroot/css/app.css
+  Program.cs
+  StudyTideForge.csproj
+  appsettings.json
+  appsettings.Development.json
+```
 
-## Local Run
+## Run Locally
 
-From repo root:
+From repository root:
 
 ```powershell
 dotnet restore
-```
-
-Run desktop app on Windows:
-
-```powershell
-dotnet run --project ".\StudyTide Forge\StudyTideForge.csproj" -f net8.0-windows10.0.19041.0
+dotnet tool restore
+dotnet dotnet-ef database update --project ".\StudyTide Forge\StudyTideForge.csproj" --startup-project ".\StudyTide Forge\StudyTideForge.csproj"
+dotnet run --project ".\StudyTide Forge\StudyTideForge.csproj"
 ```
 
 ## EF Core Migration Commands
 
-From repo root:
+Create a new migration:
 
 ```powershell
-dotnet tool restore
-
-dotnet dotnet-ef migrations add InitialForge \
-  --project ".\StudyTide Forge\StudyTideForge.csproj" \
-  --framework net8.0-windows10.0.19041.0 \
-  --output-dir Data\Migrations
-
-dotnet dotnet-ef database update \
-  --project ".\StudyTide Forge\StudyTideForge.csproj" \
-  --framework net8.0-windows10.0.19041.0
+dotnet dotnet-ef migrations add <MigrationName> --project ".\StudyTide Forge\StudyTideForge.csproj" --startup-project ".\StudyTide Forge\StudyTideForge.csproj" --output-dir Data\Migrations
 ```
 
-## Release Commands
-
-Create a publish package for Windows:
+Apply migrations:
 
 ```powershell
-dotnet publish ".\StudyTide Forge\StudyTideForge.csproj" \
-  -c Release \
-  -f net8.0-windows10.0.19041.0 \
-  -o .\artifacts\publish
+dotnet dotnet-ef database update --project ".\StudyTide Forge\StudyTideForge.csproj" --startup-project ".\StudyTide Forge\StudyTideForge.csproj"
 ```
 
 ## Git Workflow
 
-If this is a new repository:
+If starting from a fresh local repository:
 
 ```powershell
 git init
 git add .
 git commit -m "Initial release - StudyTide Forge v1.0"
 git branch -M main
+```
+
+If repository already exists, skip `git init`.
+
+## Create GitHub Repository
+
+1. Create an empty repository on GitHub.
+2. Copy the repository URL.
+3. Run:
+
+```powershell
 git remote add origin https://github.com/<your-user>/<your-repo>.git
 git push -u origin main
 git tag v1.0
 git push origin v1.0
 ```
 
-If git is already initialized, skip `git init`.
+## Publish
 
-## GitHub Repository Creation
+```powershell
+dotnet publish ".\StudyTide Forge\StudyTideForge.csproj" -c Release -o ".\artifacts\publish"
+```
 
-1. Create an empty repository on GitHub.
-2. Copy the HTTPS URL.
-3. Run `git remote add origin <url>`.
-4. Push `main` and `v1.0` tag.
+## Azure App Service Deployment
 
-## Azure App Service Guidance
+1. Create Azure resources (resource group + App Service Plan + Web App).
+2. Deploy published output.
 
-A MAUI desktop app is not hosted directly in App Service. Use these options:
-
-1. Deploy a companion ASP.NET Core web/API service to App Service.
-2. Keep desktop app local and call hosted APIs if needed.
-
-Example App Service deploy flow for a companion web app:
+Example CLI flow:
 
 ```powershell
 az login
-az account set --subscription "<subscription>"
-az webapp up \
-  --name "<unique-app-name>" \
-  --resource-group "<resource-group>" \
-  --plan "<app-service-plan>" \
-  --runtime "DOTNETCORE:8.0" \
-  --os-type Linux
+az account set --subscription "<subscription-id>"
+az group create --name "<rg-name>" --location "eastus"
+az appservice plan create --name "<plan-name>" --resource-group "<rg-name>" --sku B1 --is-linux
+az webapp create --name "<unique-app-name>" --resource-group "<rg-name>" --plan "<plan-name>" --runtime "DOTNETCORE:8.0"
+az webapp deploy --resource-group "<rg-name>" --name "<unique-app-name>" --src-path ".\artifacts\publish.zip" --type zip
 ```
 
 ## Environment Variables
 
-Desktop app:
+Typical App Service settings:
 
-- `FORGE_DB_PATH` (optional future override for database location)
-- `ASPNETCORE_ENVIRONMENT` (if reused by shared libraries)
+- `ASPNETCORE_ENVIRONMENT=Production`
+- `ConnectionStrings__ForgeDb=<optional override connection string>`
 
-Companion web app (if deployed):
+Local defaults use:
 
-- `ConnectionStrings__DefaultConnection`
-- `ASPNETCORE_ENVIRONMENT`
+- `ConnectionStrings:ForgeDb=Data Source=studytide-forge.db`
 
 ## SQLite Deployment Considerations
 
-- SQLite is ideal for local-first desktop use.
-- Keep database file in app data folder for user-scoped storage.
-- Back up the `.db` file during upgrades.
-- For multi-user cloud workloads, migrate to a server database (for example Azure SQL).
+- SQLite is file-based and best for low-concurrency or single-instance scenarios.
+- For App Service scale-out, shared write access to one local SQLite file is not suitable.
+- For production scale or multi-instance hosting, move to a managed relational database.
+- If using SQLite in App Service anyway, pin to a single instance and persist the DB file to mounted storage.
 
 ## Screenshots
 
