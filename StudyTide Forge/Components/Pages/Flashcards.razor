@@ -32,7 +32,7 @@
                 <option value="all">All lessons</option>
                 @foreach (var lesson in _lessons)
                 {
-                    <option value="@lesson.Id">@lesson.Title</option>
+                    <option value="@lesson.Id">@(_selectedModuleId.HasValue ? lesson.Title : lesson.DisplayTitle)</option>
                 }
             </select>
         </div>
@@ -123,21 +123,26 @@ else
     {
         _lessons.Clear();
 
-        if (!_selectedModuleId.HasValue)
-        {
-            return;
-        }
-
         await using var db = await DbFactory.CreateDbContextAsync();
 
-        var lessons = await db.TrainingLessons
+        var query = db.TrainingLessons
             .AsNoTracking()
-            .Where(x => x.ModuleId == _selectedModuleId.Value)
-            .OrderBy(x => x.OrderIndex)
+            .Include(x => x.Module)
+            .AsQueryable();
+
+        if (_selectedModuleId.HasValue)
+        {
+            query = query.Where(x => x.ModuleId == _selectedModuleId.Value);
+        }
+
+        var lessons = await query
+            .OrderBy(x => x.Module!.Name)
+            .ThenBy(x => x.OrderIndex)
             .Select(x => new LessonOption
             {
                 Id = x.Id,
-                Title = x.Title
+                Title = x.Title,
+                ModuleName = x.Module!.Name
             })
             .ToListAsync();
 
@@ -220,5 +225,9 @@ else
         public int Id { get; init; }
 
         public string Title { get; init; } = string.Empty;
+
+        public string ModuleName { get; init; } = string.Empty;
+
+        public string DisplayTitle => $"{ModuleName} / {Title}";
     }
 }

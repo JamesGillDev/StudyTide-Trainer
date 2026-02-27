@@ -38,12 +38,12 @@ It is built to help learners encode knowledge by retyping structured material ve
   - Module detail -> lessons
   - Lesson detail -> blocks + flashcards
 - Verbatim practice at `/practice`
-  - Scope by module/lesson
+  - Scope by module or lesson (including lesson-only global scope)
   - Load next due block
   - Full retype submission
   - Diff summary with mismatch stats
 - Flashcards at `/flashcards`
-  - Random due card
+  - Random due card with module or lesson filtering
   - Reveal answer
   - Mark correct/incorrect with tracked stats
 - Dashboard at `/`
