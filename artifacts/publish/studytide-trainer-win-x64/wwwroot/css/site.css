@@ -1,0 +1,245 @@
+:root {
+    color-scheme: light;
+    --bg: #f3f5f7;
+    --panel: #ffffff;
+    --ink: #1f2933;
+    --muted: #5f6c7b;
+    --line: #d2d9e1;
+    --accent: #0b6e4f;
+    --accent-dark: #09573f;
+    --danger: #a61b1b;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+}
+
+h1,
+h2,
+h3 {
+    margin-top: 0;
+}
+
+a {
+    color: var(--accent-dark);
+}
+
+.app-shell {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    min-height: 100vh;
+}
+
+.sidebar {
+    background: #112233;
+    color: #f2f6fa;
+    padding: 1rem;
+}
+
+.main-panel {
+    padding: 1.25rem;
+}
+
+.nav-root {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.brand-block {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.22);
+    padding-bottom: 0.75rem;
+    margin-bottom: 0.5rem;
+}
+
+.brand-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+.brand-subtitle {
+    font-size: 0.85rem;
+    color: #cad4de;
+}
+
+.nav-link {
+    color: #d9e6f2;
+    text-decoration: none;
+    padding: 0.5rem 0.65rem;
+    border-radius: 0.4rem;
+}
+
+.nav-link.active {
+    background: rgba(255, 255, 255, 0.15);
+    font-weight: 600;
+}
+
+.panel {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 0.7rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+.metric-grid {
+    display: grid;
+    gap: 0.9rem;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    margin-bottom: 1rem;
+}
+
+.metric-card {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 0.7rem;
+    padding: 0.8rem 1rem;
+}
+
+.metric-card p {
+    margin: 0;
+    font-size: 1.4rem;
+    font-weight: 700;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 180px 1fr;
+    gap: 0.55rem 0.8rem;
+    margin-bottom: 0.75rem;
+}
+
+input,
+textarea,
+select {
+    width: 100%;
+    padding: 0.48rem;
+    border-radius: 0.35rem;
+    border: 1px solid #bcc8d4;
+    font: inherit;
+}
+
+textarea {
+    resize: vertical;
+    font-family: Consolas, "Courier New", monospace;
+}
+
+button,
+.button-link {
+    display: inline-block;
+    border: 1px solid var(--accent-dark);
+    border-radius: 0.4rem;
+    background: var(--accent);
+    color: #fff;
+    text-decoration: none;
+    padding: 0.45rem 0.75rem;
+    cursor: pointer;
+}
+
+button:hover,
+.button-link:hover {
+    background: var(--accent-dark);
+}
+
+button.danger {
+    background: var(--danger);
+    border-color: #811313;
+}
+
+.actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.filter-row {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    margin-bottom: 0.8rem;
+    flex-wrap: wrap;
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+}
+
+.data-table th,
+.data-table td {
+    border: 1px solid var(--line);
+    padding: 0.45rem 0.55rem;
+    vertical-align: top;
+}
+
+.data-table th {
+    background: #edf3f8;
+    text-align: left;
+}
+
+.source-panel {
+    margin: 0;
+    background: #0f1720;
+    color: #e3edf7;
+    border-radius: 0.5rem;
+    padding: 0.85rem;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    font-family: Consolas, "Courier New", monospace;
+}
+
+.typing-box {
+    width: 100%;
+}
+
+.practice-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.diff-table code {
+    white-space: pre-wrap;
+}
+
+.status-message {
+    background: #dff5ea;
+    border: 1px solid #9fd0ba;
+    border-radius: 0.45rem;
+    padding: 0.55rem 0.7rem;
+}
+
+.error-page {
+    max-width: 640px;
+    margin: 4rem auto;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 0.6rem;
+    padding: 1.5rem;
+}
+
+@media (max-width: 920px) {
+    .app-shell {
+        grid-template-columns: 1fr;
+    }
+
+    .sidebar {
+        min-height: auto;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+}
