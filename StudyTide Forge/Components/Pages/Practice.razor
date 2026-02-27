@@ -1,4 +1,5 @@
 @page "/practice"
+@using System.Text.RegularExpressions
 @inject IDbContextFactory<ForgeDbContext> DbFactory
 @inject PracticeService PracticeService
 
@@ -61,7 +62,29 @@ else
         <div class="practice-grid">
             <article>
                 <h3>Training content</h3>
-                <pre class="training-content">@_currentBlock.Content</pre>
+
+                @if (_parsedContent.HasSections)
+                {
+                    <div class="training-sections">
+                        <section class="training-section">
+                            <h4>Prompt</h4>
+                            <pre class="training-content">@_parsedContent.Prompt</pre>
+                        </section>
+                        <section class="training-section">
+                            <h4>Response</h4>
+                            <pre class="training-content">@_parsedContent.Response</pre>
+                        </section>
+                        <section class="training-section">
+                            <h4>Example</h4>
+                            <pre class="training-content">@_parsedContent.Example</pre>
+                        </section>
+                    </div>
+                    <p class="meta-text retype-note">Retype only the text values above. Do not type the section labels.</p>
+                }
+                else
+                {
+                    <pre class="training-content">@_parsedContent.RetypeTarget</pre>
+                }
             </article>
 
             <article>
@@ -145,8 +168,12 @@ else
 
     private TrainingBlock? _currentBlock;
     private PracticeEvaluation? _evaluation;
+    private ParsedTrainingContent _parsedContent = ParsedTrainingContent.Empty;
     private string _typedText = string.Empty;
     private string? _statusMessage;
+    private static readonly Regex LabeledContentPattern = new(
+        @"^\s*Prompt:\s*\n(?<prompt>.*?)\n\s*\nResponse:\s*\n(?<response>.*?)\n\s*\nExample:\s*\n(?<example>.*)\s*$",
+        RegexOptions.Singleline | RegexOptions.CultureInvariant);
 
     protected override async Task OnInitializedAsync()
     {
@@ -224,10 +251,13 @@ else
         _currentBlock = await PracticeService.GetNextDueBlockAsync(_selectedModuleId, _selectedLessonId);
         _typedText = string.Empty;
         _evaluation = null;
+        _parsedContent = _currentBlock is null
+            ? ParsedTrainingContent.Empty
+            : ParseTrainingContent(_currentBlock.Content);
 
         _statusMessage = _currentBlock is null
             ? "No due training item available in this scope."
-            : "Training item loaded. Retype the content exactly.";
+            : "Training item loaded. Retype the content exactly (labels are display-only).";
     }
 
     private async Task SubmitAttemptAsync()
@@ -238,7 +268,7 @@ else
             return;
         }
 
-        _evaluation = PracticeService.Evaluate(_currentBlock.Content, _typedText);
+        _evaluation = PracticeService.Evaluate(_parsedContent.RetypeTarget, _typedText);
         await PracticeService.SaveAttemptAsync(_currentBlock.Id, _typedText, _evaluation);
 
         _statusMessage = "Attempt saved and schedule updated.";
@@ -254,6 +284,38 @@ else
         return int.TryParse(value, out var parsed)
             ? parsed
             : null;
+    }
+
+    private static ParsedTrainingContent ParseTrainingContent(string content)
+    {
+        var normalized = NormalizeLineEndings(content).Trim();
+        var match = LabeledContentPattern.Match(normalized);
+
+        if (!match.Success)
+        {
+            return new ParsedTrainingContent(string.Empty, string.Empty, string.Empty, normalized, false);
+        }
+
+        var prompt = match.Groups["prompt"].Value.Trim();
+        var response = match.Groups["response"].Value.Trim();
+        var example = match.Groups["example"].Value.Trim();
+        var retypeTarget = string.Join("\n\n", new[] { prompt, response, example }.Where(x => !string.IsNullOrWhiteSpace(x)));
+        return new ParsedTrainingContent(prompt, response, example, retypeTarget, true);
+    }
+
+    private static string NormalizeLineEndings(string value)
+    {
+        return value.Replace("\r\n", "\n").Replace("\r", "\n");
+    }
+
+    private readonly record struct ParsedTrainingContent(
+        string Prompt,
+        string Response,
+        string Example,
+        string RetypeTarget,
+        bool HasSections)
+    {
+        public static ParsedTrainingContent Empty { get; } = new(string.Empty, string.Empty, string.Empty, string.Empty, false);
     }
 
     private sealed class ModuleOption

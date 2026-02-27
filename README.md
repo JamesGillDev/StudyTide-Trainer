@@ -31,6 +31,12 @@ Runtime behavior:
    - `Example:`
 6. Distributes entries across multiple modules/lessons and repairs blank-module states during reseed.
 
+## Verbatim Practice Behavior
+
+- Practice displays `Prompt`, `Response`, and `Example` as section labels in the UI.
+- Retyping and accuracy scoring are performed against the section text only (labels are excluded).
+- This reduces repetitive label typing while keeping clear context on screen.
+
 ## Source File Placement
 
 Set environment variable:

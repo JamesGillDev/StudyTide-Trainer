@@ -4,6 +4,13 @@ All notable changes to this project are documented in this file.
 
 The format is based on semantic versioning (`MAJOR.MINOR.PATCH`).
 
+## [2.2.2] - 2026-02-27
+
+### Changed
+- Updated Practice page so `Prompt`, `Response`, and `Example` labels are display-only and no longer part of verbatim retype scoring.
+- Added structured section rendering for training content in Practice UI to keep context visible without label retyping overhead.
+- App version bumped to `2.2.2` (`ApplicationVersion` `2202`).
+
 ## [2.2.1] - 2026-02-27
 
 ### Added

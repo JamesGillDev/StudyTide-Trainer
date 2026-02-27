@@ -213,6 +213,28 @@ button.danger {
     overflow-x: auto;
 }
 
+.training-sections {
+    display: grid;
+    gap: 0.65rem;
+}
+
+.training-section {
+    border: 1px solid #2a4d67;
+    border-radius: 0.55rem;
+    background: #081625;
+    padding: 0.65rem;
+}
+
+.training-section h4 {
+    margin: 0 0 0.45rem;
+    color: #c4d9eb;
+    letter-spacing: 0.02em;
+}
+
+.retype-note {
+    margin-top: 0.65rem;
+}
+
 .practice-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
