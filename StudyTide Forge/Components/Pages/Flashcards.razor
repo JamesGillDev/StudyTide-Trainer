@@ -39,7 +39,7 @@
     </div>
 
     <div class="actions">
-        <button @onclick="LoadRandomCardAsync">Load Due Card</button>
+        <button @onclick="LoadScopeCardAsync">Load Due Card</button>
     </div>
 </section>
 
@@ -54,50 +54,76 @@ else
     <section class="panel flashcard-box">
         <h2>@_currentCard.Lesson?.Title</h2>
 
+        <div class="lesson-meta-row">
+            <p class="meta-text">
+                Difficulty: @_currentCard.Difficulty |
+                Correct: @_currentCard.TimesCorrect |
+                Incorrect: @_currentCard.TimesIncorrect
+            </p>
+            <label class="checkbox-inline" title="Flag this lesson for focused review">
+                <input type="checkbox" checked="@_isCurrentLessonFlagged" @onchange="OnCurrentLessonFlagChangedAsync" />
+                Flag lesson
+            </label>
+        </div>
+
         <div class="card-face">
             <h3>Question</h3>
             <p>@_currentCard.Question</p>
         </div>
 
-        @if (_isAnswerVisible)
-        {
-            <div class="card-face">
-                <h3>Answer</h3>
-                <p>@_currentCard.Answer</p>
-            </div>
-        }
-
-        <p class="meta-text">
-            Difficulty: @_currentCard.Difficulty |
-            Correct: @_currentCard.TimesCorrect |
-            Incorrect: @_currentCard.TimesIncorrect
-        </p>
-
         <div class="actions">
             <button @onclick="RevealAnswer">Reveal Answer</button>
             <button @onclick="MarkCorrectAsync">Mark Correct</button>
             <button class="danger" @onclick="MarkIncorrectAsync">Mark Incorrect</button>
-            <button @onclick="LoadRandomCardAsync">Next Card</button>
+            <button class="secondary" @onclick="GoBack" disabled="@(!CanGoBack)">Back</button>
+            <button class="secondary" @onclick="SkipCardAsync">Skip</button>
+            <button @onclick="LoadAnotherCardAsync">Next Card</button>
         </div>
     </section>
+}
+
+@if (_isAnswerModalVisible && _currentCard is not null)
+{
+    <div class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="answerTitle">
+        <section class="modal-panel answer-modal">
+            <h2 id="answerTitle">Answer</h2>
+            <p>@_currentCard.Answer</p>
+            <div class="actions">
+                <button @onclick="CloseAnswerModal">OK</button>
+            </div>
+        </section>
+    </div>
 }
 
 @code {
     private readonly List<ModuleOption> _modules = [];
     private readonly List<LessonOption> _lessons = [];
+    private readonly List<Flashcard> _history = [];
+    private readonly HashSet<int> _excludedCardIds = [];
 
     private int? _selectedModuleId;
     private int? _selectedLessonId;
 
     private Flashcard? _currentCard;
-    private bool _isAnswerVisible;
     private string? _statusMessage;
+    private bool _isAnswerModalVisible;
+    private int _historyIndex = -1;
+    private bool _isCurrentLessonFlagged;
+
+    private bool CanGoBack => _historyIndex > 0;
 
     protected override async Task OnInitializedAsync()
     {
-        await LoadModulesAsync();
-        await LoadLessonsAsync();
-        await LoadRandomCardAsync();
+        try
+        {
+            await LoadModulesAsync();
+            await LoadLessonsAsync();
+            await LoadScopeCardAsync();
+        }
+        catch (Exception exception)
+        {
+            HandleUiException("Unable to initialize flashcards.", exception);
+        }
     }
 
     private async Task LoadModulesAsync()
@@ -155,28 +181,105 @@ else
         _selectedLessonId = null;
 
         await LoadLessonsAsync();
-        await LoadRandomCardAsync();
+        await LoadScopeCardAsync();
     }
 
     private async Task OnLessonChangedAsync(ChangeEventArgs eventArgs)
     {
         _selectedLessonId = ParseNullableInt(eventArgs.Value?.ToString());
-        await LoadRandomCardAsync();
+        await LoadScopeCardAsync();
     }
 
-    private async Task LoadRandomCardAsync()
+    private async Task LoadScopeCardAsync()
     {
-        _currentCard = await FlashcardService.GetRandomCardAsync(_selectedModuleId, _selectedLessonId, dueOnly: true);
-        _isAnswerVisible = false;
+        _history.Clear();
+        _excludedCardIds.Clear();
+        _historyIndex = -1;
+        await LoadNextCardCoreAsync(excludeCurrent: false, "Card loaded.");
+    }
 
-        _statusMessage = _currentCard is null
-            ? "No due card available for this scope."
-            : "Card loaded.";
+    private async Task LoadAnotherCardAsync()
+    {
+        await LoadNextCardCoreAsync(excludeCurrent: true, "Loaded another card.");
+    }
+
+    private async Task SkipCardAsync()
+    {
+        if (_currentCard is null)
+        {
+            _statusMessage = "Load a card first.";
+            return;
+        }
+
+        await LoadNextCardCoreAsync(excludeCurrent: true, "Card skipped. Loaded another card.");
+    }
+
+    private async Task LoadNextCardCoreAsync(bool excludeCurrent, string successMessage)
+    {
+        try
+        {
+            _isAnswerModalVisible = false;
+
+            if (excludeCurrent && _currentCard is not null)
+            {
+                _excludedCardIds.Add(_currentCard.Id);
+            }
+
+            var card = await FlashcardService.GetRandomCardAsync(
+                _selectedModuleId,
+                _selectedLessonId,
+                dueOnly: true,
+                excludedCardIds: _excludedCardIds);
+
+            if (card is null && _excludedCardIds.Count > 0)
+            {
+                _excludedCardIds.Clear();
+                card = await FlashcardService.GetRandomCardAsync(_selectedModuleId, _selectedLessonId, dueOnly: true);
+            }
+
+            if (card is null)
+            {
+                SetCurrentCard(null, appendToHistory: false);
+                _statusMessage = "No due card available for this scope.";
+                return;
+            }
+
+            SetCurrentCard(card, appendToHistory: true);
+            _statusMessage = successMessage;
+        }
+        catch (Exception exception)
+        {
+            HandleUiException("Unable to load flashcards.", exception);
+        }
+    }
+
+    private void GoBack()
+    {
+        if (!CanGoBack)
+        {
+            return;
+        }
+
+        _isAnswerModalVisible = false;
+        _historyIndex--;
+        var previous = _history[_historyIndex];
+        SetCurrentCard(previous, appendToHistory: false);
+        _statusMessage = "Showing previous card.";
     }
 
     private void RevealAnswer()
     {
-        _isAnswerVisible = true;
+        if (_currentCard is null)
+        {
+            return;
+        }
+
+        _isAnswerModalVisible = true;
+    }
+
+    private void CloseAnswerModal()
+    {
+        _isAnswerModalVisible = false;
     }
 
     private async Task MarkCorrectAsync()
@@ -186,8 +289,15 @@ else
             return;
         }
 
-        await FlashcardService.SaveResultAsync(_currentCard.Id, isCorrect: true);
-        await LoadRandomCardAsync();
+        try
+        {
+            await FlashcardService.SaveResultAsync(_currentCard.Id, isCorrect: true);
+            await LoadNextCardCoreAsync(excludeCurrent: true, "Marked correct. Loaded another card.");
+        }
+        catch (Exception exception)
+        {
+            HandleUiException("Unable to save flashcard result.", exception);
+        }
     }
 
     private async Task MarkIncorrectAsync()
@@ -197,8 +307,136 @@ else
             return;
         }
 
-        await FlashcardService.SaveResultAsync(_currentCard.Id, isCorrect: false);
-        await LoadRandomCardAsync();
+        try
+        {
+            await FlashcardService.SaveResultAsync(_currentCard.Id, isCorrect: false);
+            await LoadNextCardCoreAsync(excludeCurrent: true, "Marked incorrect. Loaded another card.");
+        }
+        catch (Exception exception)
+        {
+            HandleUiException("Unable to save flashcard result.", exception);
+        }
+    }
+
+    private async Task OnCurrentLessonFlagChangedAsync(ChangeEventArgs eventArgs)
+    {
+        if (_currentCard?.LessonId is not int lessonId)
+        {
+            return;
+        }
+
+        var isFlagged = ParseCheckboxValue(eventArgs.Value);
+
+        try
+        {
+            await using var db = await DbFactory.CreateDbContextAsync();
+            var lesson = await db.TrainingLessons.FirstOrDefaultAsync(x => x.Id == lessonId);
+
+            if (lesson is null)
+            {
+                return;
+            }
+
+            lesson.IsFlagged = isFlagged;
+            await db.SaveChangesAsync();
+
+            _isCurrentLessonFlagged = isFlagged;
+
+            if (_currentCard.Lesson is not null)
+            {
+                _currentCard.Lesson.IsFlagged = isFlagged;
+            }
+
+            foreach (var card in _history.Where(x => x.LessonId == lessonId && x.Lesson is not null))
+            {
+                card.Lesson!.IsFlagged = isFlagged;
+            }
+
+            _statusMessage = isFlagged
+                ? "Lesson flagged for focused review."
+                : "Lesson removed from flagged materials.";
+        }
+        catch (Exception exception)
+        {
+            HandleUiException("Unable to update lesson flag.", exception);
+        }
+    }
+
+    private static bool ParseCheckboxValue(object? value)
+    {
+        if (value is bool boolValue)
+        {
+            return boolValue;
+        }
+
+        if (value is string stringValue && bool.TryParse(stringValue, out var parsed))
+        {
+            return parsed;
+        }
+
+        return false;
+    }
+
+    private void SetCurrentCard(Flashcard? card, bool appendToHistory)
+    {
+        _currentCard = card;
+        _isAnswerModalVisible = false;
+
+        if (card is null)
+        {
+            _isCurrentLessonFlagged = false;
+            return;
+        }
+
+        NormalizeCardOrientation(card);
+        _isCurrentLessonFlagged = card.Lesson?.IsFlagged ?? false;
+
+        if (!appendToHistory)
+        {
+            return;
+        }
+
+        if (_historyIndex < _history.Count - 1)
+        {
+            _history.RemoveRange(_historyIndex + 1, _history.Count - (_historyIndex + 1));
+        }
+
+        if (_history.Count > 0 && _history[^1].Id == card.Id)
+        {
+            _history[_history.Count - 1] = card;
+            _historyIndex = _history.Count - 1;
+            return;
+        }
+
+        _history.Add(card);
+        _historyIndex = _history.Count - 1;
+    }
+
+    private static void NormalizeCardOrientation(Flashcard card)
+    {
+        var question = card.Question;
+        var answer = card.Answer;
+
+        if (TrainingContentFormatter.NeedsPromptResponseReversal(question, answer))
+        {
+            question = TrainingContentFormatter.BuildPromptFromResponse(answer);
+            answer = TrainingContentFormatter.BuildResponseFromPrompt(card.Question);
+        }
+
+        question = TrainingContentFormatter.NormalizePromptForTermResponse(question, answer);
+
+        card.Question = TruncateValue(question, 500);
+        card.Answer = TruncateValue(answer, 500);
+    }
+
+    private static string TruncateValue(string value, int maxLength)
+    {
+        if (value.Length <= maxLength)
+        {
+            return value;
+        }
+
+        return value[..maxLength].TrimEnd();
     }
 
     private static int? ParseNullableInt(string? value)
@@ -211,6 +449,12 @@ else
         return int.TryParse(value, out var parsed)
             ? parsed
             : null;
+    }
+
+    private void HandleUiException(string context, Exception exception)
+    {
+        _statusMessage = $"{context} {exception.Message}";
+        Console.Error.WriteLine($"[StudyTide] {context} {exception}");
     }
 
     private sealed class ModuleOption

@@ -6,7 +6,11 @@ namespace StudyTideForge.Services;
 
 public sealed class FlashcardService(IDbContextFactory<ForgeDbContext> dbFactory)
 {
-    public async Task<Flashcard?> GetRandomCardAsync(int? moduleId, int? lessonId, bool dueOnly)
+    public async Task<Flashcard?> GetRandomCardAsync(
+        int? moduleId,
+        int? lessonId,
+        bool dueOnly,
+        IReadOnlyCollection<int>? excludedCardIds = null)
     {
         await using var db = await dbFactory.CreateDbContextAsync();
 
@@ -26,6 +30,11 @@ public sealed class FlashcardService(IDbContextFactory<ForgeDbContext> dbFactory
             query = query.Where(x => x.LessonId == lessonId.Value);
         }
 
+        if (excludedCardIds is { Count: > 0 })
+        {
+            query = query.Where(x => !excludedCardIds.Contains(x.Id));
+        }
+
         if (dueOnly)
         {
             query = query.Where(x => (x.TimesCorrect + x.TimesIncorrect) == 0 || x.TimesIncorrect >= x.TimesCorrect);
@@ -35,7 +44,7 @@ public sealed class FlashcardService(IDbContextFactory<ForgeDbContext> dbFactory
 
         if (candidateIds.Count == 0 && dueOnly)
         {
-            return await GetRandomCardAsync(moduleId, lessonId, dueOnly: false);
+            return await GetRandomCardAsync(moduleId, lessonId, dueOnly: false, excludedCardIds);
         }
 
         if (candidateIds.Count == 0)

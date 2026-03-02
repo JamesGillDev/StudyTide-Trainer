@@ -1,5 +1,4 @@
 @page "/practice"
-@using System.Text.RegularExpressions
 @inject IDbContextFactory<ForgeDbContext> DbFactory
 @inject PracticeService PracticeService
 
@@ -40,7 +39,7 @@
     </div>
 
     <div class="actions">
-        <button @onclick="LoadNextBlockAsync">Load Next Due Item</button>
+        <button @onclick="LoadScopeDueBlockAsync">Load Next Due Question</button>
     </div>
 </section>
 
@@ -49,7 +48,7 @@
     <div class="instruction-grid">
         <article class="instruction-step">
             <span class="step-badge">1</span>
-            <h3>Load a due item</h3>
+            <h3>Load a due question</h3>
             <p>Choose module/lesson scope, then load the next due training item.</p>
         </article>
         <article class="instruction-step">
@@ -79,11 +78,18 @@
 else
 {
     <section class="panel">
-        <h2>@_currentBlock.Title</h2>
-        <p class="meta-text">
-            Lesson: @_currentBlock.Lesson?.Title |
-            Difficulty: @_currentBlock.Difficulty
-        </p>
+        <h2>@GetCurrentHeading()</h2>
+
+        <div class="lesson-meta-row">
+            <p class="meta-text">
+                Lesson: @_currentBlock.Lesson?.Title |
+                Difficulty: @_currentBlock.Difficulty
+            </p>
+            <label class="checkbox-inline" title="Flag this lesson for focused review">
+                <input type="checkbox" checked="@_isCurrentLessonFlagged" @onchange="OnCurrentLessonFlagChangedAsync" />
+                Flag lesson
+            </label>
+        </div>
 
         <div class="practice-grid">
             <article>
@@ -126,7 +132,9 @@ else
 
         <div class="actions">
             <button @onclick="SubmitAttemptAsync">Submit Attempt</button>
-            <button @onclick="LoadNextBlockAsync">Load Another Item</button>
+            <button class="secondary" @onclick="GoBack" disabled="@(!CanGoBack)">Back</button>
+            <button class="secondary" @onclick="SkipCurrentBlockAsync">Skip</button>
+            <button @onclick="LoadAnotherQuestionAsync">Load Another Question</button>
         </div>
     </section>
 }
@@ -193,18 +201,21 @@ else
 @code {
     private readonly List<ModuleOption> _modules = [];
     private readonly List<LessonOption> _lessons = [];
+    private readonly List<TrainingBlock> _history = [];
+    private readonly HashSet<int> _excludedBlockIds = [];
 
     private int? _selectedModuleId;
     private int? _selectedLessonId;
 
     private TrainingBlock? _currentBlock;
     private PracticeEvaluation? _evaluation;
-    private ParsedTrainingContent _parsedContent = ParsedTrainingContent.Empty;
+    private DisplayTrainingContent _parsedContent = DisplayTrainingContent.Empty;
     private string _typedText = string.Empty;
     private string? _statusMessage;
-    private static readonly Regex LabeledContentPattern = new(
-        @"^\s*Prompt:\s*\n(?<prompt>.*?)\n\s*\nResponse:\s*\n(?<response>.*?)\n\s*\nExample:\s*\n(?<example>.*)\s*$",
-        RegexOptions.Singleline | RegexOptions.CultureInvariant);
+    private int _historyIndex = -1;
+    private bool _isCurrentLessonFlagged;
+
+    private bool CanGoBack => _historyIndex > 0;
 
     protected override async Task OnInitializedAsync()
     {
@@ -212,7 +223,7 @@ else
         {
             await LoadModulesAsync();
             await LoadLessonsAsync();
-            await LoadNextBlockAsync();
+            await LoadScopeDueBlockAsync();
         }
         catch (Exception exception)
         {
@@ -275,29 +286,68 @@ else
         _selectedLessonId = null;
 
         await LoadLessonsAsync();
-        await LoadNextBlockAsync();
+        await LoadScopeDueBlockAsync();
     }
 
     private async Task OnLessonChangedAsync(ChangeEventArgs eventArgs)
     {
         _selectedLessonId = ParseNullableInt(eventArgs.Value?.ToString());
-        await LoadNextBlockAsync();
+        await LoadScopeDueBlockAsync();
     }
 
-    private async Task LoadNextBlockAsync()
+    private async Task LoadScopeDueBlockAsync()
+    {
+        _history.Clear();
+        _excludedBlockIds.Clear();
+        _historyIndex = -1;
+        await LoadNextBlockCoreAsync(excludeCurrent: false, "Training question loaded.");
+    }
+
+    private async Task LoadAnotherQuestionAsync()
+    {
+        await LoadNextBlockCoreAsync(excludeCurrent: true, "Loaded another question.");
+    }
+
+    private async Task SkipCurrentBlockAsync()
+    {
+        if (_currentBlock is null)
+        {
+            _statusMessage = "Load a training question first.";
+            return;
+        }
+
+        await LoadNextBlockCoreAsync(excludeCurrent: true, "Question skipped. Loaded another question.");
+    }
+
+    private async Task LoadNextBlockCoreAsync(bool excludeCurrent, string successMessage)
     {
         try
         {
-            _currentBlock = await PracticeService.GetNextDueBlockAsync(_selectedModuleId, _selectedLessonId);
-            _typedText = string.Empty;
-            _evaluation = null;
-            _parsedContent = _currentBlock is null
-                ? ParsedTrainingContent.Empty
-                : ParseTrainingContent(_currentBlock.Content);
+            if (excludeCurrent && _currentBlock is not null)
+            {
+                _excludedBlockIds.Add(_currentBlock.Id);
+            }
 
-            _statusMessage = _currentBlock is null
-                ? "No due training item available in this scope."
-                : "Training item loaded. Retype Prompt, Response, and Example text values in order (labels are display-only).";
+            var block = await PracticeService.GetNextDueBlockAsync(
+                _selectedModuleId,
+                _selectedLessonId,
+                _excludedBlockIds);
+
+            if (block is null && _excludedBlockIds.Count > 0)
+            {
+                _excludedBlockIds.Clear();
+                block = await PracticeService.GetNextDueBlockAsync(_selectedModuleId, _selectedLessonId);
+            }
+
+            if (block is null)
+            {
+                SetCurrentBlock(null, appendToHistory: false);
+                _statusMessage = "No due training item available in this scope.";
+                return;
+            }
+
+            SetCurrentBlock(block, appendToHistory: true);
+            _statusMessage = successMessage;
         }
         catch (Exception exception)
         {
@@ -305,11 +355,24 @@ else
         }
     }
 
+    private void GoBack()
+    {
+        if (!CanGoBack)
+        {
+            return;
+        }
+
+        _historyIndex--;
+        var previous = _history[_historyIndex];
+        SetCurrentBlock(previous, appendToHistory: false);
+        _statusMessage = "Showing previous question.";
+    }
+
     private async Task SubmitAttemptAsync()
     {
         if (_currentBlock is null)
         {
-            _statusMessage = "Load a training item first.";
+            _statusMessage = "Load a training question first.";
             return;
         }
 
@@ -326,6 +389,102 @@ else
         }
     }
 
+    private async Task OnCurrentLessonFlagChangedAsync(ChangeEventArgs eventArgs)
+    {
+        if (_currentBlock?.LessonId is not int lessonId)
+        {
+            return;
+        }
+
+        var isFlagged = ParseCheckboxValue(eventArgs.Value);
+
+        try
+        {
+            await using var db = await DbFactory.CreateDbContextAsync();
+            var lesson = await db.TrainingLessons.FirstOrDefaultAsync(x => x.Id == lessonId);
+
+            if (lesson is null)
+            {
+                return;
+            }
+
+            lesson.IsFlagged = isFlagged;
+            await db.SaveChangesAsync();
+
+            _isCurrentLessonFlagged = isFlagged;
+
+            if (_currentBlock.Lesson is not null)
+            {
+                _currentBlock.Lesson.IsFlagged = isFlagged;
+            }
+
+            foreach (var block in _history.Where(x => x.LessonId == lessonId && x.Lesson is not null))
+            {
+                block.Lesson!.IsFlagged = isFlagged;
+            }
+
+            _statusMessage = isFlagged
+                ? "Lesson flagged for focused review."
+                : "Lesson removed from flagged materials.";
+        }
+        catch (Exception exception)
+        {
+            HandleUiException("Unable to update lesson flag.", exception);
+        }
+    }
+
+    private static bool ParseCheckboxValue(object? value)
+    {
+        if (value is bool boolValue)
+        {
+            return boolValue;
+        }
+
+        if (value is string stringValue && bool.TryParse(stringValue, out var parsed))
+        {
+            return parsed;
+        }
+
+        return false;
+    }
+
+    private void SetCurrentBlock(TrainingBlock? block, bool appendToHistory)
+    {
+        _currentBlock = block;
+        _typedText = string.Empty;
+        _evaluation = null;
+
+        if (block is null)
+        {
+            _parsedContent = DisplayTrainingContent.Empty;
+            _isCurrentLessonFlagged = false;
+            return;
+        }
+
+        _parsedContent = ParseTrainingContent(block.Content);
+        _isCurrentLessonFlagged = block.Lesson?.IsFlagged ?? false;
+
+        if (!appendToHistory)
+        {
+            return;
+        }
+
+        if (_historyIndex < _history.Count - 1)
+        {
+            _history.RemoveRange(_historyIndex + 1, _history.Count - (_historyIndex + 1));
+        }
+
+        if (_history.Count > 0 && _history[^1].Id == block.Id)
+        {
+            _history[_history.Count - 1] = block;
+            _historyIndex = _history.Count - 1;
+            return;
+        }
+
+        _history.Add(block);
+        _historyIndex = _history.Count - 1;
+    }
+
     private static int? ParseNullableInt(string? value)
     {
         if (string.IsNullOrWhiteSpace(value) || string.Equals(value, "all", StringComparison.OrdinalIgnoreCase))
@@ -338,26 +497,18 @@ else
             : null;
     }
 
-    private static ParsedTrainingContent ParseTrainingContent(string content)
+    private static DisplayTrainingContent ParseTrainingContent(string content)
     {
-        var normalized = NormalizeLineEndings(content).Trim();
-        var match = LabeledContentPattern.Match(normalized);
+        var normalized = TrainingContentFormatter.NormalizeLineEndings(content).Trim();
 
-        if (!match.Success)
+        if (!TrainingContentFormatter.TryParseLabeledSections(normalized, out var sections))
         {
-            return new ParsedTrainingContent(string.Empty, string.Empty, string.Empty, normalized, false);
+            return new DisplayTrainingContent(string.Empty, string.Empty, string.Empty, normalized, false);
         }
 
-        var prompt = match.Groups["prompt"].Value.Trim();
-        var response = match.Groups["response"].Value.Trim();
-        var example = match.Groups["example"].Value.Trim();
-        var retypeTarget = string.Join("\n", new[] { prompt, response, example }.Where(x => !string.IsNullOrWhiteSpace(x)));
-        return new ParsedTrainingContent(prompt, response, example, retypeTarget, true);
-    }
-
-    private static string NormalizeLineEndings(string value)
-    {
-        return value.Replace("\r\n", "\n").Replace("\r", "\n");
+        var oriented = TrainingContentFormatter.ReversePromptResponse(sections);
+        var retypeTarget = TrainingContentFormatter.BuildRetypeTarget(oriented);
+        return new DisplayTrainingContent(oriented.Prompt, oriented.Response, oriented.Example, retypeTarget, true);
     }
 
     private string GetTypingPlaceholder()
@@ -367,20 +518,30 @@ else
             : "Retype the source content exactly as shown.";
     }
 
+    private string GetCurrentHeading()
+    {
+        if (_parsedContent.HasSections && !string.IsNullOrWhiteSpace(_parsedContent.Prompt))
+        {
+            return _parsedContent.Prompt;
+        }
+
+        return _currentBlock?.Title ?? "Practice";
+    }
+
     private void HandleUiException(string context, Exception exception)
     {
         _statusMessage = $"{context} {exception.Message}";
         Console.Error.WriteLine($"[StudyTide] {context} {exception}");
     }
 
-    private readonly record struct ParsedTrainingContent(
+    private readonly record struct DisplayTrainingContent(
         string Prompt,
         string Response,
         string Example,
         string RetypeTarget,
         bool HasSections)
     {
-        public static ParsedTrainingContent Empty { get; } = new(string.Empty, string.Empty, string.Empty, string.Empty, false);
+        public static DisplayTrainingContent Empty { get; } = new(string.Empty, string.Empty, string.Empty, string.Empty, false);
     }
 
     private sealed class ModuleOption

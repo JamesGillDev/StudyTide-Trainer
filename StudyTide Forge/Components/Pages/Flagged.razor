@@ -1,0 +1,141 @@
+@page "/flagged"
+@inject IDbContextFactory<ForgeDbContext> DbFactory
+
+<PageTitle>Flagged Material</PageTitle>
+
+<h1>Flagged Material</h1>
+
+@if (!string.IsNullOrWhiteSpace(_statusMessage))
+{
+    <p class="status-message">@_statusMessage</p>
+}
+
+<section class="panel">
+    <h2>Flagged lessons</h2>
+
+    @if (_flaggedLessons.Count == 0)
+    {
+        <p>No flagged lessons yet. Flag lessons from Practice or Flashcards to track them here.</p>
+    }
+    else
+    {
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Module</th>
+                    <th>Lesson</th>
+                    <th>Training items</th>
+                    <th>Items due</th>
+                    <th>Flashcards due</th>
+                    <th>Open</th>
+                    <th>Flag</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var lesson in _flaggedLessons)
+                {
+                    <tr>
+                        <td>@lesson.ModuleName</td>
+                        <td>@lesson.LessonTitle</td>
+                        <td>@lesson.TrainingItemCount</td>
+                        <td>@lesson.DueTrainingItemCount</td>
+                        <td>@lesson.DueFlashcardCount</td>
+                        <td>
+                            <a class="button-link" href="/modules/@lesson.ModuleId/lessons/@lesson.LessonId">Open</a>
+                        </td>
+                        <td>
+                            <button class="secondary" @onclick="@(() => RemoveFlagAsync(lesson.LessonId))">Remove</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</section>
+
+@code {
+    private readonly List<FlaggedLessonSummary> _flaggedLessons = [];
+    private string? _statusMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadFlaggedLessonsAsync();
+    }
+
+    private async Task LoadFlaggedLessonsAsync()
+    {
+        try
+        {
+            await using var db = await DbFactory.CreateDbContextAsync();
+            var now = DateTime.UtcNow;
+
+            var rows = await db.TrainingLessons
+                .AsNoTracking()
+                .Where(x => x.IsFlagged)
+                .OrderBy(x => x.Module!.Category)
+                .ThenBy(x => x.Module!.Name)
+                .ThenBy(x => x.OrderIndex)
+                .Select(x => new FlaggedLessonSummary
+                {
+                    LessonId = x.Id,
+                    LessonTitle = x.Title,
+                    ModuleId = x.ModuleId,
+                    ModuleName = x.Module!.Name,
+                    TrainingItemCount = x.TrainingBlocks.Count,
+                    DueTrainingItemCount = x.TrainingBlocks.Count(block => !block.NextDueAt.HasValue || block.NextDueAt <= now),
+                    DueFlashcardCount = x.Flashcards.Count(card => (card.TimesCorrect + card.TimesIncorrect) == 0 || card.TimesIncorrect >= card.TimesCorrect)
+                })
+                .ToListAsync();
+
+            _flaggedLessons.Clear();
+            _flaggedLessons.AddRange(rows);
+        }
+        catch (Exception exception)
+        {
+            _statusMessage = $"Unable to load flagged lessons. {exception.Message}";
+            Console.Error.WriteLine($"[StudyTide] Unable to load flagged lessons. {exception}");
+        }
+    }
+
+    private async Task RemoveFlagAsync(int lessonId)
+    {
+        try
+        {
+            await using var db = await DbFactory.CreateDbContextAsync();
+            var lesson = await db.TrainingLessons.FirstOrDefaultAsync(x => x.Id == lessonId);
+
+            if (lesson is null)
+            {
+                return;
+            }
+
+            lesson.IsFlagged = false;
+            await db.SaveChangesAsync();
+
+            await LoadFlaggedLessonsAsync();
+            _statusMessage = "Flag removed.";
+        }
+        catch (Exception exception)
+        {
+            _statusMessage = $"Unable to update lesson flag. {exception.Message}";
+            Console.Error.WriteLine($"[StudyTide] Unable to update lesson flag. {exception}");
+        }
+    }
+
+    private sealed class FlaggedLessonSummary
+    {
+        public int LessonId { get; init; }
+
+        public int ModuleId { get; init; }
+
+        public string ModuleName { get; init; } = string.Empty;
+
+        public string LessonTitle { get; init; } = string.Empty;
+
+        public int TrainingItemCount { get; init; }
+
+        public int DueTrainingItemCount { get; init; }
+
+        public int DueFlashcardCount { get; init; }
+    }
+}

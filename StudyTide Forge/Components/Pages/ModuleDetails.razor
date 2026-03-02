@@ -29,6 +29,7 @@ else
                         <th>Title</th>
                         <th>Training Items</th>
                         <th>Flashcards</th>
+                        <th>Flagged</th>
                         <th>Open</th>
                     </tr>
                 </thead>
@@ -40,6 +41,9 @@ else
                             <td>@lesson.Title</td>
                             <td>@lesson.BlockCount</td>
                             <td>@lesson.FlashcardCount</td>
+                            <td>
+                                <input type="checkbox" checked="@lesson.IsFlagged" @onchange="@((eventArgs) => UpdateLessonFlagAsync(lesson, eventArgs))" />
+                            </td>
                             <td>
                                 <a class="button-link" href="/modules/@ModuleId/lessons/@lesson.Id">View</a>
                             </td>
@@ -76,12 +80,45 @@ else
                 Title = x.Title,
                 OrderIndex = x.OrderIndex,
                 BlockCount = x.TrainingBlocks.Count,
-                FlashcardCount = x.Flashcards.Count
+                FlashcardCount = x.Flashcards.Count,
+                IsFlagged = x.IsFlagged
             })
             .ToListAsync();
 
         _lessons.Clear();
         _lessons.AddRange(lessons);
+    }
+
+    private async Task UpdateLessonFlagAsync(LessonSummary lesson, ChangeEventArgs eventArgs)
+    {
+        var isFlagged = ParseCheckboxValue(eventArgs.Value);
+
+        await using var db = await DbFactory.CreateDbContextAsync();
+        var lessonEntity = await db.TrainingLessons.FirstOrDefaultAsync(x => x.Id == lesson.Id);
+
+        if (lessonEntity is null)
+        {
+            return;
+        }
+
+        lessonEntity.IsFlagged = isFlagged;
+        await db.SaveChangesAsync();
+        lesson.IsFlagged = isFlagged;
+    }
+
+    private static bool ParseCheckboxValue(object? value)
+    {
+        if (value is bool boolValue)
+        {
+            return boolValue;
+        }
+
+        if (value is string stringValue && bool.TryParse(stringValue, out var parsed))
+        {
+            return parsed;
+        }
+
+        return false;
     }
 
     private sealed class LessonSummary
@@ -95,5 +132,7 @@ else
         public int BlockCount { get; init; }
 
         public int FlashcardCount { get; init; }
+
+        public bool IsFlagged { get; set; }
     }
 }

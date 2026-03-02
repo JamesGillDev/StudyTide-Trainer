@@ -2,6 +2,10 @@
 
 StudyTide Forge is structured cognitive reinforcement training for software engineers, software developers, and cloud application developers. It combines verbatim retyping, flashcards, spaced repetition, and importer-based curriculum seeding.
 
+## Release Status
+
+StudyTide Forge desktop (`v2.4.0`) is marked **ready for public release** as of `2026-03-02`.
+
 ## Solution Layout
 
 This repository now contains two **parallel** apps:
@@ -36,27 +40,38 @@ Runtime behavior:
 - Practice displays `Prompt`, `Response`, and `Example` as section labels in the UI.
 - Retyping and accuracy scoring are performed against the section text only (labels are excluded).
 - Users retype section values in order: `Prompt` text, then `Response` text, then `Example` text.
+- Practice actions include `Back`, `Skip`, and `Load Another Question`.
 - On first app launch, a quick-start instruction bubble explains the workflow and can be reopened with the floating `i` help button.
 - Character-level scoring uses edit-distance logic, so one missing character/newline no longer collapses the entire score.
+- Prompt/response normalization removes malformed forced question stems (for example `What is is ...`) and uses clean term-identification phrasing.
 
 ## Curriculum Coverage Dashboard
 
 Dashboard now includes:
 
-- Total modules, lessons, training items, and flashcards.
+- Total modules, lessons, retype items, and flashcards.
 - Due-item metrics and recent practice accuracy.
 - Category coverage table with recommended minimum training-item targets for software/cloud roles.
 - Additional-item gap counts to show where more content is needed.
 - Duplicate-sweep repair behavior so repeated training items are automatically replaced with unique content.
+- Explicit relationship metrics:
+  - Combined mode entries (`retype + flashcards`)
+  - Unique logical items
+  - Items in both modes
+  - Retype-only items
+  - Flashcard-only items
+  - Mirroring status percentage (fully or partially mirrored)
 
 ### Current Local Inventory Snapshot (Desktop DB)
 
 As measured on `2026-03-02` from the local desktop database:
 
 - `6` modules
-- `36` lessons
-- `3175` training items
+- `35` lessons
+- `3191` training (retype) items
 - `2924` flashcards
+- `6115` combined mode entries (`3191 + 2924`)
+- `3191` unique logical items (`2924` mirrored + `267` retype-only + `0` flashcard-only)
 
 Coverage highlights:
 
@@ -87,6 +102,7 @@ Dashboard includes:
 - `Imported flashcards: X`
 - `Imported training items: Y`
 - `Category coverage and target gap` by curriculum area
+- `How totals relate` panel with explicit formulas and mirroring status
 
 ## Spaced Repetition Rules
 
@@ -115,7 +131,13 @@ Primary desktop executable:
 
 Published executable:
 
-`StudyTide Forge\bin\Release\net10.0-windows10.0.19041.0\win-x64\publish\StudyTideForge.exe`
+`StudyTide Forge\bin\Release\net10.0-windows10.0.19041.0\win-x64\StudyTideForge.exe`
+
+Preferred fixed local output path:
+
+```powershell
+dotnet publish ".\StudyTide Forge\StudyTideForge.csproj" -c Release -f net10.0-windows10.0.19041.0 -r win-x64 -o "C:\MSSA Code-github\StudyTide Trainer\StudyTide Forge\bin\Release\net10.0-windows10.0.19041.0\win-x64"
+```
 
 ### Windows Icon Cache Note
 

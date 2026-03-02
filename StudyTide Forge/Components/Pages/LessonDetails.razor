@@ -10,7 +10,13 @@
 else
 {
     <h1>@_lesson.Title</h1>
-    <p class="meta-text">Module: @_lesson.Module?.Name</p>
+    <div class="lesson-meta-row">
+        <p class="meta-text">Module: @_lesson.Module?.Name</p>
+        <label class="checkbox-inline">
+            <input type="checkbox" checked="@_lesson.IsFlagged" @onchange="OnLessonFlagChangedAsync" />
+            Flag lesson
+        </label>
+    </div>
 
     <section class="panel">
         <h2>Training items</h2>
@@ -116,6 +122,43 @@ else
 
         _flashcards.Clear();
         _flashcards.AddRange(flashcards);
+    }
+
+    private async Task OnLessonFlagChangedAsync(ChangeEventArgs eventArgs)
+    {
+        if (_lesson is null)
+        {
+            return;
+        }
+
+        var isFlagged = ParseCheckboxValue(eventArgs.Value);
+
+        await using var db = await DbFactory.CreateDbContextAsync();
+        var lessonEntity = await db.TrainingLessons.FirstOrDefaultAsync(x => x.Id == _lesson.Id);
+
+        if (lessonEntity is null)
+        {
+            return;
+        }
+
+        lessonEntity.IsFlagged = isFlagged;
+        await db.SaveChangesAsync();
+        _lesson.IsFlagged = isFlagged;
+    }
+
+    private static bool ParseCheckboxValue(object? value)
+    {
+        if (value is bool boolValue)
+        {
+            return boolValue;
+        }
+
+        if (value is string stringValue && bool.TryParse(stringValue, out var parsed))
+        {
+            return parsed;
+        }
+
+        return false;
     }
 
     private static string Trim(string value, int maxLength)

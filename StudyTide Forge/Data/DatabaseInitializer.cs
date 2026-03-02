@@ -1,6 +1,7 @@
 using System.Text.RegularExpressions;
 using Microsoft.EntityFrameworkCore;
 using StudyTideForge.Models;
+using StudyTideForge.Services;
 
 namespace StudyTideForge.Data;
 
@@ -187,6 +188,8 @@ public static class DatabaseInitializer
         await ApplySupplementalSeedBlocksAsync(db);
         await ReplaceDuplicateTrainingBlocksAsync(db);
         await ApplyTargetedCoverageBoostAsync(db);
+        await ApplyPromptResponseOrientationMigrationAsync(db);
+        await ReplaceDuplicateTrainingBlocksAsync(db);
     }
 
     private static async Task<bool> RequiresReseedAsync(ForgeDbContext db, int importedPairCount)
@@ -453,7 +456,9 @@ public static class DatabaseInitializer
     private static string BuildTrainingContent(string prompt, string response)
     {
         var example = BuildExample(prompt, response);
-        return $"Prompt:\n{prompt}\n\nResponse:\n{response}\n\nExample:\n{example}";
+        var sections = new ParsedTrainingContent(prompt, response, example);
+        var normalized = TrainingContentFormatter.ReversePromptResponse(sections);
+        return TrainingContentFormatter.BuildLabeledContent(normalized.Prompt, normalized.Response, normalized.Example);
     }
 
     private static string BuildExample(string prompt, string response)
@@ -882,7 +887,77 @@ public static class DatabaseInitializer
 
     private static string BuildSeedBlockContent(SeedBlock seedBlock)
     {
-        return $"Prompt:\n{seedBlock.Title}\n\nResponse:\n{seedBlock.Response}\n\nExample:\n{seedBlock.Example}";
+        var sections = new ParsedTrainingContent(seedBlock.Title, seedBlock.Response, seedBlock.Example);
+        var normalized = TrainingContentFormatter.ReversePromptResponse(sections);
+        return TrainingContentFormatter.BuildLabeledContent(normalized.Prompt, normalized.Response, normalized.Example);
+    }
+
+    private static async Task ApplyPromptResponseOrientationMigrationAsync(ForgeDbContext db)
+    {
+        var updated = false;
+
+        var trainingBlocks = await db.TrainingBlocks.ToListAsync();
+        foreach (var block in trainingBlocks)
+        {
+            if (!TrainingContentFormatter.TryParseLabeledSections(block.Content, out var sections))
+            {
+                continue;
+            }
+
+            var normalized = TrainingContentFormatter.ReversePromptResponse(sections);
+            if (normalized == sections)
+            {
+                continue;
+            }
+
+            block.Content = TrainingContentFormatter.BuildLabeledContent(
+                normalized.Prompt,
+                normalized.Response,
+                normalized.Example);
+
+            updated = true;
+        }
+
+        var flashcards = await db.Flashcards.ToListAsync();
+        foreach (var flashcard in flashcards)
+        {
+            var question = flashcard.Question;
+            var answer = flashcard.Answer;
+
+            if (TrainingContentFormatter.NeedsPromptResponseReversal(question, answer))
+            {
+                question = TrainingContentFormatter.BuildPromptFromResponse(answer);
+                answer = TrainingContentFormatter.BuildResponseFromPrompt(flashcard.Question);
+            }
+
+            question = TrainingContentFormatter.NormalizePromptForTermResponse(question, answer);
+
+            var normalizedQuestion = TruncateValue(question, 500);
+            var normalizedAnswer = TruncateValue(answer, 500);
+
+            if (!string.Equals(flashcard.Question, normalizedQuestion, StringComparison.Ordinal) ||
+                !string.Equals(flashcard.Answer, normalizedAnswer, StringComparison.Ordinal))
+            {
+                flashcard.Question = normalizedQuestion;
+                flashcard.Answer = normalizedAnswer;
+                updated = true;
+            }
+        }
+
+        if (updated)
+        {
+            await db.SaveChangesAsync();
+        }
+    }
+
+    private static string TruncateValue(string value, int maxLength)
+    {
+        if (value.Length <= maxLength)
+        {
+            return value;
+        }
+
+        return value[..maxLength].TrimEnd();
     }
 
     private sealed record SeedBlock(

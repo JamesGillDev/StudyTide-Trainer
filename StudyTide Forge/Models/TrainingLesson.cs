@@ -12,6 +12,8 @@ public sealed class TrainingLesson
     [StringLength(160)]
     public string Title { get; set; } = string.Empty;
 
+    public bool IsFlagged { get; set; }
+
     public int OrderIndex { get; set; }
 
     public DateTime CreatedAt { get; set; }

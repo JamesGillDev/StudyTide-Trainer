@@ -35,9 +35,11 @@ public sealed class ForgeDbContext : DbContext
         modelBuilder.Entity<TrainingLesson>(entity =>
         {
             entity.Property(x => x.Title).IsRequired().HasMaxLength(160);
+            entity.Property(x => x.IsFlagged).IsRequired().HasDefaultValue(false);
             entity.Property(x => x.OrderIndex).IsRequired();
             entity.Property(x => x.CreatedAt).IsRequired();
             entity.HasIndex(x => new { x.ModuleId, x.OrderIndex });
+            entity.HasIndex(x => x.IsFlagged);
 
             entity.HasOne(x => x.Module)
                 .WithMany(x => x.Lessons)

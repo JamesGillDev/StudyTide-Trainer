@@ -16,6 +16,17 @@ public sealed class DashboardService(IDbContextFactory<ForgeDbContext> dbFactory
         var totalLessons = await db.TrainingLessons.CountAsync();
         var totalTrainingItems = await db.TrainingBlocks.CountAsync();
         var totalFlashcards = await db.Flashcards.CountAsync();
+        var lessonItemCounts = await db.TrainingLessons
+            .AsNoTracking()
+            .Select(x => new
+            {
+                TrainingItems = x.TrainingBlocks.Count,
+                Flashcards = x.Flashcards.Count
+            })
+            .ToListAsync();
+        var itemsInBothModes = lessonItemCounts.Sum(x => Math.Min(x.TrainingItems, x.Flashcards));
+        var retypeOnlyItems = lessonItemCounts.Sum(x => Math.Max(0, x.TrainingItems - x.Flashcards));
+        var flashcardOnlyItems = lessonItemCounts.Sum(x => Math.Max(0, x.Flashcards - x.TrainingItems));
         var blocksDue = await db.TrainingBlocks.CountAsync(x => !x.NextDueAt.HasValue || x.NextDueAt <= now);
         var flashcardsDue = await db.Flashcards.CountAsync(x => (x.TimesCorrect + x.TimesIncorrect) == 0 || x.TimesIncorrect >= x.TimesCorrect);
         var importedModuleNames = LegacyImportConstants.ModuleDefinitions
@@ -121,6 +132,9 @@ public sealed class DashboardService(IDbContextFactory<ForgeDbContext> dbFactory
             TotalLessons = totalLessons,
             TotalTrainingItems = totalTrainingItems,
             TotalFlashcards = totalFlashcards,
+            ItemsInBothModes = itemsInBothModes,
+            RetypeOnlyItems = retypeOnlyItems,
+            FlashcardOnlyItems = flashcardOnlyItems,
             BlocksDue = blocksDue,
             FlashcardsDue = flashcardsDue,
             ImportedFlashcards = importedFlashcards,
@@ -156,6 +170,12 @@ public sealed class DashboardSnapshot
     public int TotalTrainingItems { get; init; }
 
     public int TotalFlashcards { get; init; }
+
+    public int ItemsInBothModes { get; init; }
+
+    public int RetypeOnlyItems { get; init; }
+
+    public int FlashcardOnlyItems { get; init; }
 
     public int BlocksDue { get; init; }
 

@@ -340,6 +340,28 @@ button.danger {
     font-size: 0.88rem;
 }
 
+.lesson-meta-row {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.75rem;
+}
+
+.checkbox-inline {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    color: #d7ebfb;
+    font-size: 0.95rem;
+}
+
+.checkbox-inline input[type="checkbox"] {
+    width: auto;
+    accent-color: #1bb3a6;
+}
+
 .coverage-table td:last-child {
     min-width: 180px;
 }
@@ -441,6 +463,30 @@ button.danger {
 .card-face {
     min-height: 100px;
     margin-bottom: 0.9rem;
+}
+
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(4, 10, 17, 0.62);
+    display: grid;
+    place-items: center;
+    z-index: 2500;
+    padding: 1rem;
+}
+
+.modal-panel {
+    width: min(620px, 94vw);
+    border: 1px solid #3f6f92;
+    border-radius: 0.9rem;
+    background: linear-gradient(165deg, #17324a 0%, #12283c 55%, #0f1f31 100%);
+    padding: 1rem 1.1rem;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.42);
+    animation: welcome-pop 180ms ease-out;
+}
+
+.answer-modal p {
+    white-space: pre-wrap;
 }
 
 .meta-text {

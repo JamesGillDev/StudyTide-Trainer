@@ -36,7 +36,7 @@ else
             <p>@_snapshot.TotalLessons</p>
         </article>
         <article class="metric-card">
-            <h2>Total training items</h2>
+            <h2>Total retype items</h2>
             <p>@_snapshot.TotalTrainingItems</p>
         </article>
         <article class="metric-card">
@@ -44,7 +44,27 @@ else
             <p>@_snapshot.TotalFlashcards</p>
         </article>
         <article class="metric-card">
-            <h2>Items due</h2>
+            <h2>Combined mode entries</h2>
+            <p>@GetCombinedModeEntries(_snapshot)</p>
+        </article>
+        <article class="metric-card">
+            <h2>Unique logical items</h2>
+            <p>@GetUniqueLogicalItems(_snapshot)</p>
+        </article>
+        <article class="metric-card">
+            <h2>Items in both modes</h2>
+            <p>@_snapshot.ItemsInBothModes</p>
+        </article>
+        <article class="metric-card">
+            <h2>Retype-only items</h2>
+            <p>@_snapshot.RetypeOnlyItems</p>
+        </article>
+        <article class="metric-card">
+            <h2>Flashcard-only items</h2>
+            <p>@_snapshot.FlashcardOnlyItems</p>
+        </article>
+        <article class="metric-card">
+            <h2>Retype due</h2>
             <p>@_snapshot.BlocksDue</p>
         </article>
         <article class="metric-card">
@@ -57,10 +77,31 @@ else
         </article>
         <article class="metric-card">
             <h2>Imported content</h2>
+            <p>Imported retype items: @_snapshot.ImportedTrainingItems</p>
             <p>Imported flashcards: @_snapshot.ImportedFlashcards</p>
-            <p>Imported training items: @_snapshot.ImportedTrainingItems</p>
         </article>
     </div>
+
+    <section class="panel">
+        <h2>How totals relate</h2>
+        <p class="meta-text">
+            Combined mode entries = Total retype items + Total flashcards = @GetCombinedModeEntries(_snapshot).
+            Unique logical items = Items in both modes + Retype-only items + Flashcard-only items = @GetUniqueLogicalItems(_snapshot).
+        </p>
+        <p class="meta-text">
+            Mirroring status:
+            @if (IsPerfectlyMirrored(_snapshot))
+            {
+                <strong> Fully mirrored.</strong>
+                <span> Every logical item is available in both Practice and Flashcards.</span>
+            }
+            else
+            {
+                <strong> Partially mirrored.</strong>
+                <span> @GetMirroringCoveragePercent(_snapshot).ToString("0.00")% of logical items are in both modes.</span>
+            }
+        </p>
+    </section>
 
     <section class="panel">
         <h2>Curriculum coverage by category</h2>
@@ -194,5 +235,32 @@ else
     private static string GetCoverageWidth(double coveragePercent)
     {
         return $"{Math.Clamp(coveragePercent, 0, 100):0.##}%";
+    }
+
+    private static int GetCombinedModeEntries(DashboardSnapshot snapshot)
+    {
+        return snapshot.TotalTrainingItems + snapshot.TotalFlashcards;
+    }
+
+    private static int GetUniqueLogicalItems(DashboardSnapshot snapshot)
+    {
+        return snapshot.ItemsInBothModes + snapshot.RetypeOnlyItems + snapshot.FlashcardOnlyItems;
+    }
+
+    private static bool IsPerfectlyMirrored(DashboardSnapshot snapshot)
+    {
+        return snapshot.RetypeOnlyItems == 0 && snapshot.FlashcardOnlyItems == 0;
+    }
+
+    private static double GetMirroringCoveragePercent(DashboardSnapshot snapshot)
+    {
+        var uniqueItems = GetUniqueLogicalItems(snapshot);
+
+        if (uniqueItems == 0)
+        {
+            return 100;
+        }
+
+        return Math.Round((double)snapshot.ItemsInBothModes / uniqueItems * 100, 2);
     }
 }

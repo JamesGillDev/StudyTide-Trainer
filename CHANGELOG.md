@@ -4,6 +4,28 @@ All notable changes to this project are documented in this file.
 
 The format is based on semantic versioning (`MAJOR.MINOR.PATCH`).
 
+## [2.4.0] - 2026-03-02
+
+### Added
+- Lesson flagging support across Practice, Flashcards, Module Details, and Lesson Details.
+- New `Flagged Material` navigation section and page for focused review of flagged lessons.
+- Practice navigation controls: `Back`, `Skip`, and `Load Another Question`.
+- Flashcard navigation controls: `Back`, `Skip`, and modal-based `Reveal Answer` dialog.
+- Dashboard differentiator metrics for content math clarity:
+  - Combined mode entries
+  - Unique logical items
+  - Items in both modes
+  - Retype-only items
+  - Flashcard-only items
+  - Mirroring status percentage
+- Database migration `AddTrainingLessonFlag` for persistent lesson flags.
+
+### Changed
+- Prompt/response normalization now removes forced `What is ...` phrasing and repairs malformed question stems.
+- Existing training items and flashcards are auto-normalized on startup for orientation and prompt grammar quality.
+- Dashboard wording now explicitly distinguishes Practice retype inventory vs Flashcard inventory.
+- App version bumped to `2.4.0` (`ApplicationVersion` `2400`).
+
 ## [2.3.1] - 2026-03-02
 
 ### Added
