@@ -2,7 +2,9 @@ namespace StudyTideForge.Data;
 
 public static class LegacyImportConstants
 {
-    public const string ModuleNamePrefix = "Legacy Import - ";
+    public const string ModuleNamePrefix = "Training Track - ";
+
+    public const string PreviousModuleNamePrefix = "Legacy Import - ";
 
     public const int LessonChunkSize = 100;
 

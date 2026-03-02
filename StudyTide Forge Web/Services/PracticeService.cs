@@ -50,41 +50,16 @@ public sealed class PracticeService(IDbContextFactory<ForgeDbContext> dbFactory)
         var normalizedSource = NormalizeLineEndings(source);
         var normalizedTyped = NormalizeLineEndings(typed);
 
-        var minLength = Math.Min(normalizedSource.Length, normalizedTyped.Length);
-        var mismatchCount = 0;
-        int? firstMismatch = null;
-
-        for (var i = 0; i < minLength; i++)
-        {
-            if (normalizedSource[i] == normalizedTyped[i])
-            {
-                continue;
-            }
-
-            mismatchCount++;
-            firstMismatch ??= i;
-        }
-
-        var missingChars = Math.Max(0, normalizedSource.Length - normalizedTyped.Length);
-        var extraChars = Math.Max(0, normalizedTyped.Length - normalizedSource.Length);
-
-        if (!firstMismatch.HasValue && (missingChars > 0 || extraChars > 0))
-        {
-            firstMismatch = minLength;
-        }
-
-        var errorCount = mismatchCount + missingChars + extraChars;
-        var accuracy = normalizedSource.Length == 0
-            ? normalizedTyped.Length == 0 ? 100 : 0
-            : Math.Clamp(((double)(normalizedSource.Length - errorCount) / normalizedSource.Length) * 100, 0, 100);
+        var firstMismatch = FindFirstMismatchIndex(normalizedSource, normalizedTyped);
+        var editMetrics = ComputeEditMetrics(normalizedSource, normalizedTyped);
 
         return new PracticeEvaluation
         {
-            AccuracyPercent = Math.Round(accuracy, 2),
-            ErrorCount = errorCount,
+            AccuracyPercent = Math.Round(editMetrics.AccuracyPercent, 2),
+            ErrorCount = editMetrics.ErrorCount,
             FirstMismatchIndex = firstMismatch,
-            MissingCharacters = missingChars,
-            ExtraCharacters = extraChars,
+            MissingCharacters = editMetrics.MissingCharacters,
+            ExtraCharacters = editMetrics.ExtraCharacters,
             MismatchedLines = BuildLineDiff(normalizedSource, normalizedTyped)
         };
     }
@@ -136,6 +111,137 @@ public sealed class PracticeService(IDbContextFactory<ForgeDbContext> dbFactory)
         return text.Replace("\r\n", "\n").Replace("\r", "\n");
     }
 
+    private static int? FindFirstMismatchIndex(string source, string typed)
+    {
+        var minLength = Math.Min(source.Length, typed.Length);
+
+        for (var index = 0; index < minLength; index++)
+        {
+            if (source[index] != typed[index])
+            {
+                return index;
+            }
+        }
+
+        if (source.Length != typed.Length)
+        {
+            return minLength;
+        }
+
+        return null;
+    }
+
+    private static EditMetrics ComputeEditMetrics(string source, string typed)
+    {
+        var sourceLength = source.Length;
+        var typedLength = typed.Length;
+
+        if (sourceLength == 0)
+        {
+            var initialErrorCount = typedLength;
+            return new EditMetrics(initialErrorCount, 0, typedLength, typedLength == 0 ? 100 : 0);
+        }
+
+        var distances = new int[sourceLength + 1, typedLength + 1];
+
+        for (var i = 0; i <= sourceLength; i++)
+        {
+            distances[i, 0] = i;
+        }
+
+        for (var j = 0; j <= typedLength; j++)
+        {
+            distances[0, j] = j;
+        }
+
+        for (var i = 1; i <= sourceLength; i++)
+        {
+            for (var j = 1; j <= typedLength; j++)
+            {
+                if (source[i - 1] == typed[j - 1])
+                {
+                    distances[i, j] = distances[i - 1, j - 1];
+                    continue;
+                }
+
+                var substitution = distances[i - 1, j - 1] + 1;
+                var deletion = distances[i - 1, j] + 1;
+                var insertion = distances[i, j - 1] + 1;
+
+                distances[i, j] = Math.Min(substitution, Math.Min(deletion, insertion));
+            }
+        }
+
+        var missingCharacters = 0;
+        var extraCharacters = 0;
+        var sourceIndex = sourceLength;
+        var typedIndex = typedLength;
+
+        while (sourceIndex > 0 || typedIndex > 0)
+        {
+            if (sourceIndex > 0 &&
+                typedIndex > 0 &&
+                source[sourceIndex - 1] == typed[typedIndex - 1] &&
+                distances[sourceIndex, typedIndex] == distances[sourceIndex - 1, typedIndex - 1])
+            {
+                sourceIndex--;
+                typedIndex--;
+                continue;
+            }
+
+            // Prefer substitution when tied so a replaced character counts as one error.
+            if (sourceIndex > 0 &&
+                typedIndex > 0 &&
+                distances[sourceIndex, typedIndex] == distances[sourceIndex - 1, typedIndex - 1] + 1)
+            {
+                sourceIndex--;
+                typedIndex--;
+                continue;
+            }
+
+            if (sourceIndex > 0 &&
+                distances[sourceIndex, typedIndex] == distances[sourceIndex - 1, typedIndex] + 1)
+            {
+                missingCharacters++;
+                sourceIndex--;
+                continue;
+            }
+
+            if (typedIndex > 0 &&
+                distances[sourceIndex, typedIndex] == distances[sourceIndex, typedIndex - 1] + 1)
+            {
+                extraCharacters++;
+                typedIndex--;
+                continue;
+            }
+
+            // Safety fallback for unexpected ties.
+            if (sourceIndex > 0 && typedIndex > 0)
+            {
+                sourceIndex--;
+                typedIndex--;
+                continue;
+            }
+
+            if (sourceIndex > 0)
+            {
+                missingCharacters += sourceIndex;
+                break;
+            }
+
+            if (typedIndex > 0)
+            {
+                extraCharacters += typedIndex;
+                break;
+            }
+        }
+
+        var errorCount = distances[sourceLength, typedLength];
+        var rawAccuracy = ((double)(sourceLength - errorCount) / sourceLength) * 100;
+        var accuracy = Math.Clamp(rawAccuracy, 0, 100);
+        return new EditMetrics(errorCount, missingCharacters, extraCharacters, accuracy);
+    }
+
     private static IReadOnlyList<LineMismatch> BuildLineDiff(string source, string typed)
     {
         var sourceLines = source.Split('\n');
@@ -164,6 +270,12 @@ public sealed class PracticeService(IDbContextFactory<ForgeDbContext> dbFactory)
 
         return mismatches;
     }
+
+    private readonly record struct EditMetrics(
+        int ErrorCount,
+        int MissingCharacters,
+        int ExtraCharacters,
+        double AccuracyPercent);
 }
 
 public sealed class PracticeEvaluation

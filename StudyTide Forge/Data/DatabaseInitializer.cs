@@ -6,6 +6,38 @@ namespace StudyTideForge.Data;
 
 public static class DatabaseInitializer
 {
+    private static readonly IReadOnlyList<SeedBlock> SupplementalSeedBlocks =
+    [
+        new(
+            ModuleCategory: "C#",
+            LessonTitle: "Imported Set 99",
+            Title: "private",
+            Response: "Use private when a member should be accessible only inside the class where it is declared. It keeps implementation details hidden from outside callers.",
+            Example: "Think of private as a secret room key: only the class holding the key can open that room.",
+            Difficulty: 1),
+        new(
+            ModuleCategory: "C#",
+            LessonTitle: "Imported Set 99",
+            Title: "static",
+            Response: "Use static for members that belong to the type itself instead of a specific object instance.",
+            Example: "A static member is like a shared remote control: you can use it without first creating a toy instance.",
+            Difficulty: 1),
+        new(
+            ModuleCategory: "C#",
+            LessonTitle: "Imported Set 99",
+            Title: "void",
+            Response: "Use void as the return type when a method performs an action but does not return a value.",
+            Example: "A void method is like completing a chore: work gets done, but no value is handed back.",
+            Difficulty: 1),
+        new(
+            ModuleCategory: "C#",
+            LessonTitle: "Imported Set 99",
+            Title: "C# numeric types by bit size",
+            Response: "byte/8 unsigned, sbyte/8 signed, short/16 signed, ushort/16 unsigned, int/32 signed, uint/32 unsigned, long/64 signed, ulong/64 unsigned, float/32 signed, double/64 signed, decimal/128 signed.",
+            Example: "Pick numeric types by size and sign needs; use decimal for high-precision base-10 values such as currency.",
+            Difficulty: 2)
+    ];
+
     public static async Task InitializeAsync(IServiceProvider services)
     {
         await using var scope = services.CreateAsyncScope();
@@ -19,15 +51,17 @@ public static class DatabaseInitializer
 
         if (imported.Pairs.Count < 200)
         {
-            throw new InvalidOperationException($"Legacy source import returned {imported.Pairs.Count} Q/A pairs, which is below the expected minimum.");
+            throw new InvalidOperationException($"Source import returned {imported.Pairs.Count} Q/A pairs, which is below the expected minimum.");
         }
 
-        if (!await RequiresReseedAsync(db, imported.Pairs.Count))
+        await MigrateModuleNamePrefixAsync(db);
+
+        if (await RequiresReseedAsync(db, imported.Pairs.Count))
         {
-            return;
+            await ReseedAsync(db, imported.Pairs);
         }
 
-        await ReseedAsync(db, imported.Pairs);
+        await ApplySupplementalSeedBlocksAsync(db);
     }
 
     private static async Task<bool> RequiresReseedAsync(ForgeDbContext db, int importedPairCount)
@@ -315,4 +349,120 @@ public static class DatabaseInitializer
 
         return $"{normalized[..(maxLength - 3)].TrimEnd()}...";
     }
+
+    private static async Task MigrateModuleNamePrefixAsync(ForgeDbContext db)
+    {
+        var oldPrefix = LegacyImportConstants.PreviousModuleNamePrefix;
+        var newPrefix = LegacyImportConstants.ModuleNamePrefix;
+
+        if (string.Equals(oldPrefix, newPrefix, StringComparison.Ordinal))
+        {
+            return;
+        }
+
+        var modulesToRename = await db.TrainingModules
+            .Where(x => x.Name.StartsWith(oldPrefix))
+            .ToListAsync();
+
+        if (modulesToRename.Count == 0)
+        {
+            return;
+        }
+
+        foreach (var module in modulesToRename)
+        {
+            module.Name = $"{newPrefix}{module.Name[oldPrefix.Length..]}";
+        }
+
+        await db.SaveChangesAsync();
+    }
+
+    private static async Task ApplySupplementalSeedBlocksAsync(ForgeDbContext db)
+    {
+        if (SupplementalSeedBlocks.Count == 0)
+        {
+            return;
+        }
+
+        var now = DateTime.UtcNow;
+
+        foreach (var seedBlock in SupplementalSeedBlocks)
+        {
+            var module = await db.TrainingModules
+                .OrderBy(x => x.Id)
+                .FirstOrDefaultAsync(x => x.Category == seedBlock.ModuleCategory);
+
+            if (module is null)
+            {
+                var moduleName = $"{LegacyImportConstants.ModuleNamePrefix}{seedBlock.ModuleCategory} Supplemental";
+
+                module = new TrainingModule
+                {
+                    Name = moduleName,
+                    Category = seedBlock.ModuleCategory,
+                    CreatedAt = now
+                };
+
+                db.TrainingModules.Add(module);
+                await db.SaveChangesAsync();
+            }
+
+            var lesson = await db.TrainingLessons
+                .FirstOrDefaultAsync(x => x.ModuleId == module.Id && x.Title == seedBlock.LessonTitle);
+
+            if (lesson is null)
+            {
+                var currentMaxOrderIndex = await db.TrainingLessons
+                    .Where(x => x.ModuleId == module.Id)
+                    .Select(x => (int?)x.OrderIndex)
+                    .MaxAsync() ?? -1;
+
+                lesson = new TrainingLesson
+                {
+                    ModuleId = module.Id,
+                    Title = seedBlock.LessonTitle,
+                    OrderIndex = currentMaxOrderIndex + 1,
+                    CreatedAt = now
+                };
+
+                db.TrainingLessons.Add(lesson);
+                await db.SaveChangesAsync();
+            }
+
+            var blockExists = await db.TrainingBlocks
+                .AnyAsync(x => x.LessonId == lesson.Id && x.Title == seedBlock.Title);
+
+            if (blockExists)
+            {
+                continue;
+            }
+
+            db.TrainingBlocks.Add(new TrainingBlock
+            {
+                LessonId = lesson.Id,
+                Title = seedBlock.Title,
+                Content = BuildSeedBlockContent(seedBlock),
+                Difficulty = Math.Clamp(seedBlock.Difficulty, 1, 5),
+                TimesPracticed = 0,
+                TimesPerfect = 0,
+                LastPracticedAt = null,
+                NextDueAt = now
+            });
+
+            await db.SaveChangesAsync();
+        }
+    }
+
+    private static string BuildSeedBlockContent(SeedBlock seedBlock)
+    {
+        return $"Prompt:\n{seedBlock.Title}\n\nResponse:\n{seedBlock.Response}\n\nExample:\n{seedBlock.Example}";
+    }
+
+    private sealed record SeedBlock(
+        string ModuleCategory,
+        string LessonTitle,
+        string Title,
+        string Response,
+        string Example,
+        int Difficulty);
 }

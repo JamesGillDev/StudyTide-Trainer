@@ -67,7 +67,7 @@ public sealed class LegacyQaSourceImporter
         }
 
         throw new FileNotFoundException(
-            $"Legacy source file was not found. Set {SourcePathOverrideVariable} or place the source file in a searched location.{Environment.NewLine}Checked paths:{Environment.NewLine}{string.Join(Environment.NewLine, checkedPaths.Distinct(StringComparer.OrdinalIgnoreCase))}");
+            $"Source file was not found. Set {SourcePathOverrideVariable} or place the source file in a searched location.{Environment.NewLine}Checked paths:{Environment.NewLine}{string.Join(Environment.NewLine, checkedPaths.Distinct(StringComparer.OrdinalIgnoreCase))}");
     }
 
     private static IEnumerable<string> GetSearchRoots()

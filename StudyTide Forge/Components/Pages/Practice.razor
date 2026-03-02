@@ -299,7 +299,7 @@ else
         var prompt = match.Groups["prompt"].Value.Trim();
         var response = match.Groups["response"].Value.Trim();
         var example = match.Groups["example"].Value.Trim();
-        var retypeTarget = string.Join("\n\n", new[] { prompt, response, example }.Where(x => !string.IsNullOrWhiteSpace(x)));
+        var retypeTarget = string.Join("\n", new[] { prompt, response, example }.Where(x => !string.IsNullOrWhiteSpace(x)));
         return new ParsedTrainingContent(prompt, response, example, retypeTarget, true);
     }
 
