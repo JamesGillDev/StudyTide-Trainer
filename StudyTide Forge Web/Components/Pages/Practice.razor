@@ -208,9 +208,16 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        await LoadModulesAsync();
-        await LoadLessonsAsync();
-        await LoadNextBlockAsync();
+        try
+        {
+            await LoadModulesAsync();
+            await LoadLessonsAsync();
+            await LoadNextBlockAsync();
+        }
+        catch (Exception exception)
+        {
+            HandleUiException("Unable to initialize practice data.", exception);
+        }
     }
 
     private async Task LoadModulesAsync()
@@ -279,16 +286,23 @@ else
 
     private async Task LoadNextBlockAsync()
     {
-        _currentBlock = await PracticeService.GetNextDueBlockAsync(_selectedModuleId, _selectedLessonId);
-        _typedText = string.Empty;
-        _evaluation = null;
-        _parsedContent = _currentBlock is null
-            ? ParsedTrainingContent.Empty
-            : ParseTrainingContent(_currentBlock.Content);
+        try
+        {
+            _currentBlock = await PracticeService.GetNextDueBlockAsync(_selectedModuleId, _selectedLessonId);
+            _typedText = string.Empty;
+            _evaluation = null;
+            _parsedContent = _currentBlock is null
+                ? ParsedTrainingContent.Empty
+                : ParseTrainingContent(_currentBlock.Content);
 
-        _statusMessage = _currentBlock is null
-            ? "No due training item available in this scope."
-            : "Training item loaded. Retype Prompt, Response, and Example text values in order (labels are display-only).";
+            _statusMessage = _currentBlock is null
+                ? "No due training item available in this scope."
+                : "Training item loaded. Retype Prompt, Response, and Example text values in order (labels are display-only).";
+        }
+        catch (Exception exception)
+        {
+            HandleUiException("Unable to load the next training item.", exception);
+        }
     }
 
     private async Task SubmitAttemptAsync()
@@ -299,10 +313,17 @@ else
             return;
         }
 
-        _evaluation = PracticeService.Evaluate(_parsedContent.RetypeTarget, _typedText);
-        await PracticeService.SaveAttemptAsync(_currentBlock.Id, _typedText, _evaluation);
+        try
+        {
+            _evaluation = PracticeService.Evaluate(_parsedContent.RetypeTarget, _typedText);
+            await PracticeService.SaveAttemptAsync(_currentBlock.Id, _typedText, _evaluation);
 
-        _statusMessage = "Attempt saved and schedule updated.";
+            _statusMessage = "Attempt saved and schedule updated.";
+        }
+        catch (Exception exception)
+        {
+            HandleUiException("Unable to submit this attempt.", exception);
+        }
     }
 
     private static int? ParseNullableInt(string? value)
@@ -344,6 +365,12 @@ else
         return _parsedContent.HasSections
             ? "Line 1: Prompt value\nLine 2: Response value\nLine 3: Example value"
             : "Retype the source content exactly as shown.";
+    }
+
+    private void HandleUiException(string context, Exception exception)
+    {
+        _statusMessage = $"{context} {exception.Message}";
+        Console.Error.WriteLine($"[StudyTide] {context} {exception}");
     }
 
     private readonly record struct ParsedTrainingContent(

@@ -161,16 +161,25 @@ public static class DatabaseInitializer
         await db.Database.MigrateAsync();
 
         var importer = new LegacyQaSourceImporter();
-        var imported = importer.Import();
+        ImportedQaResult imported;
 
-        if (imported.Pairs.Count < 200)
+        try
         {
-            throw new InvalidOperationException($"Source import returned {imported.Pairs.Count} Q/A pairs, which is below the expected minimum.");
+            imported = importer.Import();
+        }
+        catch (Exception exception)
+        {
+            Console.Error.WriteLine($"[StudyTide] Source import failed. Startup will continue with existing database content. {exception.Message}");
+            imported = new ImportedQaResult("Unavailable", []);
         }
 
         await MigrateModuleNamePrefixAsync(db);
 
-        if (await RequiresReseedAsync(db, imported.Pairs.Count))
+        if (imported.Pairs.Count < 200)
+        {
+            Console.Error.WriteLine($"[StudyTide] Source import returned {imported.Pairs.Count} Q/A pairs. Skipping base reseed and continuing with supplemental content.");
+        }
+        else if (await RequiresReseedAsync(db, imported.Pairs.Count))
         {
             await ReseedAsync(db, imported.Pairs);
         }
