@@ -5,7 +5,18 @@
 
 @if (_snapshot is null)
 {
-    <p>Loading dashboard metrics...</p>
+    @if (string.IsNullOrWhiteSpace(_loadError))
+    {
+        <p>Loading dashboard metrics...</p>
+    }
+    else
+    {
+        <section class="panel warning-message">
+            <h1>Dashboard is temporarily unavailable</h1>
+            <p>@_loadError</p>
+            <p class="meta-text">You can still open Practice and Flashcards while diagnostics run.</p>
+        </section>
+    }
 }
 else
 {
@@ -158,10 +169,19 @@ else
 
 @code {
     private DashboardSnapshot? _snapshot;
+    private string? _loadError;
 
     protected override async Task OnInitializedAsync()
     {
-        _snapshot = await DashboardService.GetSnapshotAsync();
+        try
+        {
+            _snapshot = await DashboardService.GetSnapshotAsync();
+        }
+        catch (Exception exception)
+        {
+            _loadError = exception.Message;
+            Console.Error.WriteLine($"[StudyTide] Dashboard initialization failed. {exception}");
+        }
     }
 
     private static string Truncate(string value, int maxLength)

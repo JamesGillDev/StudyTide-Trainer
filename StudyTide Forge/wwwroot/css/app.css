@@ -451,6 +451,32 @@ code {
     color: #d8f7f2;
 }
 
+#blazor-error-ui {
+    display: none;
+    position: fixed;
+    inset: auto 0 0 0;
+    z-index: 10000;
+    background: #fde7eb;
+    color: #470a14;
+    border-top: 1px solid #e8a6b1;
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.25);
+    padding: 0.65rem 1rem;
+}
+
+#blazor-error-ui .reload {
+    margin-left: 0.4rem;
+}
+
+#blazor-error-ui .dismiss {
+    cursor: pointer;
+    float: right;
+    margin-left: 1rem;
+}
+
+.route-fallback {
+    margin: 1rem;
+}
+
 @media (max-width: 900px) {
     .app-shell {
         grid-template-columns: 1fr;
