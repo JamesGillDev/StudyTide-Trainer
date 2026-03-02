@@ -655,16 +655,9 @@ public static class DatabaseInitializer
         var concepts = GetConceptsForCategory(category);
         var variantCount = GetVariantCountForCategory(category);
         var sequence = 1;
-        var safety = 0;
 
         while (generated.Count < requiredCount)
         {
-            safety++;
-            if (safety > 100000)
-            {
-                throw new InvalidOperationException($"Unable to generate enough unique seed blocks for category '{category}'.");
-            }
-
             var conceptIndex = (sequence - 1) % concepts.Count;
             var variantIndex = ((sequence - 1) / concepts.Count) % variantCount;
             var concept = concepts[conceptIndex];
