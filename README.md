@@ -1,6 +1,6 @@
 # StudyTide Forge
 
-StudyTide Forge is structured cognitive reinforcement training with verbatim retyping, flashcards, spaced repetition, and importer-based curriculum seeding.
+StudyTide Forge is structured cognitive reinforcement training for software engineers, software developers, and cloud application developers. It combines verbatim retyping, flashcards, spaced repetition, and importer-based curriculum seeding.
 
 ## Solution Layout
 
@@ -13,18 +13,18 @@ This repository now contains two **parallel** apps:
 
 Both use EF Core + SQLite and the same domain model terminology (`TrainingModule`, `TrainingLesson`, `TrainingItem`, `Flashcard`, `PracticeAttempt`).
 
-## Importer Workflow
+## Source Import Workflow
 
 Importer file: `Data/LegacyQaSourceImporter.cs`
 
 Runtime behavior:
 
-1. Reads a legacy shared C# source file at startup.
+1. Reads a shared C# source file at startup.
 2. Extracts only question/answer string literals.
 3. Drops blanks and deduplicates exact duplicates.
 4. Reverses direction for reinforcement:
-   - `Flashcard.Question` <- legacy answer text
-   - `Flashcard.Answer` <- legacy question text
+   - `Flashcard.Question` <- source answer text
+   - `Flashcard.Answer` <- source question text
 5. Builds `TrainingItem.Content` as:
    - `Prompt:`
    - `Response:`
@@ -35,7 +35,32 @@ Runtime behavior:
 
 - Practice displays `Prompt`, `Response`, and `Example` as section labels in the UI.
 - Retyping and accuracy scoring are performed against the section text only (labels are excluded).
-- This reduces repetitive label typing while keeping clear context on screen.
+- Users retype section values in order: `Prompt` text, then `Response` text, then `Example` text.
+- On first app launch, a quick-start instruction bubble explains the workflow and can be reopened with the floating `i` help button.
+- Character-level scoring uses edit-distance logic, so one missing character/newline no longer collapses the entire score.
+
+## Curriculum Coverage Dashboard
+
+Dashboard now includes:
+
+- Total modules, lessons, training items, and flashcards.
+- Due-item metrics and recent practice accuracy.
+- Category coverage table with recommended minimum training-item targets for software/cloud roles.
+- Additional-item gap counts to show where more content is needed.
+
+### Current Local Inventory Snapshot (Desktop DB)
+
+As measured on `2026-03-02` from the local desktop database:
+
+- `6` modules
+- `33` lessons
+- `2928` training items
+- `2924` flashcards
+
+Coverage highlights:
+
+- Strong coverage: `Azure`, `SQL`, `DevOps`, `Behavioral`
+- Additional depth recommended: `C#` (+156 target gap), `System Design` (+68 target gap)
 
 ## Source File Placement
 
@@ -55,6 +80,7 @@ Dashboard includes:
 
 - `Imported flashcards: X`
 - `Imported training items: Y`
+- `Category coverage and target gap` by curriculum area
 
 ## Spaced Repetition Rules
 

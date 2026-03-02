@@ -44,6 +44,32 @@
     </div>
 </section>
 
+<section class="panel instruction-panel">
+    <h2>Retype Workflow</h2>
+    <div class="instruction-grid">
+        <article class="instruction-step">
+            <span class="step-badge">1</span>
+            <h3>Load a due item</h3>
+            <p>Choose module/lesson scope, then load the next due training item.</p>
+        </article>
+        <article class="instruction-step">
+            <span class="step-badge">2</span>
+            <h3>Read all three sections</h3>
+            <p>Review Prompt, Response, and Example so context is clear before typing.</p>
+        </article>
+        <article class="instruction-step">
+            <span class="step-badge">3</span>
+            <h3>Retype values only</h3>
+            <p>Type section text in order. Do not type section labels.</p>
+        </article>
+        <article class="instruction-step">
+            <span class="step-badge">4</span>
+            <h3>Use Diff Summary</h3>
+            <p>Fix weak spots by checking line differences and first mismatch index.</p>
+        </article>
+    </div>
+</section>
+
 @if (_currentBlock is null)
 {
     <section class="panel">
@@ -79,17 +105,22 @@ else
                             <pre class="training-content">@_parsedContent.Example</pre>
                         </section>
                     </div>
-                    <p class="meta-text retype-note">Retype only the text values above. Do not type the section labels.</p>
+                    <p class="meta-text retype-note">Retype only the text values above in this order: Prompt line, Response line, Example line.</p>
                 }
                 else
                 {
                     <pre class="training-content">@_parsedContent.RetypeTarget</pre>
+                    <p class="meta-text retype-note">Retype exactly what is shown in the training content panel.</p>
                 }
             </article>
 
             <article>
                 <h3>Your verbatim retype</h3>
-                <InputTextArea @bind-Value="_typedText" rows="18" />
+                <InputTextArea @bind-Value="_typedText" rows="18" class="typing-box" placeholder="@GetTypingPlaceholder()" />
+                <div class="typing-hints">
+                    <span>Expected chars: @_parsedContent.RetypeTarget.Length</span>
+                    <span>Typed chars: @_typedText.Length</span>
+                </div>
             </article>
         </div>
 
@@ -257,7 +288,7 @@ else
 
         _statusMessage = _currentBlock is null
             ? "No due training item available in this scope."
-            : "Training item loaded. Retype the content exactly (labels are display-only).";
+            : "Training item loaded. Retype Prompt, Response, and Example text values in order (labels are display-only).";
     }
 
     private async Task SubmitAttemptAsync()
@@ -306,6 +337,13 @@ else
     private static string NormalizeLineEndings(string value)
     {
         return value.Replace("\r\n", "\n").Replace("\r", "\n");
+    }
+
+    private string GetTypingPlaceholder()
+    {
+        return _parsedContent.HasSections
+            ? "Line 1: Prompt value\nLine 2: Response value\nLine 3: Example value"
+            : "Retype the source content exactly as shown.";
     }
 
     private readonly record struct ParsedTrainingContent(

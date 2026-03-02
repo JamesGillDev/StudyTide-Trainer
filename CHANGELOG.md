@@ -4,6 +4,22 @@ All notable changes to this project are documented in this file.
 
 The format is based on semantic versioning (`MAJOR.MINOR.PATCH`).
 
+## [2.3.0] - 2026-03-02
+
+### Added
+- First-launch in-app instruction bubble with a floating help button to reopen guidance.
+- Practice workflow panel that explains the required retype sequence step-by-step.
+- Dashboard curriculum coverage table with category targets, coverage percentages, and additional-item gap counts.
+- Dashboard inventory metrics for total lessons, total training items, and total flashcards.
+
+### Changed
+- Refreshed desktop and web UI styling for a clearer, more professional training workflow.
+- Practice page now shows explicit line-order guidance and live expected/typed character counters.
+- Dashboard focus updated to software-engineering and cloud-application readiness framing.
+- Module naming migrated from `Legacy Import - ...` to `Training Track - ...` with startup auto-migration for existing databases.
+- Importer-facing error wording updated to remove user-facing `Legacy` terminology.
+- App version bumped to `2.3.0` (`ApplicationVersion` `2300`).
+
 ## [2.2.2] - 2026-02-27
 
 ### Changed

@@ -13,10 +13,18 @@ public sealed class DashboardService(IDbContextFactory<ForgeDbContext> dbFactory
         var sevenDaysAgo = now.AddDays(-7);
 
         var totalModules = await db.TrainingModules.CountAsync();
+        var totalLessons = await db.TrainingLessons.CountAsync();
+        var totalTrainingItems = await db.TrainingBlocks.CountAsync();
+        var totalFlashcards = await db.Flashcards.CountAsync();
         var blocksDue = await db.TrainingBlocks.CountAsync(x => !x.NextDueAt.HasValue || x.NextDueAt <= now);
         var flashcardsDue = await db.Flashcards.CountAsync(x => (x.TimesCorrect + x.TimesIncorrect) == 0 || x.TimesIncorrect >= x.TimesCorrect);
         var importedModuleNames = LegacyImportConstants.ModuleDefinitions
-            .Select(x => $"{LegacyImportConstants.ModuleNamePrefix}{x.Name}")
+            .SelectMany(x => new[]
+            {
+                $"{LegacyImportConstants.ModuleNamePrefix}{x.Name}",
+                $"{LegacyImportConstants.PreviousModuleNamePrefix}{x.Name}"
+            })
+            .Distinct(StringComparer.OrdinalIgnoreCase)
             .ToList();
         var importedFlashcards = await db.Flashcards
             .CountAsync(x =>
@@ -24,6 +32,41 @@ public sealed class DashboardService(IDbContextFactory<ForgeDbContext> dbFactory
         var importedTrainingItems = await db.TrainingBlocks
             .CountAsync(x =>
                 importedModuleNames.Contains(x.Lesson!.Module!.Name));
+        var categoryRows = await db.TrainingModules
+            .AsNoTracking()
+            .Select(x => new
+            {
+                x.Category,
+                LessonCount = x.Lessons.Count,
+                BlockCount = x.Lessons.SelectMany(lesson => lesson.TrainingBlocks).Count(),
+                FlashcardCount = x.Lessons.SelectMany(lesson => lesson.Flashcards).Count()
+            })
+            .ToListAsync();
+        var categoryCoverage = categoryRows
+            .GroupBy(x => x.Category, StringComparer.OrdinalIgnoreCase)
+            .Select(group =>
+            {
+                var trainingItemCount = group.Sum(x => x.BlockCount);
+                var recommendationTarget = GetRecommendedTrainingItemTarget(group.Key);
+                var gap = Math.Max(0, recommendationTarget - trainingItemCount);
+                var coveragePercent = recommendationTarget == 0
+                    ? 100
+                    : Math.Min(100, (double)trainingItemCount / recommendationTarget * 100);
+
+                return new CategoryCoverage
+                {
+                    Category = group.Key,
+                    Modules = group.Count(),
+                    Lessons = group.Sum(x => x.LessonCount),
+                    TrainingItems = trainingItemCount,
+                    Flashcards = group.Sum(x => x.FlashcardCount),
+                    RecommendedMinimumTrainingItems = recommendationTarget,
+                    AdditionalTrainingItemsNeeded = gap,
+                    CoveragePercent = Math.Round(coveragePercent, 2)
+                };
+            })
+            .OrderBy(x => x.Category)
+            .ToList();
 
         var accuracyLast7Days = await db.PracticeAttempts
             .Where(x => x.AttemptedAt >= sevenDaysAgo)
@@ -75,13 +118,31 @@ public sealed class DashboardService(IDbContextFactory<ForgeDbContext> dbFactory
         return new DashboardSnapshot
         {
             TotalModules = totalModules,
+            TotalLessons = totalLessons,
+            TotalTrainingItems = totalTrainingItems,
+            TotalFlashcards = totalFlashcards,
             BlocksDue = blocksDue,
             FlashcardsDue = flashcardsDue,
             ImportedFlashcards = importedFlashcards,
             ImportedTrainingItems = importedTrainingItems,
             AccuracyLast7Days = Math.Round(accuracyLast7Days, 2),
+            CategoryCoverage = categoryCoverage,
             WeakestBlocks = weakestBlocks,
             WeakestFlashcards = weakestFlashcards
+        };
+    }
+
+    private static int GetRecommendedTrainingItemTarget(string category)
+    {
+        return category switch
+        {
+            "Azure" => 500,
+            "C#" => 450,
+            "SQL" => 350,
+            "DevOps" => 300,
+            "System Design" => 300,
+            "Behavioral" => 150,
+            _ => 250
         };
     }
 }
@@ -89,6 +150,12 @@ public sealed class DashboardService(IDbContextFactory<ForgeDbContext> dbFactory
 public sealed class DashboardSnapshot
 {
     public int TotalModules { get; init; }
+
+    public int TotalLessons { get; init; }
+
+    public int TotalTrainingItems { get; init; }
+
+    public int TotalFlashcards { get; init; }
 
     public int BlocksDue { get; init; }
 
@@ -100,9 +167,30 @@ public sealed class DashboardSnapshot
 
     public double AccuracyLast7Days { get; init; }
 
+    public IReadOnlyList<CategoryCoverage> CategoryCoverage { get; init; } = [];
+
     public IReadOnlyList<WeakBlock> WeakestBlocks { get; init; } = [];
 
     public IReadOnlyList<WeakFlashcard> WeakestFlashcards { get; init; } = [];
+}
+
+public sealed class CategoryCoverage
+{
+    public string Category { get; init; } = string.Empty;
+
+    public int Modules { get; init; }
+
+    public int Lessons { get; init; }
+
+    public int TrainingItems { get; init; }
+
+    public int Flashcards { get; init; }
+
+    public int RecommendedMinimumTrainingItems { get; init; }
+
+    public int AdditionalTrainingItemsNeeded { get; init; }
+
+    public double CoveragePercent { get; init; }
 }
 
 public sealed class WeakBlock

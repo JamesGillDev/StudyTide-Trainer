@@ -1,4 +1,5 @@
 @inherits LayoutComponentBase
+@inject NavigationManager Navigation
 
 <div class="app-shell">
     <aside class="sidebar">
@@ -6,6 +7,52 @@
     </aside>
 
     <main class="main-panel">
+        <div class="launch-tip-banner">
+            <strong>Retype rule:</strong> Type the text values only. `Prompt`, `Response`, and `Example` labels are display guides.
+        </div>
         @Body
     </main>
 </div>
+
+@if (_showWelcomeBubble)
+{
+    <div class="welcome-overlay" role="dialog" aria-modal="true" aria-labelledby="welcomeTitle">
+        <section class="welcome-bubble">
+            <p class="welcome-kicker">Quick Start</p>
+            <h2 id="welcomeTitle">How to train in StudyTide Forge</h2>
+            <p>Use this sequence for best results and consistent scoring.</p>
+            <ol class="welcome-steps">
+                <li>Open <strong>Practice</strong> and load a due training item.</li>
+                <li>Read the three sections: <strong>Prompt</strong>, <strong>Response</strong>, <strong>Example</strong>.</li>
+                <li>Retype only the section text values in the same order.</li>
+                <li>Submit and review mismatch feedback before loading the next item.</li>
+            </ol>
+            <div class="actions">
+                <button type="button" @onclick="OpenPractice">Open Practice</button>
+                <button type="button" class="secondary" @onclick="DismissWelcome">Got it</button>
+            </div>
+        </section>
+    </div>
+}
+
+<button type="button" class="help-fab" title="Show training instructions" @onclick="ShowWelcome">i</button>
+
+@code {
+    private bool _showWelcomeBubble = true;
+
+    private void DismissWelcome()
+    {
+        _showWelcomeBubble = false;
+    }
+
+    private void ShowWelcome()
+    {
+        _showWelcomeBubble = true;
+    }
+
+    private void OpenPractice()
+    {
+        _showWelcomeBubble = false;
+        Navigation.NavigateTo("/practice");
+    }
+}

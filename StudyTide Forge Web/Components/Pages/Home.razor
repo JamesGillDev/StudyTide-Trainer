@@ -3,18 +3,34 @@
 
 <PageTitle>Dashboard</PageTitle>
 
-<h1>Dashboard</h1>
-
 @if (_snapshot is null)
 {
     <p>Loading dashboard metrics...</p>
 }
 else
 {
+    <section class="panel hero-panel">
+        <p class="hero-kicker">Training Overview</p>
+        <h1>Software Engineer + Cloud App Developer Readiness</h1>
+        <p class="meta-text">Your curriculum blends C#, Azure, SQL, DevOps, and system design drills with verbatim practice and flashcards.</p>
+    </section>
+
     <div class="metric-grid">
         <article class="metric-card">
             <h2>Total modules</h2>
             <p>@_snapshot.TotalModules</p>
+        </article>
+        <article class="metric-card">
+            <h2>Total lessons</h2>
+            <p>@_snapshot.TotalLessons</p>
+        </article>
+        <article class="metric-card">
+            <h2>Total training items</h2>
+            <p>@_snapshot.TotalTrainingItems</p>
+        </article>
+        <article class="metric-card">
+            <h2>Total flashcards</h2>
+            <p>@_snapshot.TotalFlashcards</p>
         </article>
         <article class="metric-card">
             <h2>Items due</h2>
@@ -34,6 +50,44 @@ else
             <p>Imported training items: @_snapshot.ImportedTrainingItems</p>
         </article>
     </div>
+
+    <section class="panel">
+        <h2>Curriculum coverage by category</h2>
+        <p class="meta-text">Recommended minimums are tuned for software engineering and cloud application development preparation.</p>
+
+        <table class="data-table coverage-table">
+            <thead>
+                <tr>
+                    <th>Category</th>
+                    <th>Modules</th>
+                    <th>Lessons</th>
+                    <th>Training items</th>
+                    <th>Recommended minimum</th>
+                    <th>Additional needed</th>
+                    <th>Coverage</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var coverage in _snapshot.CategoryCoverage)
+                {
+                    <tr>
+                        <td>@coverage.Category</td>
+                        <td>@coverage.Modules</td>
+                        <td>@coverage.Lessons</td>
+                        <td>@coverage.TrainingItems</td>
+                        <td>@coverage.RecommendedMinimumTrainingItems</td>
+                        <td>@coverage.AdditionalTrainingItemsNeeded</td>
+                        <td>
+                            <div class="coverage-meter" aria-hidden="true">
+                                <span style="width:@GetCoverageWidth(coverage.CoveragePercent)"></span>
+                            </div>
+                            <span class="coverage-label">@coverage.CoveragePercent.ToString("0.0")%</span>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </section>
 
     <section class="panel">
         <h2>Weakest training items</h2>
@@ -115,5 +169,10 @@ else
         return value.Length <= maxLength
             ? value
             : $"{value[..maxLength]}...";
+    }
+
+    private static string GetCoverageWidth(double coveragePercent)
+    {
+        return $"{Math.Clamp(coveragePercent, 0, 100):0.##}%";
     }
 }
