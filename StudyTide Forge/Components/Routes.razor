@@ -1,4 +1,4 @@
-<ErrorBoundary @ref="_errorBoundary" OnError="HandleError">
+<ErrorBoundary @ref="_errorBoundary">
     <ChildContent>
         <Router AppAssembly="@typeof(MauiProgram).Assembly">
             <Found Context="routeData">
@@ -13,15 +13,11 @@
             </NotFound>
         </Router>
     </ChildContent>
-    <ErrorContent>
+    <ErrorContent Context="exception">
         <section class="panel warning-message route-fallback">
             <h1>Something went wrong</h1>
             <p>The app hit an unexpected error while rendering.</p>
-            @if (_lastError is not null)
-            {
-                <p class="meta-text">Details: @_lastError.Message</p>
-                <p class="meta-text">Log file: @_errorLogPath</p>
-            }
+            <p class="meta-text">Details: @exception.Message</p>
             <div class="actions">
                 <button type="button" @onclick="Recover">Recover</button>
             </div>
@@ -31,40 +27,9 @@
 
 @code {
     private ErrorBoundary? _errorBoundary;
-    private Exception? _lastError;
-    private readonly string _errorLogPath = Path.Combine(
-        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-        "StudyTideForge",
-        "errors.log");
-
-    private void HandleError(Exception exception)
-    {
-        _lastError = exception;
-        AppendErrorLog(exception);
-    }
 
     private void Recover()
     {
-        _lastError = null;
         _errorBoundary?.Recover();
-    }
-
-    private void AppendErrorLog(Exception exception)
-    {
-        try
-        {
-            var directory = Path.GetDirectoryName(_errorLogPath);
-
-            if (!string.IsNullOrWhiteSpace(directory))
-            {
-                Directory.CreateDirectory(directory);
-            }
-
-            File.AppendAllText(_errorLogPath, $"[{DateTime.UtcNow:O}] {exception}{Environment.NewLine}{Environment.NewLine}");
-        }
-        catch
-        {
-            // Logging failures should never break rendering.
-        }
     }
 }
