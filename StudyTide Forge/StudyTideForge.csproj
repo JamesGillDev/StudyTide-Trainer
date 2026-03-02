@@ -44,4 +44,16 @@
     </PackageReference>
   </ItemGroup>
 
+  <Target Name="SyncNewIconExecutableAlias" AfterTargets="Publish">
+    <PropertyGroup>
+      <PrimaryExe>$(PublishDir)StudyTideForge.exe</PrimaryExe>
+      <AliasExe>$(PublishDir)StudyTideForge-NewIcon.exe</AliasExe>
+      <AliasWebViewDataDir>$(PublishDir)StudyTideForge-NewIcon.exe.WebView2</AliasWebViewDataDir>
+    </PropertyGroup>
+
+    <Delete Files="$(AliasExe)" Condition="Exists('$(AliasExe)')" />
+    <Copy SourceFiles="$(PrimaryExe)" DestinationFiles="$(AliasExe)" Condition="Exists('$(PrimaryExe)')" />
+    <RemoveDir Directories="$(AliasWebViewDataDir)" Condition="Exists('$(AliasWebViewDataDir)')" />
+  </Target>
+
 </Project>
