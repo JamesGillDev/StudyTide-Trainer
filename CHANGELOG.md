@@ -4,6 +4,22 @@ All notable changes to this project are documented in this file.
 
 The format is based on semantic versioning (`MAJOR.MINOR.PATCH`).
 
+## [2.3.1] - 2026-03-02
+
+### Added
+- Automated duplicate-sweep pass that repairs repeated training items by replacing duplicates with unique, category-aligned material.
+- Targeted curriculum expansion for `C#` and `System Design` categories to satisfy dashboard readiness targets.
+- Coverage-boost lesson tracks:
+  - `Coverage Boost - C#`
+  - `Coverage Boost - System Design`
+
+### Changed
+- Seeding pipeline now runs in this order: supplemental seeds, duplicate repair, then targeted coverage expansion.
+- Training inventory now reaches target depth for both focus categories:
+  - `C#`: `450` training items
+  - `System Design`: `300` training items
+- App version bumped to `2.3.1` (`ApplicationVersion` `2301`).
+
 ## [2.3.0] - 2026-03-02
 
 ### Added

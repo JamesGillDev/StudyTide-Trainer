@@ -47,20 +47,26 @@ Dashboard now includes:
 - Due-item metrics and recent practice accuracy.
 - Category coverage table with recommended minimum training-item targets for software/cloud roles.
 - Additional-item gap counts to show where more content is needed.
+- Duplicate-sweep repair behavior so repeated training items are automatically replaced with unique content.
 
 ### Current Local Inventory Snapshot (Desktop DB)
 
 As measured on `2026-03-02` from the local desktop database:
 
 - `6` modules
-- `33` lessons
-- `2928` training items
+- `36` lessons
+- `3175` training items
 - `2924` flashcards
 
 Coverage highlights:
 
-- Strong coverage: `Azure`, `SQL`, `DevOps`, `Behavioral`
-- Additional depth recommended: `C#` (+156 target gap), `System Design` (+68 target gap)
+- All target categories meet or exceed recommended minimums.
+- Focus-category targets achieved:
+  - `C#` reached `450` training items.
+  - `System Design` reached `300` training items.
+- Duplicate sweep status:
+  - Duplicate lesson/title groups: `0`
+  - Duplicate content groups: `0`
 
 ## Source File Placement
 

@@ -38,6 +38,120 @@ public static class DatabaseInitializer
             Difficulty: 2)
     ];
 
+    private static readonly IReadOnlyDictionary<string, int> CategoryCoverageTargets = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase)
+    {
+        ["C#"] = 450,
+        ["System Design"] = 300
+    };
+
+    private static readonly IReadOnlyList<string> CSharpConcepts =
+    [
+        "Type system and value vs reference behavior",
+        "Nullability and null-safety",
+        "Access modifiers and encapsulation",
+        "Class design and cohesion",
+        "Struct usage and memory considerations",
+        "Record types and immutability",
+        "Interfaces and abstraction boundaries",
+        "Inheritance and composition trade-offs",
+        "Pattern matching with switch expressions",
+        "Generic types and constraints",
+        "Collections and collection interfaces",
+        "LINQ query and method syntax",
+        "Deferred execution in LINQ",
+        "Async and await control flow",
+        "Task coordination and cancellation",
+        "IAsyncEnumerable streaming",
+        "Exception handling strategy",
+        "Custom exception design",
+        "IDisposable and resource cleanup",
+        "Dependency injection lifetimes",
+        "Configuration and options pattern",
+        "Logging strategy and structured logs",
+        "Middleware pipeline behavior",
+        "Minimal API endpoint design",
+        "Blazor component state management",
+        "HTTP client lifetime management",
+        "Serialization with System.Text.Json",
+        "Date and time correctness",
+        "String handling and performance",
+        "Span and memory slicing",
+        "File and stream I/O safety",
+        "Thread-safety primitives",
+        "Parallelism and throughput tuning",
+        "Events and delegates",
+        "Lambda expressions and closures",
+        "Extension methods",
+        "Attributes and metadata",
+        "Reflection trade-offs",
+        "Source generators and analyzers",
+        "Unit testing patterns",
+        "Integration testing patterns",
+        "Mocking and fakes strategy",
+        "SOLID design principles",
+        "Domain modeling and invariants",
+        "Validation strategy",
+        "EF Core tracking behavior",
+        "EF Core query optimization",
+        "EF Core migrations workflow",
+        "Transactions and consistency",
+        "Caching patterns in .NET",
+        "API versioning strategy",
+        "Authentication and authorization",
+        "Secure secret handling",
+        "Resilience with retries/timeouts",
+        "Observability instrumentation",
+        "Background jobs and hosted services",
+        "Performance profiling and benchmarks",
+        "Code review and maintainability",
+        "Build and release automation",
+        "Package/version management"
+    ];
+
+    private static readonly IReadOnlyList<string> SystemDesignConcepts =
+    [
+        "Service boundaries and bounded contexts",
+        "Load balancing strategies",
+        "Horizontal vs vertical scaling",
+        "Caching layers and invalidation",
+        "Content delivery network usage",
+        "Database indexing strategy",
+        "Read replicas and read/write split",
+        "Partitioning and sharding",
+        "Message queue decoupling",
+        "Event-driven architecture",
+        "Idempotency in distributed systems",
+        "Retry and backoff policies",
+        "Circuit breaker behavior",
+        "Bulkhead isolation",
+        "Rate limiting and throttling",
+        "API gateway responsibilities",
+        "Service discovery patterns",
+        "Distributed tracing design",
+        "Metrics and alerting strategy",
+        "Logging architecture",
+        "SLO/SLA planning",
+        "Data consistency models",
+        "CAP theorem trade-offs",
+        "Consensus and leader election",
+        "CQRS command/query separation",
+        "Event sourcing trade-offs",
+        "Blue-green deployment",
+        "Canary rollout strategy",
+        "Feature flag governance",
+        "Disaster recovery planning",
+        "Multi-region failover",
+        "Data retention and lifecycle",
+        "Security boundaries and zero trust",
+        "Tenant isolation in multi-tenant apps",
+        "API contract evolution",
+        "Throughput and latency budgeting",
+        "Capacity planning",
+        "Backpressure management",
+        "Workflow orchestration",
+        "Observability-driven incident response"
+    ];
+
     public static async Task InitializeAsync(IServiceProvider services)
     {
         await using var scope = services.CreateAsyncScope();
@@ -62,6 +176,8 @@ public static class DatabaseInitializer
         }
 
         await ApplySupplementalSeedBlocksAsync(db);
+        await ReplaceDuplicateTrainingBlocksAsync(db);
+        await ApplyTargetedCoverageBoostAsync(db);
     }
 
     private static async Task<bool> RequiresReseedAsync(ForgeDbContext db, int importedPairCount)
@@ -379,56 +495,317 @@ public static class DatabaseInitializer
 
     private static async Task ApplySupplementalSeedBlocksAsync(ForgeDbContext db)
     {
-        if (SupplementalSeedBlocks.Count == 0)
+        await ApplySeedBlocksAsync(db, SupplementalSeedBlocks);
+    }
+
+    private static async Task ApplyTargetedCoverageBoostAsync(ForgeDbContext db)
+    {
+        foreach (var target in CategoryCoverageTargets)
+        {
+            var category = target.Key;
+            var currentCount = await db.TrainingBlocks
+                .CountAsync(x => x.Lesson!.Module!.Category == category);
+            var missingCount = target.Value - currentCount;
+
+            if (missingCount <= 0)
+            {
+                continue;
+            }
+
+            var lessonTitle = $"Coverage Boost - {category}";
+            var lesson = await EnsureLessonAsync(db, category, lessonTitle);
+            var existingTitles = (await db.TrainingBlocks
+                .Where(x => x.LessonId == lesson.Id)
+                .Select(x => x.Title)
+                .ToListAsync())
+                .ToHashSet(StringComparer.Ordinal);
+            var usedContentKeys = (await db.TrainingBlocks
+                .Select(x => x.Content)
+                .ToListAsync())
+                .Select(NormalizeDuplicateKey)
+                .Where(x => !string.IsNullOrWhiteSpace(x))
+                .ToHashSet(StringComparer.Ordinal);
+            var generated = GenerateUniqueSeedBlocks(
+                category,
+                lessonTitle,
+                missingCount,
+                existingTitles,
+                usedContentKeys,
+                "Coverage Boost");
+
+            await ApplySeedBlocksAsync(db, generated);
+        }
+    }
+
+    private static async Task ReplaceDuplicateTrainingBlocksAsync(ForgeDbContext db)
+    {
+        var blocks = await db.TrainingBlocks
+            .Include(x => x.Lesson)
+            .ThenInclude(x => x!.Module)
+            .OrderBy(x => x.Id)
+            .ToListAsync();
+
+        if (blocks.Count == 0)
+        {
+            return;
+        }
+
+        var usedContentKeys = blocks
+            .Select(x => NormalizeDuplicateKey(x.Content))
+            .Where(x => !string.IsNullOrWhiteSpace(x))
+            .ToHashSet(StringComparer.Ordinal);
+        var updated = false;
+
+        // First pass: duplicate titles within the same lesson.
+        var duplicateTitleGroups = blocks
+            .GroupBy(x => BuildLessonTitleGroupKey(x.LessonId, x.Title), StringComparer.Ordinal)
+            .Where(x => x.Count() > 1)
+            .ToList();
+
+        foreach (var group in duplicateTitleGroups)
+        {
+            var duplicates = group
+                .OrderBy(x => x.Id)
+                .Skip(1)
+                .ToList();
+
+            if (duplicates.Count == 0)
+            {
+                continue;
+            }
+
+            var reference = group.First();
+            var category = reference.Lesson?.Module?.Category ?? "C#";
+            var lessonTitle = reference.Lesson?.Title ?? $"Coverage Boost - {category}";
+            var lessonTitles = blocks
+                .Where(x => x.LessonId == reference.LessonId)
+                .Select(x => x.Title)
+                .ToHashSet(StringComparer.Ordinal);
+            var replacements = GenerateUniqueSeedBlocks(
+                category,
+                lessonTitle,
+                duplicates.Count,
+                lessonTitles,
+                usedContentKeys,
+                "Refined");
+
+            for (var index = 0; index < duplicates.Count; index++)
+            {
+                ApplyReplacement(duplicates[index], replacements[index]);
+                updated = true;
+            }
+        }
+
+        // Second pass: duplicate content regardless of lesson.
+        var duplicateContentGroups = blocks
+            .GroupBy(x => NormalizeDuplicateKey(x.Content), StringComparer.Ordinal)
+            .Where(x => !string.IsNullOrWhiteSpace(x.Key) && x.Count() > 1)
+            .ToList();
+
+        foreach (var group in duplicateContentGroups)
+        {
+            var duplicates = group
+                .OrderBy(x => x.Id)
+                .Skip(1)
+                .ToList();
+
+            foreach (var duplicate in duplicates)
+            {
+                var category = duplicate.Lesson?.Module?.Category ?? "C#";
+                var lessonTitle = duplicate.Lesson?.Title ?? $"Coverage Boost - {category}";
+                var lessonTitles = blocks
+                    .Where(x => x.LessonId == duplicate.LessonId)
+                    .Select(x => x.Title)
+                    .ToHashSet(StringComparer.Ordinal);
+                var replacement = GenerateUniqueSeedBlocks(
+                    category,
+                    lessonTitle,
+                    1,
+                    lessonTitles,
+                    usedContentKeys,
+                    "Refined")[0];
+
+                ApplyReplacement(duplicate, replacement);
+                updated = true;
+            }
+        }
+
+        if (updated)
+        {
+            await db.SaveChangesAsync();
+        }
+    }
+
+    private static void ApplyReplacement(TrainingBlock targetBlock, SeedBlock replacement)
+    {
+        targetBlock.Title = replacement.Title;
+        targetBlock.Content = BuildSeedBlockContent(replacement);
+        targetBlock.Difficulty = Math.Clamp(replacement.Difficulty, 1, 5);
+    }
+
+    private static List<SeedBlock> GenerateUniqueSeedBlocks(
+        string category,
+        string lessonTitle,
+        int requiredCount,
+        ISet<string> existingLessonTitles,
+        ISet<string> usedContentKeys,
+        string titlePrefix)
+    {
+        var generated = new List<SeedBlock>(requiredCount);
+        var concepts = GetConceptsForCategory(category);
+        var variantCount = GetVariantCountForCategory(category);
+        var sequence = 1;
+        var safety = 0;
+
+        while (generated.Count < requiredCount)
+        {
+            safety++;
+            if (safety > 100000)
+            {
+                throw new InvalidOperationException($"Unable to generate enough unique seed blocks for category '{category}'.");
+            }
+
+            var conceptIndex = (sequence - 1) % concepts.Count;
+            var variantIndex = ((sequence - 1) / concepts.Count) % variantCount;
+            var concept = concepts[conceptIndex];
+            var candidate = BuildGeneratedSeedBlock(category, lessonTitle, concept, sequence, variantIndex, titlePrefix);
+            sequence++;
+
+            if (existingLessonTitles.Contains(candidate.Title))
+            {
+                continue;
+            }
+
+            var contentKey = NormalizeDuplicateKey(BuildSeedBlockContent(candidate));
+            if (usedContentKeys.Contains(contentKey))
+            {
+                continue;
+            }
+
+            generated.Add(candidate);
+            existingLessonTitles.Add(candidate.Title);
+            usedContentKeys.Add(contentKey);
+        }
+
+        return generated;
+    }
+
+    private static SeedBlock BuildGeneratedSeedBlock(
+        string category,
+        string lessonTitle,
+        string concept,
+        int sequence,
+        int variantIndex,
+        string titlePrefix)
+    {
+        if (string.Equals(category, "System Design", StringComparison.OrdinalIgnoreCase))
+        {
+            return BuildSystemDesignSeedBlock(lessonTitle, concept, sequence, variantIndex, titlePrefix);
+        }
+
+        return BuildCSharpSeedBlock(lessonTitle, concept, sequence, variantIndex, titlePrefix);
+    }
+
+    private static SeedBlock BuildCSharpSeedBlock(
+        string lessonTitle,
+        string concept,
+        int sequence,
+        int variantIndex,
+        string titlePrefix)
+    {
+        return variantIndex switch
+        {
+            0 => new SeedBlock(
+                ModuleCategory: "C#",
+                LessonTitle: lessonTitle,
+                Title: $"{titlePrefix} - C# #{sequence:000}: {concept} (Core)",
+                Response: $"{concept} is a core C# skill used to keep .NET code readable, reliable, and maintainable in production systems.",
+                Example: $"In an ASP.NET Core service, apply {concept.ToLowerInvariant()} so features remain testable and easy to evolve.",
+                Difficulty: 2),
+            1 => new SeedBlock(
+                ModuleCategory: "C#",
+                LessonTitle: lessonTitle,
+                Title: $"{titlePrefix} - C# #{sequence:000}: {concept} (Application)",
+                Response: $"Use {concept.ToLowerInvariant()} when implementing application code that needs clear behavior, strong testability, and stable runtime outcomes.",
+                Example: $"During feature development, evaluate where {concept.ToLowerInvariant()} reduces complexity before adding new code.",
+                Difficulty: 3),
+            _ => new SeedBlock(
+                ModuleCategory: "C#",
+                LessonTitle: lessonTitle,
+                Title: $"{titlePrefix} - C# #{sequence:000}: {concept} (Pitfall)",
+                Response: $"A common mistake with {concept.ToLowerInvariant()} is inconsistent use across the codebase, which increases defects and long-term maintenance cost.",
+                Example: $"During code review, standardize {concept.ToLowerInvariant()} usage to prevent regressions and improve team velocity.",
+                Difficulty: 3)
+        };
+    }
+
+    private static SeedBlock BuildSystemDesignSeedBlock(
+        string lessonTitle,
+        string concept,
+        int sequence,
+        int variantIndex,
+        string titlePrefix)
+    {
+        return variantIndex switch
+        {
+            0 => new SeedBlock(
+                ModuleCategory: "System Design",
+                LessonTitle: lessonTitle,
+                Title: $"{titlePrefix} - System Design #{sequence:000}: {concept} (Principle)",
+                Response: $"{concept} is a system-design principle that improves scalability, resiliency, and operational clarity in distributed systems.",
+                Example: $"When designing a cloud platform, explicitly document {concept.ToLowerInvariant()} to align architecture decisions with reliability goals.",
+                Difficulty: 3),
+            _ => new SeedBlock(
+                ModuleCategory: "System Design",
+                LessonTitle: lessonTitle,
+                Title: $"{titlePrefix} - System Design #{sequence:000}: {concept} (Trade-off)",
+                Response: $"{concept} requires evaluating performance, cost, and complexity trade-offs before selecting a final architecture.",
+                Example: $"In architecture review, compare options for {concept.ToLowerInvariant()} and justify the selected trade-off with measurable criteria.",
+                Difficulty: 4)
+        };
+    }
+
+    private static IReadOnlyList<string> GetConceptsForCategory(string category)
+    {
+        return string.Equals(category, "System Design", StringComparison.OrdinalIgnoreCase)
+            ? SystemDesignConcepts
+            : CSharpConcepts;
+    }
+
+    private static int GetVariantCountForCategory(string category)
+    {
+        return string.Equals(category, "System Design", StringComparison.OrdinalIgnoreCase)
+            ? 2
+            : 3;
+    }
+
+    private static string BuildLessonTitleGroupKey(int lessonId, string title)
+    {
+        return $"{lessonId}\u001f{NormalizeDuplicateKey(title)}";
+    }
+
+    private static string NormalizeDuplicateKey(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return string.Empty;
+        }
+
+        return Regex.Replace(value.Trim().ToLowerInvariant(), @"\s+", " ");
+    }
+
+    private static async Task ApplySeedBlocksAsync(ForgeDbContext db, IReadOnlyList<SeedBlock> seedBlocks)
+    {
+        if (seedBlocks.Count == 0)
         {
             return;
         }
 
         var now = DateTime.UtcNow;
 
-        foreach (var seedBlock in SupplementalSeedBlocks)
+        foreach (var seedBlock in seedBlocks)
         {
-            var module = await db.TrainingModules
-                .OrderBy(x => x.Id)
-                .FirstOrDefaultAsync(x => x.Category == seedBlock.ModuleCategory);
-
-            if (module is null)
-            {
-                var moduleName = $"{LegacyImportConstants.ModuleNamePrefix}{seedBlock.ModuleCategory} Supplemental";
-
-                module = new TrainingModule
-                {
-                    Name = moduleName,
-                    Category = seedBlock.ModuleCategory,
-                    CreatedAt = now
-                };
-
-                db.TrainingModules.Add(module);
-                await db.SaveChangesAsync();
-            }
-
-            var lesson = await db.TrainingLessons
-                .FirstOrDefaultAsync(x => x.ModuleId == module.Id && x.Title == seedBlock.LessonTitle);
-
-            if (lesson is null)
-            {
-                var currentMaxOrderIndex = await db.TrainingLessons
-                    .Where(x => x.ModuleId == module.Id)
-                    .Select(x => (int?)x.OrderIndex)
-                    .MaxAsync() ?? -1;
-
-                lesson = new TrainingLesson
-                {
-                    ModuleId = module.Id,
-                    Title = seedBlock.LessonTitle,
-                    OrderIndex = currentMaxOrderIndex + 1,
-                    CreatedAt = now
-                };
-
-                db.TrainingLessons.Add(lesson);
-                await db.SaveChangesAsync();
-            }
-
+            var lesson = await EnsureLessonAsync(db, seedBlock.ModuleCategory, seedBlock.LessonTitle);
             var blockExists = await db.TrainingBlocks
                 .AnyAsync(x => x.LessonId == lesson.Id && x.Title == seedBlock.Title);
 
@@ -448,9 +825,57 @@ public static class DatabaseInitializer
                 LastPracticedAt = null,
                 NextDueAt = now
             });
+        }
 
+        await db.SaveChangesAsync();
+    }
+
+    private static async Task<TrainingLesson> EnsureLessonAsync(ForgeDbContext db, string category, string lessonTitle)
+    {
+        var now = DateTime.UtcNow;
+        var module = await db.TrainingModules
+            .OrderBy(x => x.Id)
+            .FirstOrDefaultAsync(x => x.Category == category);
+
+        if (module is null)
+        {
+            var moduleName = $"{LegacyImportConstants.ModuleNamePrefix}{category} Supplemental";
+
+            module = new TrainingModule
+            {
+                Name = moduleName,
+                Category = category,
+                CreatedAt = now
+            };
+
+            db.TrainingModules.Add(module);
             await db.SaveChangesAsync();
         }
+
+        var lesson = await db.TrainingLessons
+            .FirstOrDefaultAsync(x => x.ModuleId == module.Id && x.Title == lessonTitle);
+
+        if (lesson is not null)
+        {
+            return lesson;
+        }
+
+        var currentMaxOrderIndex = await db.TrainingLessons
+            .Where(x => x.ModuleId == module.Id)
+            .Select(x => (int?)x.OrderIndex)
+            .MaxAsync() ?? -1;
+
+        lesson = new TrainingLesson
+        {
+            ModuleId = module.Id,
+            Title = lessonTitle,
+            OrderIndex = currentMaxOrderIndex + 1,
+            CreatedAt = now
+        };
+
+        db.TrainingLessons.Add(lesson);
+        await db.SaveChangesAsync();
+        return lesson;
     }
 
     private static string BuildSeedBlockContent(SeedBlock seedBlock)
