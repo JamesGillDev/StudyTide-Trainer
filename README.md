@@ -4,7 +4,7 @@ StudyTide Forge is structured cognitive reinforcement training for software engi
 
 ## Release Status
 
-StudyTide Forge desktop (`v2.9.3`) is marked **ready for public release** as of `2026-03-03`.
+StudyTide Forge desktop (`v2.10.0`) is marked **ready for public release** as of `2026-03-03`.
 Public release verification refreshed on `2026-03-03` after local desktop/web publish validation.
 
 ## Solution Layout
@@ -46,7 +46,7 @@ py .\tools\extract_training_material.py
 
 Current extraction output (`2026-03-03`):
 
-- `3484` deduplicated training pairs generated from the provided MSSA PDFs/Docx/Xlsx files.
+- `3699` deduplicated training pairs generated from the provided MSSA PDFs/Docx/Xlsx files plus `Training Notes.zip` archive documents.
 - OCR fallback applied to image-only pages (notably `az2006_portrait_dark_teal.pdf`).
 - Generated artifacts:
   - `StudyTide Forge\seed-source\legacy-source.cs`
@@ -77,11 +77,21 @@ Current extraction output (`2026-03-03`):
 
 - Training item examples were regenerated to remove the old generic `When practicing...` template.
 - Current seeded inventory now contains concrete examples across all combined entries:
-  - `3488` training items
-  - `3484` flashcards
-  - `6972` combined entries
+  - `3703` training items
+  - `3699` flashcards
+  - `7402` combined entries
 - Example migration runs at startup and rewrites existing training item `Example` sections from Prompt/Response context when needed.
 - Study-view action buttons use a fixed minimum height for consistent visual alignment (`Previous`, `Next`, `Practice`, `Flashcards`).
+
+## v2.10.0 Archive Ingestion + Coverage Completion
+
+- Added archive-aware extraction to ingest supported training files from `Training Notes.zip` (`.pdf`, `.docx`, `.xlsx`) in addition to direct file paths.
+- Extraction remains deduplicated and now outputs `3699` unique pairs for import seeding.
+- Added Azure coverage target support (`500`) with Azure-specific generated reinforcement content for any future category gap backfill.
+- Verified fresh reseed snapshot from the updated import source:
+  - `3699` flashcards
+  - `3703` training items
+  - `574` Azure items and `437` System Design items (both above minimum target).
 
 ## v2.9.1 Content and Layout Polish
 
@@ -149,13 +159,13 @@ Dashboard now includes:
 
 ### Current Local Inventory Snapshot (Desktop DB)
 
-As measured on `2026-03-03` from the local desktop database after non-training sweep:
+As measured on `2026-03-03` from a fresh reseed validation run using the current bundled source:
 
 - `6` modules
-- `28` lessons
-- `2059` training (retype) items
-- `1877` flashcards
-- `3936` combined mode entries (`2059 + 1877`)
+- `41` lessons
+- `3703` training (retype) items
+- `3699` flashcards
+- `7402` combined mode entries (`3703 + 3699`)
 
 ## Source File Placement
 

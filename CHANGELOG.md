@@ -4,6 +4,20 @@ All notable changes to this project are documented in this file.
 
 The format is based on semantic versioning (`MAJOR.MINOR.PATCH`).
 
+## [2.10.0] - 2026-03-03
+
+### Added
+- Archive-aware training extraction support for `Training Notes.zip`, including `.pdf`, `.docx`, and `.xlsx` entries.
+- Azure coverage target support (`500`) with Azure-specific generated seed content for targeted coverage backfill.
+
+### Changed
+- Refreshed bundled `legacy-source.cs` import material to `3699` deduplicated training pairs from the expanded training corpus.
+- Updated extraction artifacts under `App_Data/training-material` with archive-source reporting.
+- App version bumped to `2.10.0` (`ApplicationVersion` `21000`).
+
+### Release
+- Marked `v2.10.0` as **ready for public release** on `2026-03-03`.
+
 ## [2.9.2] - 2026-03-03
 
 ### Changed

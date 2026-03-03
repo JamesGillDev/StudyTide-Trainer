@@ -1,5 +1,31 @@
 # Release Notes
 
+## v2.10.0 (2026-03-03)
+
+This release is **ready for public release**.
+
+### Highlights
+
+- Added archive-aware training extraction to ingest `.pdf`, `.docx`, and `.xlsx` files from `Training Notes.zip` in addition to direct source files.
+- Regenerated bundled import source with `3699` deduplicated Q/A pairs and refreshed extraction artifacts:
+  - `StudyTide Forge\seed-source\legacy-source.cs`
+  - `StudyTide Forge Web\seed-source\legacy-source.cs`
+  - `App_Data\training-material\extracted-training-pairs.json`
+  - `App_Data\training-material\extraction-report.md`
+- Added Azure category coverage target support (`500`) with Azure-specific generated content templates for targeted gap fill behavior.
+- Verified reseed inventory with current source:
+  - `3703` training items
+  - `3699` flashcards
+  - `7402` combined entries
+  - `574` Azure and `437` System Design items (no gap for requested categories).
+
+### Local Publish Outputs
+
+- Desktop publish target:
+  - `StudyTide Forge\bin\Release\net10.0-windows10.0.19041.0\win-x64\StudyTideForge.exe`
+- Web publish target:
+  - `artifacts\publish\studytide-forge-web-win-x64\StudyTideForgeWeb.exe`
+
 ## v2.9.3 (2026-03-03)
 
 This release is **ready for public release**.

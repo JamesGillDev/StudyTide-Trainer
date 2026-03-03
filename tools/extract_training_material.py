@@ -3,7 +3,10 @@ from __future__ import annotations
 import json
 import html
 import re
+import shutil
+import tempfile
 import unicodedata
+import zipfile
 from collections import Counter
 from dataclasses import dataclass
 from datetime import datetime, timezone
@@ -44,6 +47,12 @@ SOURCE_FILES = [
     Path(r"c:\MSSA Training\Git_Markdown_Master_Reference.pdf"),
     Path(r"c:\MSSA Training\Training Notes\Daily Training Notes\Training Notes (11-26 Feb 2026).pdf"),
 ]
+
+ZIP_SOURCE_FILES = [
+    Path(r"c:\MSSA Training\Training Notes.zip"),
+]
+
+SUPPORTED_SOURCE_SUFFIXES = {".pdf", ".docx", ".xlsx"}
 
 # Handle smart punctuation variants present in Windows paths.
 ALT_SOURCE_FILES = [
@@ -105,20 +114,80 @@ class SourceStats:
     used_ocr: bool
 
 
-def resolve_source_files() -> list[Path]:
-    files: list[Path] = []
+@dataclass(frozen=True)
+class SourceDocument:
+    path: Path
+    source_name: str
+
+
+def resolve_source_files() -> tuple[list[SourceDocument], list[Path]]:
+    files: list[SourceDocument] = []
+    temp_dirs: list[Path] = []
+    seen_paths: set[str] = set()
+    seen_names: set[str] = set()
+
+    def add_document(path: Path, source_name: str) -> None:
+        normalized_name = source_name.lower()
+        if normalized_name in seen_names:
+            return
+
+        seen_names.add(normalized_name)
+        files.append(SourceDocument(path=path, source_name=source_name))
 
     for source in SOURCE_FILES:
         if source.exists():
-            files.append(source)
+            normalized_path = str(source.resolve()).lower()
+            if normalized_path in seen_paths:
+                continue
+
+            seen_paths.add(normalized_path)
+            add_document(source, source.name)
 
     for candidate in ALT_SOURCE_FILES:
-        if candidate.exists() and candidate not in files:
-            files.append(candidate)
+        if candidate.exists():
+            normalized_path = str(candidate.resolve()).lower()
+            if normalized_path in seen_paths:
+                continue
+
+            seen_paths.add(normalized_path)
+            add_document(candidate, candidate.name)
+
+    for archive_path in ZIP_SOURCE_FILES:
+        if not archive_path.exists():
+            continue
+
+        temp_dir = Path(tempfile.mkdtemp(prefix="studytide-training-zip-"))
+        temp_dirs.append(temp_dir)
+
+        with zipfile.ZipFile(archive_path) as archive:
+            members = sorted(archive.infolist(), key=lambda item: item.filename.lower())
+
+            for member in members:
+                if member.is_dir():
+                    continue
+
+                member_path = Path(member.filename.replace("\\", "/"))
+                suffix = member_path.suffix.lower()
+
+                if suffix not in SUPPORTED_SOURCE_SUFFIXES:
+                    continue
+
+                relative_parts = [part for part in member_path.parts if part not in ("", ".", "..")]
+                if not relative_parts:
+                    continue
+
+                destination = temp_dir.joinpath(*relative_parts)
+                destination.parent.mkdir(parents=True, exist_ok=True)
+
+                with archive.open(member) as source_stream, destination.open("wb") as destination_stream:
+                    shutil.copyfileobj(source_stream, destination_stream)
+
+                source_name = f"{archive_path.name}::{'/'.join(relative_parts)}"
+                add_document(destination, source_name)
 
     # Stable order by full path keeps generation deterministic.
-    files = sorted(files, key=lambda p: str(p).lower())
-    return files
+    files = sorted(files, key=lambda item: item.source_name.lower())
+    return files, temp_dirs
 
 
 def normalize_ascii(value: str) -> str:
@@ -476,9 +545,10 @@ def is_valid_question_text(question: str) -> bool:
     return True
 
 
-def build_pairs_for_source(source_file: Path, lines: list[str]) -> list[TrainingPair]:
+def build_pairs_for_source(source_file: Path, source_name: str, lines: list[str]) -> list[TrainingPair]:
     pairs: list[TrainingPair] = []
-    current_heading = source_file.stem.replace("_", " ")
+    heading_source = source_name.split("::", 1)[-1]
+    current_heading = Path(heading_source).stem.replace("_", " ")
 
     coalesced = coalesce_lines(lines)
 
@@ -532,7 +602,7 @@ def build_pairs_for_source(source_file: Path, lines: list[str]) -> list[Training
             TrainingPair(
                 question=question,
                 answer=answer,
-                source_file=source_file.name,
+                source_file=source_name,
             )
         )
 
@@ -594,15 +664,19 @@ def escape_verbatim(value: str) -> str:
     return value.replace('"', '""')
 
 
-def build_seed_source_content(pairs: list[TrainingPair], generated_at: datetime, source_files: list[Path]) -> str:
+def build_seed_source_content(
+    pairs: list[TrainingPair],
+    generated_at: datetime,
+    source_names: list[str],
+) -> str:
     header = [
         "// <auto-generated>",
         f"// Generated by tools/extract_training_material.py on {generated_at.date().isoformat()}.",
         "// Source training files:",
     ]
 
-    for source_file in source_files:
-        header.append(f"// - {source_file}")
+    for source_name in source_names:
+        header.append(f"// - {source_name}")
 
     header.extend(
         [
@@ -647,7 +721,7 @@ def build_seed_source_content(pairs: list[TrainingPair], generated_at: datetime,
 def write_outputs(
     pairs: list[TrainingPair],
     source_stats: list[SourceStats],
-    source_files: list[Path],
+    source_names: list[str],
 ) -> None:
     OUTPUT_WEB_SOURCE.parent.mkdir(parents=True, exist_ok=True)
     OUTPUT_DESKTOP_SOURCE.parent.mkdir(parents=True, exist_ok=True)
@@ -656,13 +730,13 @@ def write_outputs(
 
     now = datetime.now(timezone.utc)
 
-    source_content = build_seed_source_content(pairs, now, source_files)
+    source_content = build_seed_source_content(pairs, now, source_names)
     OUTPUT_WEB_SOURCE.write_text(source_content, encoding="utf-8")
     OUTPUT_DESKTOP_SOURCE.write_text(source_content, encoding="utf-8")
 
     json_payload = {
         "generatedAtUtc": now.isoformat(),
-        "sourceFiles": [str(path) for path in source_files],
+        "sourceFiles": source_names,
         "pairCount": len(pairs),
         "pairs": [
             {
@@ -722,50 +796,57 @@ def write_outputs(
 
 
 def main() -> int:
-    source_files = resolve_source_files()
-    if not source_files:
+    source_documents, temp_dirs = resolve_source_files()
+    if not source_documents:
         print("No source files found. Nothing to extract.")
         return 1
 
     all_pairs: list[TrainingPair] = []
     stats: list[SourceStats] = []
 
-    for source_file in source_files:
-        suffix = source_file.suffix.lower()
+    try:
+        for source_document in source_documents:
+            source_file = source_document.path
+            source_name = source_document.source_name
+            suffix = source_file.suffix.lower()
 
-        if suffix == ".pdf":
-            lines, page_count, used_ocr = extract_pdf_lines(source_file)
-            sections = page_count
-        elif suffix == ".docx":
-            lines, paragraph_count = extract_docx_lines(source_file)
-            sections = paragraph_count
-            used_ocr = False
-        elif suffix == ".xlsx":
-            lines, sheet_count = extract_xlsx_lines(source_file)
-            sections = sheet_count
-            used_ocr = False
-        else:
-            continue
+            if suffix == ".pdf":
+                lines, page_count, used_ocr = extract_pdf_lines(source_file)
+                sections = page_count
+            elif suffix == ".docx":
+                lines, paragraph_count = extract_docx_lines(source_file)
+                sections = paragraph_count
+                used_ocr = False
+            elif suffix == ".xlsx":
+                lines, sheet_count = extract_xlsx_lines(source_file)
+                sections = sheet_count
+                used_ocr = False
+            else:
+                continue
 
-        coalesced = coalesce_lines(lines)
-        qualified_statements = [line for line in coalesced if not is_noise(strip_reference_noise(line))]
-        source_pairs = build_pairs_for_source(source_file, lines)
+            coalesced = coalesce_lines(lines)
+            qualified_statements = [line for line in coalesced if not is_noise(strip_reference_noise(line))]
+            source_pairs = build_pairs_for_source(source_file, source_name, lines)
 
-        all_pairs.extend(source_pairs)
+            all_pairs.extend(source_pairs)
 
-        stats.append(
-            SourceStats(
-                source_file=source_file.name,
-                pages_or_sections=sections,
-                extracted_lines=len(lines),
-                qualified_statements=len(qualified_statements),
-                generated_pairs=len(source_pairs),
-                used_ocr=used_ocr,
+            stats.append(
+                SourceStats(
+                    source_file=source_name,
+                    pages_or_sections=sections,
+                    extracted_lines=len(lines),
+                    qualified_statements=len(qualified_statements),
+                    generated_pairs=len(source_pairs),
+                    used_ocr=used_ocr,
+                )
             )
-        )
 
-    deduped_pairs = dedupe_pairs(all_pairs)
-    write_outputs(deduped_pairs, stats, source_files)
+        deduped_pairs = dedupe_pairs(all_pairs)
+        source_names = [source_document.source_name for source_document in source_documents]
+        write_outputs(deduped_pairs, stats, source_names)
+    finally:
+        for temp_dir in temp_dirs:
+            shutil.rmtree(temp_dir, ignore_errors=True)
 
     print(f"Extracted {len(all_pairs)} raw pairs.")
     print(f"Produced {len(deduped_pairs)} unique training pairs.")

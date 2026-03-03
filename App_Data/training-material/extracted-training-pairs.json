@@ -1,28 +1,74 @@
 {
-  "generatedAtUtc": "2026-03-03T22:53:30.896518+00:00",
+  "generatedAtUtc": "2026-03-03T23:31:42.201135+00:00",
   "sourceFiles": [
-    "c:\\MSSA Training\\AI900_Cheatsheet.pdf",
-    "c:\\MSSA Training\\az2006_portrait_dark_teal.pdf",
-    "c:\\MSSA Training\\C# code snippets - Visual Studio (Windows) _ Microsoft Learn.pdf",
-    "c:\\MSSA Training\\Coding Commands Master Reference \u2014 Java Script \u2022 Python \u2022 C#.pdf",
-    "c:\\MSSA Training\\Comprehensive_Reference.pdf",
-    "c:\\MSSA Training\\Git_Markdown_Master_Reference.pdf",
-    "c:\\MSSA Training\\Int, Var, Methodologies, & Errors \u2014 All\u2011in\u2011one.pdf",
-    "c:\\MSSA Training\\keyboard-shortcuts-windows.pdf",
-    "c:\\MSSA Training\\Layouts_and_Instances_Deep_Guide.pdf",
-    "c:\\MSSA Training\\MSSA Training App.docx",
-    "c:\\MSSA Training\\MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf",
-    "c:\\MSSA Training\\MSSA_Comprehensive_Reference_no_strike.pdf",
-    "c:\\MSSA Training\\NumbersAndMemory.xlsx",
-    "c:\\MSSA Training\\Training Notes\\Daily Training Notes\\Training Notes (11-26 Feb 2026).pdf",
-    "c:\\MSSA Training\\Vibe_Check_Flow_Full_Instructions.pdf"
+    "AI900_Cheatsheet.pdf",
+    "az2006_portrait_dark_teal.pdf",
+    "C# code snippets - Visual Studio (Windows) _ Microsoft Learn.pdf",
+    "Coding Commands Master Reference \u2014 Java Script \u2022 Python \u2022 C#.pdf",
+    "Comprehensive_Reference.pdf",
+    "Git_Markdown_Master_Reference.pdf",
+    "Int, Var, Methodologies, & Errors \u2014 All\u2011in\u2011one.pdf",
+    "keyboard-shortcuts-windows.pdf",
+    "Layouts_and_Instances_Deep_Guide.pdf",
+    "MSSA Training App.docx",
+    "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf",
+    "MSSA_Comprehensive_Reference_no_strike.pdf",
+    "NumbersAndMemory.xlsx",
+    "Training Notes (11-26 Feb 2026).pdf",
+    "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_12_January_2026.pdf",
+    "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_13_January_2026.pdf",
+    "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_14_January_2026.pdf",
+    "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_15_January_2026.pdf",
+    "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_20_January_2026.pdf",
+    "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_21_January_2026.pdf",
+    "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_22_January_2026.pdf",
+    "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_26_January_2026.pdf",
+    "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_27_January_2026.pdf",
+    "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_28_January_2026.pdf",
+    "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_29_January_2026 (LAST DSA DAY).pdf",
+    "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_5_January_2026.pdf",
+    "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_6_January_2026.pdf",
+    "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_7_January_2026.pdf",
+    "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_8_January_2026.pdf",
+    "Training Notes.zip::Training Notes/Daily Training Notes/MSSA_Week01_Training_Summary.pdf",
+    "Training Notes.zip::Training Notes/Daily Training Notes/MSSA_Week02_Training_Summary.pdf",
+    "Training Notes.zip::Training Notes/Daily Training Notes/MSSA_Week03_Training_Summary.pdf",
+    "Training Notes.zip::Training Notes/Daily Training Notes/Training Notes (01 Dec 2025).pdf",
+    "Training Notes.zip::Training Notes/Daily Training Notes/Training Notes (02 Dec 2025).pdf",
+    "Training Notes.zip::Training Notes/Daily Training Notes/Training Notes (03 Dec 2025).pdf",
+    "Training Notes.zip::Training Notes/Daily Training Notes/Training Notes (04 Dec 2025).pdf",
+    "Training Notes.zip::Training Notes/Daily Training Notes/Training Notes (08 Dec 2025).pdf",
+    "Training Notes.zip::Training Notes/Daily Training Notes/Training Notes (09 Dec 2025).pdf",
+    "Training Notes.zip::Training Notes/Daily Training Notes/Training Notes (09 Feb 2026).pdf",
+    "Training Notes.zip::Training Notes/Daily Training Notes/Training Notes (10 Dec 2025).pdf",
+    "Training Notes.zip::Training Notes/Daily Training Notes/Training Notes (10 Feb 2026).pdf",
+    "Training Notes.zip::Training Notes/Daily Training Notes/Training Notes (10-11 Nov 2025).pdf",
+    "Training Notes.zip::Training Notes/Daily Training Notes/Training Notes (11 Dec 2025).pdf",
+    "Training Notes.zip::Training Notes/Daily Training Notes/Training Notes (11-26 Feb 2026).pdf",
+    "Training Notes.zip::Training Notes/Daily Training Notes/Training Notes (12 Nov 2025).pdf",
+    "Training Notes.zip::Training Notes/Daily Training Notes/Training Notes (13 Nov 2025).pdf",
+    "Training Notes.zip::Training Notes/Daily Training Notes/Training Notes (15 Dec 2025).pdf",
+    "Training Notes.zip::Training Notes/Daily Training Notes/Training Notes (16-18 Dec 2025).pdf",
+    "Training Notes.zip::Training Notes/Daily Training Notes/Training Notes (17-19 Nov 2025).pdf",
+    "Training Notes.zip::Training Notes/Daily Training Notes/Training Notes (20 Nov 2025).pdf",
+    "Training Notes.zip::Training Notes/Daily Training Notes/Training Notes (22 Dec 2025).pdf",
+    "Training Notes.zip::Training Notes/Daily Training Notes/Training Notes (23 Dec 2025).pdf",
+    "Training Notes.zip::Training Notes/Daily Training Notes/Training Notes (24 Nov 2025).pdf",
+    "Training Notes.zip::Training Notes/Daily Training Notes/Training Notes (25 Nov 2025).pdf",
+    "Training Notes.zip::Training Notes/Daily Training Notes/Training Notes (26 Nov 2025).pdf",
+    "Vibe_Check_Flow_Full_Instructions.pdf"
   ],
-  "pairCount": 3484,
+  "pairCount": 3699,
   "pairs": [
     {
       "question": "it defines state and behavior",
       "answer": "A class is the blueprint for an object",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
+    },
+    {
+      "question": "o O(1) average lookup o Automatic uniqueness Strategy: o Store all values from the first array in a set",
+      "answer": "A HashSet is ideal because it provides",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_22_January_2026.pdf"
     },
     {
       "question": "Runs when someone submits the Form Writes the row to Excel Counts how many Done for today only Posts a message into Teams: X of 17 complete (Y%) A Teams tab so the form is easy to access",
@@ -103,6 +149,11 @@
       "question": "An adaptive algorithm is affected by the nature of the elements in the array",
       "answer": "Adaptability",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
+    },
+    {
+      "question": "o digit from string A (if present) o digit from string B (if present) o carry from previous step Compute: o resultBit = sum % 2 o carry = sum / 2 Move left If a carry remains at the end, prepend it This mirrors exactly how humans perform addition on paper",
+      "answer": "Add",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_27_January_2026.pdf"
     },
     {
       "question": "[ValidateAntiForgeryToken] // CSRF protection public IActionResult Create(Product model)",
@@ -685,9 +736,19 @@
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
     },
     {
+      "question": "Today's work reinforced that algorithms are not about clever tricks or memorized patterns",
+      "answer": "Algorithms as disciplined state management over time",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_27_January_2026.pdf"
+    },
+    {
       "question": "In this topic, you will learn about Knapsack and Graph Coloring problems in detail",
       "answer": "Algorithms of Backtracking",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
+    },
+    {
+      "question": "That problem is not about aliens",
+      "answer": "Alien Dictionary Problem (Lexicographic Thinking)",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_29_January_2026 (LAST DSA DAY).pdf"
     },
     {
       "question": "the Vehicle[] array that stores every Car or Truck",
@@ -1045,6 +1106,11 @@
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
     },
     {
+      "question": "Fast access by index",
+      "answer": "Arrays",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_29_January_2026 (LAST DSA DAY).pdf"
+    },
+    {
       "question": "fixed-size, index-based collections. Think parking lots or Excel rows",
       "answer": "Arrays",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
@@ -1300,6 +1366,36 @@
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
     },
     {
+      "question": "1. Create Resource Group az group create \\ name rg-sqlfailover-james \\ location eastus 2. Create Primary SQL Server az sql server create \\ name sqlfailover-james-pri \\ resource-group rg-sqlfailover-james \\ location eastus \\ admin-user sqladmin \\ admin-password ' ' 3. Create Se...",
+      "answer": "Azure CLI Steps (Cloud Shell - Bash)",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/Training Notes (10 Feb 2026).pdf"
+    },
+    {
+      "question": "name fg-james-awlt \\ resource-group rg-sqlfailover-james \\ server sqlfailover-james-pri \\ partner-server sqlfailover-james-sec \\ failover-policy Automatic \\ grace-period 1 \\ add-db AdventureWorksLT 6. Force Failover (Testing) az sql failover-group set-primary \\ name fg-james-a...",
+      "answer": "Azure CLI Steps (Cloud Shell - Bash)",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/Training Notes (10 Feb 2026).pdf"
+    },
+    {
+      "question": "resource-group rg-sqlfailover-james \\ location westus \\ admin-user sqladmin \\ admin-password ' ' 4. Create AdventureWorksLT Database (Primary Only) az sql db create \\ resource-group rg-sqlfailover-james \\ server sqlfailover-james-pri \\ name AdventureWorksLT \\ sample-name Adven...",
+      "answer": "Azure CLI Steps (Cloud Shell - Bash)",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/Training Notes (10 Feb 2026).pdf"
+    },
+    {
+      "question": "That is the entire purpose of the failover group endpoint",
+      "answer": "Azure CLI Steps (Cloud Shell - Bash)",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/Training Notes (10 Feb 2026).pdf"
+    },
+    {
+      "question": "The application connection string does not change",
+      "answer": "Azure CLI Steps (Cloud Shell - Bash)",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/Training Notes (10 Feb 2026).pdf"
+    },
+    {
+      "question": "This swaps the Primary and Secondary roles",
+      "answer": "Azure CLI Steps (Cloud Shell - Bash)",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/Training Notes (10 Feb 2026).pdf"
+    },
+    {
       "question": "an embedded command line that runs Azure CLI or Azure PowerShell without local setup. It s useful for quick script execution and automation",
       "answer": "Azure Cloud Shell",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
@@ -1343,6 +1439,16 @@
       "question": "ARM provides a consistent deployment model. Bicep is a concise language that compiles to ARM JSON; it uses parameters and variables so templates can be reused. Students authored Bicep to deploy a storage account and blob container",
       "answer": "Azure Resource Manager (ARM) & Bicep",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
+    },
+    {
+      "question": "Today focused on configuring Azure SQL auto-failover groups and understanding client connectivity through the failover endpoint, along with a discussion on ADO.NET versus Entity Framework",
+      "answer": "Azure SQL Auto-Failover Groups + ADO.NET",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/Training Notes (10 Feb 2026).pdf"
+    },
+    {
+      "question": "Queues preserve arrival order",
+      "answer": "Backtracking",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_29_January_2026 (LAST DSA DAY).pdf"
     },
     {
       "question": "algorithm starts at a certain \"position\" and tries out all possible \"movements\" from that position",
@@ -1615,6 +1721,11 @@
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
     },
     {
+      "question": "Explicitly select only required columns",
+      "answer": "Best practice",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/Training Notes (09 Feb 2026).pdf"
+    },
+    {
       "question": "Minimum time an algorithm takes to perform operations on the input data",
       "answer": "Best Time Complexity",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
@@ -1785,9 +1896,19 @@
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
     },
     {
+      "question": "The Only Part That Matters",
+      "answer": "Big-O",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_29_January_2026 (LAST DSA DAY).pdf"
+    },
+    {
       "question": "Big-O is a **growth rate** description. It's what happens as input size n grows",
       "answer": "Big-O Deep Dive (without the nonsense)",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
+    },
+    {
+      "question": "Today was not about writing SQL",
+      "answer": "Big-Picture Takeaway",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/Training Notes (10 Feb 2026).pdf"
     },
     {
       "question": "BigO measures how performance scales, not how fast code runs on a CPU",
@@ -1795,14 +1916,29 @@
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
     },
     {
+      "question": "identical to grade-school addition, just in base-2 instead of base-10",
+      "answer": "Binary addition with carry",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_27_January_2026.pdf"
+    },
+    {
       "question": "Binary search is a fast search algorithm that works with a sorted list. The binary search algorithm works on a sorted array or list. It uses a divide -and-conquer approach to search for an element within a sorted list. The binary search method can only be used with sorted arrays",
       "answer": "Binary Search",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
     },
     {
+      "question": "Binary search repeatedly divides the search space in half",
+      "answer": "Binary Search",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_22_January_2026.pdf"
+    },
+    {
       "question": "Binary searches also have certain limitations. One of the key limitations is that it works only with sorted arrays. The unsorte d arrays or lists must be sorted first before binary search can be performed, adding to the time complexity. A non-contiguous data structure can abso...",
       "answer": "Binary Search",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
+    },
+    {
+      "question": "Requires the data to be sorted by the same field being searched",
+      "answer": "Binary Search",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_22_January_2026.pdf"
     },
     {
       "question": "Search sorted data in O(log n)",
@@ -1823,6 +1959,11 @@
       "question": "This can be an issue with the large lists or arrays that may not fit into the memory",
       "answer": "Binary Search",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
+    },
+    {
+      "question": "Uses index-based access (arrays), not linked lists",
+      "answer": "Binary Search",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_22_January_2026.pdf"
     },
     {
       "question": "You learned about linear search earlier. Since there is no guarantee of how soon the element will be located because of its position in the list array, there is no constant time to get the result. On the other hand, binary search is faster as it uses the divide and conquers me...",
@@ -1955,6 +2096,11 @@
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
     },
     {
+      "question": "Left < Node < Right",
+      "answer": "Binary Search Tree (BST)",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_29_January_2026 (LAST DSA DAY).pdf"
+    },
+    {
       "question": "A binary search tree is a variation of a binary tree and is also known as an ordered binary tree",
       "answer": "Binary Search Tree: Definition",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
@@ -1973,6 +2119,11 @@
       "question": "We know there is a parent node and then have a left and right sub -tree. Unlike a binary tree, a binary search tree follows two specific rules that must be applied to the binary search tree",
       "answer": "Binary Search Tree: Definition",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
+    },
+    {
+      "question": "Each node has up to two children",
+      "answer": "Binary Tree",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_29_January_2026 (LAST DSA DAY).pdf"
     },
     {
       "question": "Note that the time complexity for a binary tree is heavily influenced by whether the tree is balanced or unbalanced. In a balanced binary tree, the height of the tree is log n, where n is the number of nodes in the tree. In an unbalanced binary tree, the height of the tree can...",
@@ -2095,6 +2246,21 @@
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
     },
     {
+      "question": "Bubble Sort repeatedly compares adjacent elements and swaps them if out of order",
+      "answer": "Bubble Sort (Conceptual & Visual Understanding)",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_22_January_2026.pdf"
+    },
+    {
+      "question": "Largest elements \"bubble\" to the end of the list on each pass",
+      "answer": "Bubble Sort (Conceptual & Visual Understanding)",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_22_January_2026.pdf"
+    },
+    {
+      "question": "Uses a swapped flag to detect when sorting is complete",
+      "answer": "Bubble Sort (Conceptual & Visual Understanding)",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_22_January_2026.pdf"
+    },
+    {
       "question": "Storage slot in a hash table",
       "answer": "Bucket",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
@@ -2108,6 +2274,11 @@
       "question": "Why the CLI matters even if you love Visual Studio # solution + projects dotnet new sln -n CadMonth1 dotnet new console -n CadConsole dotnet new classlib -n CadLib dotnet sln add CadConsole/CadConsole.csproj dotnet sln add CadLib/CadLib.csproj # build and run dotnet build dotn...",
       "answer": "Build/run/test from the terminal",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
+    },
+    {
+      "question": "A strong engineer understands both and chooses based on trade-offs",
+      "answer": "Building infrastructure-level tooling",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/Training Notes (10 Feb 2026).pdf"
     },
     {
       "question": "the method gets its own copy and cannot change the caller's variable",
@@ -2410,6 +2581,21 @@
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
     },
     {
+      "question": "No sorting or nested loops are required",
+      "answer": "Characteristics",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_22_January_2026.pdf"
+    },
+    {
+      "question": "o Convert the result set to an array for the final output",
+      "answer": "Characteristics",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_22_January_2026.pdf"
+    },
+    {
+      "question": "o Iterate through the second array and add values found in the first set to a result set",
+      "answer": "Characteristics",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_22_January_2026.pdf"
+    },
+    {
       "question": "While a programming language may have its syntaxes, the algorithm must be used consistently without modifications",
       "answer": "Characteristics and Properties of Algorithms",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
@@ -2555,6 +2741,11 @@
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
     },
     {
+      "question": "o Loop invariants o Boundary tracking o Controlled state mutation Emphasized as a teaching tool, not the most optimal production choice",
+      "answer": "Clear demonstration of",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_26_January_2026.pdf"
+    },
+    {
       "question": "Clearing the collection: _count = 0",
       "answer": "Clear Method",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
@@ -2593,6 +2784,11 @@
       "question": "Function remembers variables from its creation scope",
       "answer": "Closure",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
+    },
+    {
+      "question": "infrastructure + client behavior",
+      "answer": "Cloud resilience",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/Training Notes (10 Feb 2026).pdf"
     },
     {
       "question": "IaaS, PaaS, SaaS (Deep Dive) The IaaS / PaaS / SaaS models were not presented as memorization targets, but as sliding control scales. In IaaS, control remains high but so does responsibility. In SaaS, operational responsibility is almost entirely shifted to the provider, but c...",
@@ -2955,6 +3151,11 @@
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
     },
     {
+      "question": "Exact numeric (int, decimal)",
+      "answer": "Common categories",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/Training Notes (09 Feb 2026).pdf"
+    },
+    {
       "question": "Together, the RemoteControl and Animal examples moved you further from toy console snippets into real-world object modeling and clean, safe use of C#'s type system",
       "answer": "Common Errors You Saw and Fixed Today",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
@@ -3125,6 +3326,26 @@
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
     },
     {
+      "question": "Builds a sorted portion of the array one element at a time",
+      "answer": "Concept",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_26_January_2026.pdf"
+    },
+    {
+      "question": "Divide-and-conquer algorithm that splits the array in half, recursively sorts each half, then merges them",
+      "answer": "Concept",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_26_January_2026.pdf"
+    },
+    {
+      "question": "Generalized insertion sort using diminishing gaps",
+      "answer": "Concept",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_26_January_2026.pdf"
+    },
+    {
+      "question": "Repeatedly swap adjacent elements if they are out of order",
+      "answer": "Concept",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_26_January_2026.pdf"
+    },
+    {
       "question": "Explain a key idea from M2 in 3-5 sentences and give one example",
       "answer": "Concept 1",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
@@ -3250,6 +3471,11 @@
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
     },
     {
+      "question": "Azure handles DNS redirection",
+      "answer": "Connection String Uses Failover Endpoint",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/Training Notes (10 Feb 2026).pdf"
+    },
+    {
       "question": "Special config slots for DB connections",
       "answer": "Connection Strings",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
@@ -3273,6 +3499,11 @@
       "question": "1. Pour water and milk into the kettle",
       "answer": "Consider the following steps in a new algorithm that you create",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
+    },
+    {
+      "question": "Rules are always enforced",
+      "answer": "Consistency",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/Training Notes (09 Feb 2026).pdf"
     },
     {
       "question": "lowercase English letters only 26 possible characters",
@@ -3365,6 +3596,71 @@
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
     },
     {
+      "question": "Brian worked through the Microsoft Learn module \"Implement class methods and construct objects\" (Unit 6 of 10) and a demo solution called ClassReviewDemos in Visual Studio",
+      "answer": "Context & schedule",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/Training Notes (08 Dec 2025).pdf"
+    },
+    {
+      "question": "Morning MSSA C# session focused on class methods, parameters, and object- oriented patterns",
+      "answer": "Context & schedule",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/Training Notes (08 Dec 2025).pdf"
+    },
+    {
+      "question": "And precedence rules are doctrine",
+      "answer": "Context and patience",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_28_January_2026.pdf"
+    },
+    {
+      "question": "Computers don't have that luxury",
+      "answer": "Context and patience",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_28_January_2026.pdf"
+    },
+    {
+      "question": "Once doctrine is explicit, chaos disappears",
+      "answer": "Context and patience",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_28_January_2026.pdf"
+    },
+    {
+      "question": "Parentheses are mission boundaries",
+      "answer": "Context and patience",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_28_January_2026.pdf"
+    },
+    {
+      "question": "Stacks are staging areas",
+      "answer": "Context and patience",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_28_January_2026.pdf"
+    },
+    {
+      "question": "That's why postfix evaluation doesn't need parentheses",
+      "answer": "Context and patience",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_28_January_2026.pdf"
+    },
+    {
+      "question": "That's why stacks show up in compilers, parsers, interpreters, and CPUs",
+      "answer": "Context and patience",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_28_January_2026.pdf"
+    },
+    {
+      "question": "This part matters more than any algorithm",
+      "answer": "Context and patience",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_28_January_2026.pdf"
+    },
+    {
+      "question": "When things got heavy today, you didn't: Shut down",
+      "answer": "Context and patience",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_28_January_2026.pdf"
+    },
+    {
+      "question": "You're learning how systems stay sane under pressure",
+      "answer": "Context and patience",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_28_January_2026.pdf"
+    },
+    {
+      "question": "You're not learning \"DSA tricks.\"",
+      "answer": "Context and patience",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_28_January_2026.pdf"
+    },
+    {
       "question": "Object used with 'with' to guarantee cleanup",
       "answer": "Context manager",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
@@ -3450,6 +3746,11 @@
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
     },
     {
+      "question": "Infrastructure resiliency is not only about database replication",
+      "answer": "Core Engineering Concept Learned",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/Training Notes (10 Feb 2026).pdf"
+    },
+    {
       "question": "Main menu (looping) Text menu like: 1) Add study session 2) List all sessions 3) Show stats 0) Exit Add study session Date (default to today if user just presses Enter) Topic (string for now: \"C# Loops\", \"Arrays/Lists\", \"MVC\", etc.) Duration in minutes (int with validation) No...",
       "answer": "Core features",
       "sourceFile": "MSSA Training App.docx"
@@ -3458,6 +3759,16 @@
       "question": "The emphasis was on designing behavior first, then implementing it to satisfy tests",
       "answer": "Core Focus of the Day",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
+    },
+    {
+      "question": "This was not about memorizing code, but about internalizing patterns, tradeoffs, and failure modes",
+      "answer": "Core Focus of the Day",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_26_January_2026.pdf"
+    },
+    {
+      "question": "Today was a deep dive into sorting algorithms and the algorithmic thinking behind them, with emphasis on understanding how, why, and when different sorting strategies work-or fail",
+      "answer": "Core Focus of the Day",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_26_January_2026.pdf"
     },
     {
       "question": "Today's lesson centered on building a custom generic collection, driven entirely by interfaces and tests, while reinforcing generics, contracts, and exception correctness",
@@ -3475,6 +3786,21 @@
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
     },
     {
+      "question": "Queues decide who goes next",
+      "answer": "Core Insight",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_27_January_2026.pdf"
+    },
+    {
+      "question": "Stacks remember where you've been",
+      "answer": "Core Insight",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_27_January_2026.pdf"
+    },
+    {
+      "question": "SQL is about declaring intent, not controlling flow",
+      "answer": "Core Mindset to Remember",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/Training Notes (09 Feb 2026).pdf"
+    },
+    {
       "question": "the code you think might fail",
       "answer": "Core pieces: \u007f try block",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
@@ -3488,6 +3814,16 @@
       "question": "DSA is about survivability at scale",
       "answer": "Core Takeaway",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
+    },
+    {
+      "question": "If order of arrival matters, you want a queue",
+      "answer": "Core truth",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_29_January_2026 (LAST DSA DAY).pdf"
+    },
+    {
+      "question": "If the most recent thing must be handled first, you want a stack",
+      "answer": "Core truth",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_29_January_2026 (LAST DSA DAY).pdf"
     },
     {
       "question": "We are not converting arbitrary objects into integers",
@@ -3630,6 +3966,26 @@
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
     },
     {
+      "question": "NOT the individual server",
+      "answer": "Critical concept: The application connects to the failover group endpoint",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/Training Notes (10 Feb 2026).pdf"
+    },
+    {
+      "question": "Linked lists always favor linear traversal",
+      "answer": "Critical Constraint",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_22_January_2026.pdf"
+    },
+    {
+      "question": "Sorting and searching must use the same field (e.g., sort by ID search by ID)",
+      "answer": "Critical Constraint",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_22_January_2026.pdf"
+    },
+    {
+      "question": "Sorting by one field and searching by another produces unreliable results",
+      "answer": "Critical Constraint",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_22_January_2026.pdf"
+    },
+    {
       "question": "Trick a user into unwanted action; fix with tokens + same-site cookies",
       "answer": "CSRF",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
@@ -3683,6 +4039,16 @@
       "question": "knowledge base was successfully deployed and ready for prediction or bot creationlearn.microsoft.com",
       "answer": "Custom Question Answering (CQA) and knowledge bases",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
+    },
+    {
+      "question": "table dbo is just the default schema",
+      "answer": "Customer",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/Training Notes (09 Feb 2026).pdf"
+    },
+    {
+      "question": "if there's a cycle, they meet.\" Remove Duplicates: \"Because the list is sorted, duplicates are adjacent, so I skip them in one pass.\" Jump Game: \"I track the farthest index I can reach; if I get stuck, it's impossible.\"",
+      "answer": "Cycle Detection: \"Fast and slow pointers",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_21_January_2026.pdf"
     },
     {
       "question": "if there's a cycle, they meet.\" Remove Duplicates: \"Because the list is sorted, duplicates are adjacent, so I skip them in one pass.\" Jump Game: \"I track the farthest index I can reach; if I get stuck, it's impossible.\" DSA - Condensed Foundations Study Guide January 2026 Edit...",
@@ -3770,6 +4136,11 @@
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
     },
     {
+      "question": "A transaction cannot leave the database in an invalid state",
+      "answer": "Data integrity rules",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/Training Notes (09 Feb 2026).pdf"
+    },
+    {
       "question": "Classes can encapsulate operations along with data",
       "answer": "Data Objects",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
@@ -3800,9 +4171,19 @@
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
     },
     {
+      "question": "Final Mental Model Summary (MSSA CCAD21 - DSA Wrap-Up) This section is not about memorizing LeetCode tricks",
+      "answer": "Data Structures & Algorithms",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_29_January_2026 (LAST DSA DAY).pdf"
+    },
+    {
       "question": "You saw that lists and arrays can live as fields inside classes (like MainMenu or TeamManager), or in separate static data classes (like MenuData). This is the start of organizing data and behavior logically",
       "answer": "Data Structures in Classes and Separate Data Files",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
+    },
+    {
+      "question": "SQL commands always run inside a database context",
+      "answer": "Database Context (USE)",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/Training Notes (09 Feb 2026).pdf"
     },
     {
       "question": "Parse/TryParse/ParseExact, ISO-8601, offsets, MinValue trap from",
@@ -3960,17 +4341,12 @@
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
     },
     {
+      "question": "digit math with % 10 and / 10 (Palindrome Number) custom collection behaviors (GetRange, IndexOf(startIndex)) the distinction between equality-based search and predicate-based search unit test structure and how tests encode expected behavior",
+      "answer": "Debugging mindset note (important)",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_13_January_2026.pdf"
+    },
+    {
       "question": "digit math with % 10 and / 10 (Palindrome Number) custom collection behaviors (GetRange, IndexOf(startIndex)) the distinction between equality-based search and predicate-based search unit test structure and how tests encode expected behavior MSSA CCAD21 - Data Structures & Alg...",
-      "answer": "Debugging mindset note (important)",
-      "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
-    },
-    {
-      "question": "Given two sorted arrays (nums1 and nums2) and counts m and n, merge nums2 into nums1 in-place, producing one sorted array",
-      "answer": "Debugging mindset note (important)",
-      "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
-    },
-    {
-      "question": "nums1 has extra space at the end to accommodate all elements",
       "answer": "Debugging mindset note (important)",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
     },
@@ -4223,6 +4599,11 @@
       "question": "Staging environment for safe release; swap into production",
       "answer": "Deployment Slot",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
+    },
+    {
+      "question": "Uses recursion or stack",
+      "answer": "Depth-First Search (DFS)",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_29_January_2026 (LAST DSA DAY).pdf"
     },
     {
       "question": "Depth-first traversal is a method of going right to the leaf nodes of the binary tree first before moving up the tree to explore other nodes. At first, we go down to the next level before moving up the tree, which is why it is known as depth-first traversal",
@@ -4695,6 +5076,11 @@
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
     },
     {
+      "question": "Once committed, data is permanent",
+      "answer": "Durability",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/Training Notes (09 Feb 2026).pdf"
+    },
+    {
       "question": "Resizable array structure (List ) that grows by allocating a bigger array",
       "answer": "Dynamic array",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
@@ -4703,6 +5089,11 @@
       "question": "Recursion can be used in dynamic programming to optimize the performance of algorithms by reusing previously calculated results",
       "answer": "Dynamic programming",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
+    },
+    {
+      "question": "\"If I sold today using the cheapest earlier buy, would this be my best profit?\" Track the best profit seen (maxProfit) Never sell before buying (enforced by time order) Two Critical Variables minPrice best legal buy so far maxProfit best legal sell so far No extra memory. No a...",
+      "answer": "Each day ask",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_27_January_2026.pdf"
     },
     {
       "question": "x % 10 extracts the last digit reversedHalf = reversedHalf * 10 + digit appends digit onto reversedHalf x /= 10 removes last digit from x Stop when reversedHalf >= x we've processed half the digits",
@@ -4718,6 +5109,16 @@
       "question": "when to use it a short implementation sketch complexity tests you should write Recipe: Two Sum with Dictionary Use when: find two numbers that add to a target",
       "answer": "Each recipe includes",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
+    },
+    {
+      "question": "Handled via locks and isolation levels",
+      "answer": "Each transaction behaves as if it's running alone",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/Training Notes (09 Feb 2026).pdf"
+    },
+    {
+      "question": "A weird restricted list Push, pop, shrug, repeat Something teachers insist is important without saying why Today, that fog cleared",
+      "answer": "Earlier in the course, stacks probably felt like",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_28_January_2026.pdf"
     },
     {
       "question": "Keep the \"happy path\" code flat and readable",
@@ -4855,17 +5256,7 @@
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
     },
     {
-      "question": "Brian worked through the Microsoft Learn module \"Implement class methods and construct objects\" (Unit 6 of 10) and a demo solution called ClassReviewDemos in Visual Studio",
-      "answer": "End-of-Day Reality Check",
-      "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
-    },
-    {
       "question": "Hooked up show/edit/remove logic on real objects in an array",
-      "answer": "End-of-Day Reality Check",
-      "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
-    },
-    {
-      "question": "Morning MSSA C# session focused on class methods, parameters, and object- oriented patterns",
       "answer": "End-of-Day Reality Check",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
     },
@@ -4880,47 +5271,12 @@
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
     },
     {
-      "question": "In C# arrays, indices always start at 0 and go to Length - 1",
+      "question": "These notes reflect Week 05, Day 02 of MSSA and your ongoing ramp-up from \"basic C# syntax\" to \"professional OOP mindset.\"",
       "answer": "End-of-Day Summary",
-      "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
-    },
-    {
-      "question": "Keeping VehicleCount and printing logic in sync so there are no ghost or duplicate cars",
-      "answer": "End-of-Day Summary",
-      "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
-    },
-    {
-      "question": "Searching the array for a matching VIN and returning the index",
-      "answer": "End-of-Day Summary",
-      "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
-    },
-    {
-      "question": "Shifting cars left in the array when one is removed",
-      "answer": "End-of-Day Summary",
-      "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
-    },
-    {
-      "question": "The index is not the value; it is the position where the value lives",
-      "answer": "End-of-Day Summary",
-      "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/Training Notes (02 Dec 2025).pdf"
     },
     {
       "question": "These notes reflect Week 05, Day 02 of MSSA and your ongoing ramp-up from \"basic C# syntax\" to \"professional OOP mindset.\" MSSA - Daily Training Notes Week 05 - Day 03 03 Dec 2025 Theme: Arrays as Parking Lots, Indices, and CRUD on Vehicles 1. Big Picture of Today Today was al...",
-      "answer": "End-of-Day Summary",
-      "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
-    },
-    {
-      "question": "Using that index to show, edit, or remove that specific vehicle",
-      "answer": "End-of-Day Summary",
-      "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
-    },
-    {
-      "question": "Using the index (0, 1, 2,...) as the \"slot number\" where a vehicle sits",
-      "answer": "End-of-Day Summary",
-      "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
-    },
-    {
-      "question": "VehicleCount tracks how many of those spots currently hold a real car or truck",
       "answer": "End-of-Day Summary",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
     },
@@ -5003,6 +5359,16 @@
       "question": "the time complexity. It can also be the number of operations executed by the code. There can be two types of time complexities. The first one is the constant time, which applies to the insert and delete operations because the operation occurs once. The time complexity for Link...",
       "answer": "Every operation on the linked list has a runtime",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
+    },
+    {
+      "question": "1. What information do I need to remember?",
+      "answer": "Every problem quietly asks four questions",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_29_January_2026 (LAST DSA DAY).pdf"
+    },
+    {
+      "question": "1. A base case (stopping condition) 2. Progress toward the base case If either is missing infinite recursion",
+      "answer": "Every recursive function must have",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_29_January_2026 (LAST DSA DAY).pdf"
     },
     {
       "question": "Add the two numbers together, calculate the sum, and store the result in a variable named 'sum'",
@@ -5123,6 +5489,26 @@
       "question": "One demo had a try/catch/finally where the exception was thrown in the try, caught in the catch, and then the finally block still ran",
       "answer": "Exceptions - Controlled Failure Instead of Crashing",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
+    },
+    {
+      "question": "But math was never the point",
+      "answer": "Execute Phase 3 before Phase 2 is complete",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_28_January_2026.pdf"
+    },
+    {
+      "question": "Once you saw that, the solution stopped being clever and started being obvious",
+      "answer": "Execute Phase 3 before Phase 2 is complete",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_28_January_2026.pdf"
+    },
+    {
+      "question": "Prefix and postfix are for execution",
+      "answer": "Execute Phase 3 before Phase 2 is complete",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_28_January_2026.pdf"
+    },
+    {
+      "question": "This topic has confused generations of students because it's usually taught backwards - with math",
+      "answer": "Execute Phase 3 before Phase 2 is complete",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_28_January_2026.pdf"
     },
     {
       "question": "using Azure ML Lite, students predicted apartment rental prices. They selected features, trained the model and viewed outputs, illustrating how ML can forecast unknown values",
@@ -5393,6 +5779,36 @@
       "question": "A single test case",
       "answer": "Fact (xUnit)",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
+    },
+    {
+      "question": "Query the wrong object",
+      "answer": "Failing to do so can",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/Training Notes (09 Feb 2026).pdf"
+    },
+    {
+      "question": "Application connects to this endpoint instead of a specific server",
+      "answer": "Failover Group",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/Training Notes (10 Feb 2026).pdf"
+    },
+    {
+      "question": "Azure automatically redirects traffic to whichever server is Primary",
+      "answer": "Failover Group",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/Training Notes (10 Feb 2026).pdf"
+    },
+    {
+      "question": "Logical abstraction over the two servers",
+      "answer": "Failover Group",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/Training Notes (10 Feb 2026).pdf"
+    },
+    {
+      "question": "Recursion works when the problem definition is recursive",
+      "answer": "Fair handling",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_29_January_2026 (LAST DSA DAY).pdf"
+    },
+    {
+      "question": "Trees are about relationships, not storage",
+      "answer": "Fair handling",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_29_January_2026 (LAST DSA DAY).pdf"
     },
     {
       "question": "AddAfter / AddBefore (Link \"Surgery\")",
@@ -6195,6 +6611,16 @@
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
     },
     {
+      "question": "You do need to recognize patterns when pressure is high",
+      "answer": "Final Note to Future James",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_29_January_2026 (LAST DSA DAY).pdf"
+    },
+    {
+      "question": "You do not need to be a LeetCode grinder",
+      "answer": "Final Note to Future James",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_29_January_2026 (LAST DSA DAY).pdf"
+    },
+    {
       "question": "Use the Find method of the \"empList\" to find the node that contains the employee name \"Raj\". Assign the found node to a variable called \"nodeToDelete\". Then, use the Remove method of the \"empList\" to remove the \"nodeToDelete\" from the list",
       "answer": "Find and Remove Employee",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
@@ -6233,6 +6659,11 @@
       "question": "Types and real-world modeling",
       "answer": "Focus",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
+    },
+    {
+      "question": "o Partition logic o Pivot selection o Recursive subproblem boundaries Important distinction: o QuickSort's performance heavily depends on pivot choice Complexity: o Best/Average: O(n log n) o Worst: O(n2) (poor pivot selection) Discussed partition strategies: o Lomuto Partitio...",
+      "answer": "Focus areas",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_26_January_2026.pdf"
     },
     {
       "question": "It is used in the Linux kernel: It sorts the entries in the procfs file system, a virtual file system responsible for providing access to kernel data structures and system information",
@@ -6468,6 +6899,26 @@
       "question": "stop writing the same Console.ReadLine / Console.WriteLine patterns everywhere and move input and output concerns into reusable helper classes. This improves readability, reuse, and separation of concerns in console apps",
       "answer": "Goal for the day",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
+    },
+    {
+      "question": "If an object is not dbo, you must explicitly reference the schema",
+      "answer": "Golden Rule",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/Training Notes (09 Feb 2026).pdf"
+    },
+    {
+      "question": "Recursion answers the question: \"If I already knew the answer for smaller versions, could I solve this one?\" Trees, linked lists, and divide-and-conquer problems naturally fit recursion",
+      "answer": "Golden rule",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_29_January_2026 (LAST DSA DAY).pdf"
+    },
+    {
+      "question": "Your folder structure does NOT define your namespace",
+      "answer": "Golden Rule",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/Training Notes (09 Feb 2026).pdf"
+    },
+    {
+      "question": "Your namespace defines your architecture",
+      "answer": "Golden Rule",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/Training Notes (09 Feb 2026).pdf"
     },
     {
       "question": "At the top right, click \"Collect responses\" (or \"Send\")",
@@ -6815,6 +7266,16 @@
       "sourceFile": "keyboard-shortcuts-windows.pdf"
     },
     {
+      "question": "This is cloud engineering",
+      "answer": "How lower-level data access (ADO.NET) interacts with distributed systems",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/Training Notes (10 Feb 2026).pdf"
+    },
+    {
+      "question": "This is infrastructure thinking",
+      "answer": "How lower-level data access (ADO.NET) interacts with distributed systems",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/Training Notes (10 Feb 2026).pdf"
+    },
+    {
       "question": "2. **Practice (60-120 min):** Do the labs and katas",
       "answer": "How to Use This Guide",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
@@ -6875,6 +7336,11 @@
       "sourceFile": "Layouts_and_Instances_Deep_Guide.pdf"
     },
     {
+      "question": "\"Do this, but only after that, unless this happens first.\" Computers are not. They require mechanical certainty",
+      "answer": "Humans are comfortable with ambiguity. We say things like",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_28_January_2026.pdf"
+    },
+    {
       "question": "store seen numbers in a dictionary from value -> index",
       "answer": "Idea",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
@@ -6930,9 +7396,19 @@
       "sourceFile": "AI900_Cheatsheet.pdf"
     },
     {
+      "question": "Stacks exist to enforce discipline of order",
+      "answer": "If you need frequent inserts/deletes linked list",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_29_January_2026 (LAST DSA DAY).pdf"
+    },
+    {
       "question": "Use an Array / List",
       "answer": "If you need to access elements frequently",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
+    },
+    {
+      "question": "Inorder traversal of a BST gives sorted values",
+      "answer": "If you remember nothing else",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_29_January_2026 (LAST DSA DAY).pdf"
     },
     {
       "question": "Execution time does not change with input size",
@@ -7410,6 +7886,11 @@
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
     },
     {
+      "question": "why this finally made sense",
+      "answer": "Infix Prefix/Postfix",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_28_January_2026.pdf"
+    },
+    {
       "question": "A mechanism where one class (the child/derived class) extends another (the base/parent class) and automatically gets its members. Example: Book and Movie could both inherit from a common MediaItem base class",
       "answer": "Inheritance",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
@@ -7548,6 +8029,11 @@
       "question": "OrderPizza() doing everything (menus, fees, pizza definitions, totals, printing, etc.) You split into \"nouns\": Pizza types (things you sell) Planet/Destination (where it goes) Delivery fee logic (rules/lookup) Order data (what customer chose) Then your main program becomes a c...",
       "answer": "Instead of",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
+    },
+    {
+      "question": "Store customer once Reference customer via a key This mirrors real-world systems (personnel records, logistics, inventory)",
+      "answer": "Instead of copying customer info into every order",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/Training Notes (09 Feb 2026).pdf"
     },
     {
       "question": "Generates a collection Uses a sequence generator Adds values via a loop Returns a ready-to-test collection This: Keeps tests clean Avoids duplication Makes changing test data trivial 7. Sequence Strategies (Ordered, Random, etc.) Sequence generators abstract how data is create...",
@@ -7758,6 +8244,11 @@
       "question": "Any type that implements INamedObject must provide a Name property",
       "answer": "Interfaces, INamedObject, and Contracts",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
+    },
+    {
+      "question": "If something must be resolved in reverse order stack If order matters but skipping is allowed queue If ambiguity exists convert to an unambiguous form If something feels hard to \"look backward\" reverse structure instead These patterns will keep reappearing under different names",
+      "answer": "Internalize patterns",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_28_January_2026.pdf"
     },
     {
       "question": "examrelevant concepts and supplies citations from Microsoft Docs for further study",
@@ -8110,6 +8601,11 @@
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
     },
     {
+      "question": "Concurrent transactions do not interfere with each other",
+      "answer": "Isolation",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/Training Notes (09 Feb 2026).pdf"
+    },
+    {
       "question": "track work and group for goals/timeboxes",
       "answer": "Issues & Milestones",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
@@ -8320,6 +8816,11 @@
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
     },
     {
+      "question": "o Gap sequence matters o Tradeoff between theoretical analysis and real-world performance Complexity: o Best: ~O(n log n) o Average: varies by gap sequence o Worst: O(n2) Highlighted ambiguity in \"average case\" depending on implementation",
+      "answer": "Key discussion points",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_26_January_2026.pdf"
+    },
+    {
       "question": "Base interface = general behavior",
       "answer": "Key idea",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
@@ -8360,6 +8861,21 @@
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
     },
     {
+      "question": "Sorting enables faster searching, but only when the search respects the sort order",
+      "answer": "Key Insight",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_22_January_2026.pdf"
+    },
+    {
+      "question": "This is array syntax hiding a pure set-logic problem",
+      "answer": "Key Insight",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_22_January_2026.pdf"
+    },
+    {
+      "question": "Trees trade memory complexity for speed of lookup",
+      "answer": "Key insight",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_29_January_2026 (LAST DSA DAY).pdf"
+    },
+    {
       "question": "null = no object you cannot call methods on it",
       "answer": "Key mental model",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
@@ -8375,6 +8891,11 @@
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
     },
     {
+      "question": "Correctness is more important than convenience",
+      "answer": "Key principle",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/Training Notes (09 Feb 2026).pdf"
+    },
+    {
       "question": "If a method returns bool, you must store or return that boolean",
       "answer": "Key Rule",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
@@ -8385,6 +8906,11 @@
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
     },
     {
+      "question": "If all characters match and one word ends, the shorter word must come first",
+      "answer": "Key rule to remember forever",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_29_January_2026 (LAST DSA DAY).pdf"
+    },
+    {
       "question": "Throw the correct exception type",
       "answer": "Key rules reinforced",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
@@ -8393,6 +8919,31 @@
       "question": "\u007f You cannot instantiate an interface or an abstract class (no new IRemoteControl(), no new RemoteControl() when it is abstract)",
       "answer": "Key rules you reinforced",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
+    },
+    {
+      "question": "Binary search is fast but strict about its requirements",
+      "answer": "Key Takeaways",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_22_January_2026.pdf"
+    },
+    {
+      "question": "Data structure choice (array vs linked list) directly impacts algorithm viability",
+      "answer": "Key Takeaways",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_22_January_2026.pdf"
+    },
+    {
+      "question": "Linear search is simple and reliable, even without sorted data",
+      "answer": "Key Takeaways",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_22_January_2026.pdf"
+    },
+    {
+      "question": "Sorting is foundational and enables more powerful algorithms",
+      "answer": "Key Takeaways",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_22_January_2026.pdf"
+    },
+    {
+      "question": "Visualization tools make algorithm behavior much easier to internalize",
+      "answer": "Key Takeaways",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_22_January_2026.pdf"
     },
     {
       "question": "\u007f Always work in a branch; never ship unreviewed changes",
@@ -8473,6 +9024,21 @@
       "question": "The Applied Skills lab demonstrates how to call Vision APIs, interpret JSON responses and build a simple vision solution",
       "answer": "Key takeaways for Day 3",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
+    },
+    {
+      "question": "o In-place o Stable o Efficient for small or nearly sorted datasets Complexity: o Best: O(n) o Average/Worst: O(n2) Often used internally as a helper algorithm (e.g., in hybrid sorts)",
+      "answer": "Key traits",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_26_January_2026.pdf"
+    },
+    {
+      "question": "o Recursive o Stable o Not in-place (requires additional memory) Complexity: o Best / Average / Worst: O(n log n) Important takeaway: o Performance is predictable o Trades memory for guaranteed speed Reinforced recursion concepts: o Base case o Divide step o Merge step o Stack...",
+      "answer": "Key traits",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_26_January_2026.pdf"
+    },
+    {
+      "question": "o Simple to understand o In-place o Stable Complexity: o Best: O(n) (already sorted with optimization) o Average/Worst: O(n2) Primary value: Teaching loops, swaps, early exit conditions, and worst-case behavior",
+      "answer": "Key traits",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_26_January_2026.pdf"
     },
     {
       "question": "JavaScript (Node), and Python",
@@ -8740,9 +9306,19 @@
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
     },
     {
+      "question": "It does not require sorted data, making it reliable for unordered collections",
+      "answer": "Linear Search",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_22_January_2026.pdf"
+    },
+    {
       "question": "Linear search is a simple search algorithm designed to search from a list. When a list is unsorted, we really have no choice but to start at the beginning and look at each element to determine if it is the element we are looking for; there are no logical s hortcuts. This means...",
       "answer": "Linear Search",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
+    },
+    {
+      "question": "Linear search scans a collection from start to end, checking each element until a match is found or the list ends",
+      "answer": "Linear Search",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_22_January_2026.pdf"
     },
     {
       "question": "list, or isn't in the list at all) we will have to take the time to look at every single element",
@@ -8778,6 +9354,11 @@
       "question": "Time complexity is defined using O(n), where n defines the list's number of elements. It has three varied complexities, which are: Best: It can be O(1) when the searched element is the first element in the list",
       "answer": "Linear Search",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
+    },
+    {
+      "question": "Worst-case performance checks every element",
+      "answer": "Linear Search",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_22_January_2026.pdf"
     },
     {
       "question": "You will start from index 0 and continue moving to index 5, where the number 20 is located",
@@ -8995,6 +9576,16 @@
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
     },
     {
+      "question": "Pivot chosen as the last element",
+      "answer": "Lomuto Partition (Referenced)",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_26_January_2026.pdf"
+    },
+    {
+      "question": "Binary addition is a training ground for larger algorithmic thinking",
+      "answer": "loop termination discipline",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_27_January_2026.pdf"
+    },
+    {
       "question": "for (counter), while (pre-check), do..while (post-check). Use break and continue sparingly",
       "answer": "Loop types",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
@@ -9048,6 +9639,11 @@
       "question": "It exists only to help humans understand the test case",
       "answer": "Maintain maxReach",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
+    },
+    {
+      "question": "o minPrice is always valid o maxProfit is always legal Complexity Time: O(n) Space: O(1) Layman Explanation (Locked In) \"I keep track of the cheapest price so far and check each day if selling then would give me the best profit.\" This explanation alone reconstructs the solution",
+      "answer": "Maintains a strict invariant",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_27_January_2026.pdf"
     },
     {
       "question": "Choose \"Choice\" (the one with multiple choice options)",
@@ -9145,6 +9741,16 @@
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
     },
     {
+      "question": "Lines, task scheduling, print jobs",
+      "answer": "Mental model",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_27_January_2026.pdf"
+    },
+    {
+      "question": "Plates, undo history, function calls",
+      "answer": "Mental model",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_27_January_2026.pdf"
+    },
+    {
       "question": "Searching is about the structure of your data",
       "answer": "Mental Model",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
@@ -9158,6 +9764,16 @@
       "question": "You are learning the standard toolbox",
       "answer": "Mental Model",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
+    },
+    {
+      "question": "\"Algorithms teach you why something works, when it breaks, how badly it breaks, and under what conditions it becomes dangerous.\" Today reinforced that mindset across multiple sorting strategies",
+      "answer": "Mental Model to Retain",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_26_January_2026.pdf"
+    },
+    {
+      "question": "If you need random access array",
+      "answer": "Mental rule",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_29_January_2026 (LAST DSA DAY).pdf"
     },
     {
       "question": "Combine histories; can create merge commit",
@@ -10255,6 +10871,11 @@
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
     },
     {
+      "question": "It is about how to think when faced with unfamiliar problems, which is the only thing that survives long-term",
+      "answer": "MSSA CCAD21 - Data Structures & Algorithms",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_29_January_2026 (LAST DSA DAY).pdf"
+    },
+    {
       "question": "Week 01 Training Summary (Days 01-04 Only) Page 1 MSSA Cohort CCAD21 - Week 01 Training Summary (Days 01-04 Only) Dark theme \u007f One column \u007f Training-only content (no personal chatter) Week 01 - Day 01: Fundamentals & Orientation Objectives \u007f Introduce Git fundamentals and GitH...",
       "answer": "MSSA Cohort CCAD21",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
@@ -10308,6 +10929,11 @@
       "question": "Day 02 Recap (MVC, Security, Control Flow) Dark reference \u007f copy/paste-friendly ASP.NET Core MVC - Quick Start Scaffold and run: dotnet new mvc -n MvcQuickStart cd MvcQuickStart dotnet run Default: Model (data), View (Razor.cshtml), Controller (actions). Routing: /Home/Index",
       "answer": "MSSA Week 02",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
+    },
+    {
+      "question": "Day 04 Recap (Methods, Libraries, NuGet, Debugging, Control Flow) Dark reference \u007f copy/paste-friendly Quick definitions Method: named block of code that accepts parameters and may return a value",
+      "answer": "MSSA Week 02",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/Training Notes (13 Nov 2025).pdf"
     },
     {
       "question": "Integers, Variables, Methodologies & Errors (JavaScript Python C#) Darkmode study guide. In your browser, use Print Save as PDF. Enable \"Background graphics/Print backgrounds.\" 1) Integers Across Languages Core types & ranges - JS: Number (safe (2^531)); use BigInt for exact l...",
@@ -10915,6 +11541,11 @@
       "sourceFile": "Coding Commands Master Reference \u2014 Java Script \u2022 Python \u2022 C#.pdf"
     },
     {
+      "question": "This is pure recursion discipline, not a trick",
+      "answer": "Null cleanly stops recursion",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_29_January_2026 (LAST DSA DAY).pdf"
+    },
+    {
       "question": "Use nullable reference types and check for null at boundaries",
       "answer": "Null reference exceptions",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
@@ -11023,6 +11654,11 @@
       "question": "Nested loops over the same input",
       "answer": "O(n2) - Quadratic time",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
+    },
+    {
+      "question": "That's why interviewers care",
+      "answer": "O(n2) danger zone, but sometimes unavoidable",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_29_January_2026 (LAST DSA DAY).pdf"
     },
     {
       "question": "A calculation runs in quadratic time, which is the square of the input data",
@@ -11340,16 +11976,6 @@
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
     },
     {
-      "question": "Data Structures and Algorithms (DSA) exist to help systems remain efficient as they grow",
-      "answer": "One-Liners You Can Say in Class or Interviews",
-      "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
-    },
-    {
-      "question": "Every system works when it's small; DSA ensures it still works when it becomes large",
-      "answer": "One-Liners You Can Say in Class or Interviews",
-      "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
-    },
-    {
       "question": "Split nuances, Join, interpolation best practices, StringBuilder patterns vs , quick regex intro",
       "answer": "Open items / next adds (queued but not done yet) Strings (more)",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
@@ -11378,6 +12004,11 @@
       "question": "File persistence Serialize/deserialize List to JSON in a file under Documents or in the project folder",
       "answer": "Option 3) Show stats: total minutes total sessions average minutes Phase 4",
       "sourceFile": "MSSA Training App.docx"
+    },
+    {
+      "question": "If order matters wrong tool",
+      "answer": "Order doesn't matter",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_29_January_2026 (LAST DSA DAY).pdf"
     },
     {
       "question": "Output: Employee Name: John",
@@ -11518,6 +12149,21 @@
       "question": "What reversedHalf means (the trick explained clearly) reversedHalf stores the reversed last half of digits of x",
       "answer": "Palindrome rules (the early exits)",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
+    },
+    {
+      "question": "\"How does this map to something I already understand?\"",
+      "answer": "Panic or self-blame",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_28_January_2026.pdf"
+    },
+    {
+      "question": "\"Why is this the right tool?\"",
+      "answer": "Panic or self-blame",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_28_January_2026.pdf"
+    },
+    {
+      "question": "That's not coping. That's engineering instinct",
+      "answer": "Panic or self-blame",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_28_January_2026.pdf"
     },
     {
       "question": "JS Promise.all; Py asyncio.gather; C# Task.WhenAll",
@@ -12080,6 +12726,11 @@
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
     },
     {
+      "question": "EF is used for most business applications",
+      "answer": "Practical Industry Reality",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/Training Notes (10 Feb 2026).pdf"
+    },
+    {
       "question": "Write 2-3 tiny POCO classes (Driver, Student, GameCharacter, etc.)",
       "answer": "Practice ideas",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
@@ -12090,14 +12741,29 @@
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
     },
     {
+      "question": "That rule shows up everywhere (sorting, parsing, compilers)",
+      "answer": "Prefix rules",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_29_January_2026 (LAST DSA DAY).pdf"
+    },
+    {
       "question": "MSSA CAD + what you're building (C#/.NET/Azure)",
       "answer": "Present",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
     },
     {
+      "question": "Queues are about order and equity, not speed",
+      "answer": "Prevent starvation",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_27_January_2026.pdf"
+    },
+    {
       "question": "Building a custom array-backed collection in C#, understanding how built-in collections work under the hood, and reinforcing generic design, capacity management, and correctness through testing",
       "answer": "Primary Focus",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
+    },
+    {
+      "question": "Hosts the active, read/write database",
+      "answer": "Primary Server",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/Training Notes (10 Feb 2026).pdf"
     },
     {
       "question": "Primitive Data types are built-in data types in a programming language and are not defined as an aggregation of simpler data types",
@@ -12140,9 +12806,29 @@
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
     },
     {
+      "question": "Add Binary (LeetCode 67)",
+      "answer": "Problem 1",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_27_January_2026.pdf"
+    },
+    {
       "question": "Write a clean solution + 5 tests + explain complexity",
       "answer": "Problem 1",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
+    },
+    {
+      "question": "Best Time to Buy and Sell Stock (LeetCode 121) What the Problem Really Is A single-pass optimization problem, not a finance problem",
+      "answer": "Problem 2",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_27_January_2026.pdf"
+    },
+    {
+      "question": "Given two sorted arrays (nums1 and nums2) and counts m and n, merge nums2 into nums1 in-place, producing one sorted array",
+      "answer": "Problem Summary",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_14_January_2026.pdf"
+    },
+    {
+      "question": "nums1 has extra space at the end to accommodate all elements",
+      "answer": "Problem Summary",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_14_January_2026.pdf"
     },
     {
       "question": "Can be used in processing large datasets where complex operations need to be performed",
@@ -12515,6 +13201,11 @@
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
     },
     {
+      "question": "@@SERVERNAME AS PrimaryServer, partner_server AS SecondaryServer, partner_database AS DatabaseName, replication_state_desc AS ReplicationState FROM sys.dm_geo_replication_link_status; Expected replication state: CATCH_UP Secondary is synchronized and ready",
+      "answer": "Query used inside app: SELECT",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/Training Notes (10 Feb 2026).pdf"
+    },
+    {
       "question": "If I need to keep order across hundreds of operations on a collection, which type should I use?",
       "answer": "Question 1",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
@@ -12583,6 +13274,11 @@
       "question": "A queue is a linear data structure, which is a collection that gathers similar data items. Queues are a first-in-first-out (FIFO) data structure that allows you to add elements to the back of the queue and remove elements from the front of the queue. In a queue, there are two...",
       "answer": "Queues",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
+    },
+    {
+      "question": "First In, First Out (FIFO)",
+      "answer": "Queues",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_29_January_2026 (LAST DSA DAY).pdf"
     },
     {
       "question": "Fast in practice; worst-case requires care (pivot selection)",
@@ -12830,9 +13526,24 @@
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
     },
     {
+      "question": "Stays synchronized with primary",
+      "answer": "Region example: westus",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/Training Notes (10 Feb 2026).pdf"
+    },
+    {
       "question": "The class is intentionally incomplete at first",
       "answer": "Regroup later if needed",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
+    },
+    {
+      "question": "carry propagation matters direction matters final carry must be handled explicitly Complexity Time: O(n) Space: O(n) Class-Ready One-Liner \"I add the binary strings from right to left, track a carry, and build the result one bit at a time.\" Deeper Lesson This problem is not ab...",
+      "answer": "Reinforced why",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_27_January_2026.pdf"
+    },
+    {
+      "question": "Store data in tables Enforce relationships between tables Protect data integrity Prioritize correctness over convenience Core goal: One source of truth, referenced everywhere else Normalization (Why Data Is Structured This Way) Normalization exists to: Reduce duplication Preve...",
+      "answer": "Relational databases (SQL Server, Oracle, PostgreSQL, MySQL)",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/Training Notes (09 Feb 2026).pdf"
     },
     {
       "question": "Use.vscode/launch.json and tasks.json to standardize Run/Debug across machines",
@@ -13120,6 +13831,11 @@
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
     },
     {
+      "question": "Enqueue join the back",
+      "answer": "Rules",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_27_January_2026.pdf"
+    },
+    {
       "question": "sign) Numbers ending in 0 are not palindromes, unless the number is 0 o Example: 10 would reverse to 01 (leading zeros don't count) Key idea (the \"follow-up\" solution) Don't reverse the whole number. Reverse only half of it, then compare",
       "answer": "Rules: Negative numbers are never palindromes (because of the",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
@@ -13203,6 +13919,11 @@
       "question": "Run the program and observe the output. Verify that the seat numbers are correctly displayed in the matrix format, with each row on a separate line",
       "answer": "Run the Program",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
+    },
+    {
+      "question": "Contains Duplicate, Two Sum (set-based), Remove Duplicates, and frequency/counting problems",
+      "answer": "Same reasoning pattern as",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_22_January_2026.pdf"
     },
     {
       "question": "[ ] Branch PR merge delete branch",
@@ -13715,6 +14436,11 @@
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
     },
     {
+      "question": "Geo-replicated copy of the primary database",
+      "answer": "Secondary Server",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/Training Notes (10 Feb 2026).pdf"
+    },
+    {
       "question": "Not stored in deployment history",
       "answer": "Secure parameters",
       "sourceFile": "Training Notes (11-26 Feb 2026).pdf"
@@ -13808,6 +14534,11 @@
       "question": "you'll send screenshots throughout the day; I'll integrate each into the doc; we'll compile at end-of-day",
       "answer": "Set working rhythm",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
+    },
+    {
+      "question": "Intersection of Two Arrays (LeetCode 349) The problem reduces to set intersection: find values that appear in both arrays, with no duplicates and no required order",
+      "answer": "Set-Based Logic",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_22_January_2026.pdf"
     },
     {
       "question": "New Car object with same field/property values",
@@ -13955,6 +14686,11 @@
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
     },
     {
+      "question": "and stacks are the tool that makes that conversion possible",
+      "answer": "So we convert infix into something unambiguous",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_28_January_2026.pdf"
+    },
+    {
       "question": "OOP design principles (single responsibility, etc.)",
       "answer": "SOLID",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
@@ -14100,6 +14836,11 @@
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
     },
     {
+      "question": "SQL Server enforces strong typing",
+      "answer": "SQL Data Types (Why SQL Is Strict)",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/Training Notes (09 Feb 2026).pdf"
+    },
+    {
       "question": "Attacker manipulates SQL via input; fix with parameterized queries",
       "answer": "SQL Injection",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
@@ -14108,6 +14849,11 @@
       "question": "\u007f Connected to the local SQL Server instance",
       "answer": "SQL Server Management Studio (SSMS) verification",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
+    },
+    {
+      "question": "WHERE CustomerID = 5",
+      "answer": "SQL uses single equals",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/Training Notes (09 Feb 2026).pdf"
     },
     {
       "question": "1) Terminates when the iterative condition becomes false",
@@ -14175,6 +14921,11 @@
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
     },
     {
+      "question": "Last In, First Out (LIFO)",
+      "answer": "Stacks",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_29_January_2026 (LAST DSA DAY).pdf"
+    },
+    {
       "question": "The stack is an ordered list with a collection of items in which elements can be inserted and deleted from the same end, called the top. Stack is a linear data structure and follows the Last in, First Out approach. Examples of stacks are piles of coins, plates, tennis balls, a...",
       "answer": "Stacks",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
@@ -14183,6 +14934,11 @@
       "question": "An array is used to implement Stacks and Queues Graphs: An array is used to represent graphs in computer science Advantages of Arrays: 1 D Array elements can easily be accessed by using the index number, so if you know the index number, the retrieval time of the array is O (1)",
       "answer": "Stacks and Queues",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
+    },
+    {
+      "question": "the restriction is the feature",
+      "answer": "Stacks are restrictive by design",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_27_January_2026.pdf"
     },
     {
       "question": "Infix notation is the commonly used notation to represent arithmetic expressions, in which the operators are written between the operands. However, this notation has a few limitations, mainly because it is ambiguous when multiple operators with different precedence are involved",
@@ -14595,6 +15351,11 @@
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
     },
     {
+      "question": "o Determine range (min/max) o Create buckets o Distribute elements o Sort individual buckets o Concatenate results Key insights: o Performance depends heavily on data distribution o Worst case degrades if all values cluster Complexity discussion included: o Average: O(n + k) o...",
+      "answer": "Steps",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_26_January_2026.pdf"
+    },
+    {
       "question": "Start with in-memory objects (e.g., List vehicles)",
       "answer": "Steps and patterns",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
@@ -14840,6 +15601,11 @@
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
     },
     {
+      "question": "Today moved you from \"I kinda know arrays\" to \"I can wire arrays into real CRUD operations and talk about indices, search, and shifting like a developer.\"",
+      "answer": "Takeaways for the Day",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/Training Notes (03 Dec 2025).pdf"
+    },
+    {
       "question": "Today moved you from \"I kinda know arrays\" to \"I can wire arrays into real CRUD operations and talk about indices, search, and shifting like a developer.\" Training Notes - 04 Dec 2025 (Week 05 \u007f Day 04) MSSA CCAD21 - C# Classes, Cloning, and Drivers Big Picture Focus today: re...",
       "answer": "Takeaways for the Day",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
@@ -14920,6 +15686,11 @@
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
     },
     {
+      "question": "Track minimum so far Compare against current Update best result That's state management, not finance",
+      "answer": "That's why problems like \"Best Time to Buy and Sell Stock\" work",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_29_January_2026 (LAST DSA DAY).pdf"
+    },
+    {
       "question": "1) One sentence goal (definition of done)",
       "answer": "The 7 Step Loop (anti spaghetti)",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
@@ -14993,6 +15764,11 @@
       "question": "Why the \"dictionary approach\" keeps showing up",
       "answer": "The classic separation you were being pushed toward",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
+    },
+    {
+      "question": "The engine handles execution",
+      "answer": "The conditions",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/Training Notes (09 Feb 2026).pdf"
     },
     {
       "question": "Determine whether a value exists in the collection",
@@ -15070,6 +15846,11 @@
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
     },
     {
+      "question": "Big-O describes how bad things get when they go wrong",
+      "answer": "The key realization",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_29_January_2026 (LAST DSA DAY).pdf"
+    },
+    {
       "question": "next == null no cycle next == some previous node cycle The Problem You cannot: Detect \"infinity\" Know you looped back naturally The Solution You must prove the list loops",
       "answer": "The last node will either",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
@@ -15090,6 +15871,16 @@
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
     },
     {
+      "question": "At first glance, \"valid parentheses\" looks like a toy problem",
+      "answer": "The parentheses problem wasn't about punctuation",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_28_January_2026.pdf"
+    },
+    {
+      "question": "It's a discipline enforcement test",
+      "answer": "The parentheses problem wasn't about punctuation",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_28_January_2026.pdf"
+    },
+    {
       "question": "MERGE (arr, start, end)",
       "answer": "The pseudocode is as follows",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
@@ -15098,6 +15889,21 @@
       "question": "procedure QuickSort(arr: array of integers, low: integer, high: integer) if low < high then pivotIndex = Partition(arr, low, high) QuickSort(arr, low, pivotIndex - 1) QuickSort(arr, pivotIndex + 1, high) procedure Partition(arr: array of integers, low: integer, high: integer):...",
       "answer": "The pseudocode of Quick sort is as follows",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
+    },
+    {
+      "question": "how you approached confusion today",
+      "answer": "The quiet win",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_28_January_2026.pdf"
+    },
+    {
+      "question": "\"You are not allowed to close something unless it is the most recently opened unresolved thing.\" That is exactly how command structure, safety procedures, and weapon handling work",
+      "answer": "The rule is",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_28_January_2026.pdf"
+    },
+    {
+      "question": "\"Make sure brackets match.\"",
+      "answer": "The rule isn't",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_28_January_2026.pdf"
     },
     {
       "question": "=> \"I am saving book data to the cloud!\"",
@@ -15130,9 +15936,29 @@
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
     },
     {
+      "question": "That question solves more problems than memorization ever will",
+      "answer": "The Single Most Important DSA Skill",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_29_January_2026 (LAST DSA DAY).pdf"
+    },
+    {
+      "question": "When do I stop?",
+      "answer": "The Single Most Important DSA Skill",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_29_January_2026 (LAST DSA DAY).pdf"
+    },
+    {
+      "question": "When does it change?",
+      "answer": "The Single Most Important DSA Skill",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_29_January_2026 (LAST DSA DAY).pdf"
+    },
+    {
       "question": "The solution of adding two numbers. It can be done with the help of '+', the operator",
       "answer": "The solution to this problem, as per the given constraints",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
+    },
+    {
+      "question": "Operators that are waiting their turn Parentheses that haven't been resolved Intent that cannot yet be executed That's not \"extra memory.\" That's deferred responsibility",
+      "answer": "The stack temporarily holds",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_28_January_2026.pdf"
     },
     {
       "question": "The number of child nodes per node within the non-binary tree The way the child nodes are connected determines the branching structure Application of Non-binary Trees Solve various types of problems that may involve sorting and searching",
@@ -15153,6 +15979,11 @@
       "question": "1. Tests already exist",
       "answer": "The workflow was",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
+    },
+    {
+      "question": "Arrays as Parking Lots, Indices, and CRUD on Vehicles 1. Big Picture of Today Today was all about getting truly comfortable with arrays and indices while wiring them into real CRUD behavior on your Autolot: Arrays as fixed-size \"parking lots\" of vehicles",
+      "answer": "Theme",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/Training Notes (03 Dec 2025).pdf"
     },
     {
       "question": "Interfaces, Polymorphism, and Save Strategies",
@@ -15215,6 +16046,11 @@
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
     },
     {
+      "question": "tracking state respecting order enforcing constraints letting answers emerge from rules instead of guesses Multiple problems with different \"skins\" all reduced to the same mental discipline",
+      "answer": "They are about",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_27_January_2026.pdf"
+    },
+    {
       "question": "simple efficient sorting algorithms Simple sorting algorithms are easy to use and implement. The key simple sorting algorithms are: Bubble sort Selection sort Insertion sort On the other hand, the efficient sorting algorithms offer the best asymptotic time complexity",
       "answer": "They are divided into two categories",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
@@ -15223,6 +16059,11 @@
       "question": "they describe different perspectives of the same algorithm",
       "answer": "They are not competing ideas",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
+    },
+    {
+      "question": "\"We are building our own List, but learning why it's designed the way it is.\" This is foundational for: Lists Stacks Queues Trees Almost every real-world data structure",
+      "answer": "Think of today's work as",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_8_January_2026.pdf"
     },
     {
       "question": "\"We are building our own List, but learning why it's designed the way it is.\" This is foundational for: Lists Stacks Queues Trees Almost every real-world data structure MSSA Cohort Reference - Git & Markdown (Nov 2025 - Mar 2026) Page 1 Git + Markdown Master Reference Git Comm...",
@@ -15245,9 +16086,19 @@
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
     },
     {
+      "question": "you're not starting from zero. You're translating experience into a new domain, and today proved that works",
+      "answer": "This is especially important given your background",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_28_January_2026.pdf"
+    },
+    {
       "question": "you keep the high-level code stable while swapping out implementations underneath",
       "answer": "This is how menus, processors, and data pipelines stay flexible",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
+    },
+    {
+      "question": "Before writing code, decide what must be remembered and in what order",
+      "answer": "This is the one thing to carry forward",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_29_January_2026 (LAST DSA DAY).pdf"
     },
     {
       "question": "things look familiar again. The instructor cautioned against mistaking familiarity for completeness. The hierarchy was intentionally minimal",
@@ -15275,6 +16126,16 @@
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
     },
     {
+      "question": "streaming analytics monitoring systems sliding window problems prefix min/max algorithms This is production thinking, not puzzle solving",
+      "answer": "This pattern appears everywhere",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_27_January_2026.pdf"
+    },
+    {
+      "question": "The code mirrors the definition",
+      "answer": "This problem works because",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_29_January_2026 (LAST DSA DAY).pdf"
+    },
+    {
       "question": "MainMenu or UI code only cares about \"Save my books\"",
       "answer": "This reinforces the separation of concerns",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
@@ -15290,9 +16151,19 @@
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
     },
     {
+      "question": "\"All statements after this run against this database.\" Without USE, you may: Query the wrong database Get \"object not found\" errors Modify unintended data SELECT Basics SELECT * FROM SalesLT.Customer; This works, but it is not best practice",
+      "answer": "This tells SQL Server",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/Training Notes (09 Feb 2026).pdf"
+    },
+    {
       "question": "Thread.Sleep blocks the thread (bad for UI/web). Task.Delay is non-blocking and resumes later",
       "answer": "Thread.Sleep vs await Task.Delay",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
+    },
+    {
+      "question": "Loop boundaries and off-by-one errors Base cases in recursion Best vs average vs worst-case performance Space vs time tradeoffs In-place vs auxiliary memory algorithms Why \"works\" is not the same as \"safe\" or \"scalable\" Big Picture Takeaway Sorting algorithms were used as a ve...",
+      "answer": "Throughout the day, emphasis was placed on understanding",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_26_January_2026.pdf"
     },
     {
       "question": "logarithmic in base 2",
@@ -15393,6 +16264,11 @@
       "question": "It is the number of operations needed to be executed in a program",
       "answer": "Time Complexity",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
+    },
+    {
+      "question": "o Best Case: O(n) (already sorted, with optimization) o Worst Case: O(n2) (reverse-sorted) Space Complexity: O(1) Simple to understand, inefficient for large datasets Learning Value Excellent for understanding: o Nested loops o Comparisons o Swapping o Algorithm visualization...",
+      "answer": "Time Complexity",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_22_January_2026.pdf"
     },
     {
       "question": "problem. The time it takes to compute an algorithm increases, or the number of steps increases as the input size increases",
@@ -16220,6 +17096,21 @@
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
     },
     {
+      "question": "04 Dec 2025 (Week 05 \u007f Day 04) MSSA CCAD21 - C# Classes, Cloning, and Drivers Big Picture Focus today: reference types, cloning objects, and wiring more behavior into the AutoLot / Vehicle system",
+      "answer": "Training Notes",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/Training Notes (04 Dec 2025).pdf"
+    },
+    {
+      "question": "Training Notes 15 December 2025",
+      "answer": "Training Notes (15 Dec 2025)",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/Training Notes (15 Dec 2025).pdf"
+    },
+    {
+      "question": "Training Notes (20 Nov 2025)",
+      "answer": "Training Notes (20 Nov 2025)",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/Training Notes (20 Nov 2025).pdf"
+    },
+    {
       "question": "import data, choose a model type, split data into training and test sets, train the model, evaluate metrics and iterate. Models must be retrained with new data to remain accurate",
       "answer": "Training workflow",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
@@ -16478,6 +17369,11 @@
       "question": "We will now process the left sub-tree under node, C. We will process the left child node, D. However, since it is a parent node for F and H, we must process the left child node, F",
       "answer": "Tree Traversal",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
+    },
+    {
+      "question": "Traversal is about when you visit the node",
+      "answer": "Tree Traversals (Order Is the Point)",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_29_January_2026 (LAST DSA DAY).pdf"
     },
     {
       "question": "Implement traversal/search/sort variations; include edge cases and compare complexities",
@@ -16790,6 +17686,16 @@
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
     },
     {
+      "question": "You need fast membership tests",
+      "answer": "Use when",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_29_January_2026 (LAST DSA DAY).pdf"
+    },
+    {
+      "question": "You must reverse something",
+      "answer": "Used when",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_29_January_2026 (LAST DSA DAY).pdf"
+    },
+    {
       "question": "Prompt the user to enter a student ID to search for and store the input in a variable called \"searchID\"",
       "answer": "User Input",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
@@ -17050,6 +17956,46 @@
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
     },
     {
+      "question": "In C# arrays, indices always start at 0 and go to Length - 1",
+      "answer": "Week 05 - Day 03",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/Training Notes (03 Dec 2025).pdf"
+    },
+    {
+      "question": "Keeping VehicleCount and printing logic in sync so there are no ghost or duplicate cars",
+      "answer": "Week 05 - Day 03",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/Training Notes (03 Dec 2025).pdf"
+    },
+    {
+      "question": "Searching the array for a matching VIN and returning the index",
+      "answer": "Week 05 - Day 03",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/Training Notes (03 Dec 2025).pdf"
+    },
+    {
+      "question": "Shifting cars left in the array when one is removed",
+      "answer": "Week 05 - Day 03",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/Training Notes (03 Dec 2025).pdf"
+    },
+    {
+      "question": "The index is not the value; it is the position where the value lives",
+      "answer": "Week 05 - Day 03",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/Training Notes (03 Dec 2025).pdf"
+    },
+    {
+      "question": "Using that index to show, edit, or remove that specific vehicle",
+      "answer": "Week 05 - Day 03",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/Training Notes (03 Dec 2025).pdf"
+    },
+    {
+      "question": "Using the index (0, 1, 2,...) as the \"slot number\" where a vehicle sits",
+      "answer": "Week 05 - Day 03",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/Training Notes (03 Dec 2025).pdf"
+    },
+    {
+      "question": "VehicleCount tracks how many of those spots currently hold a real car or truck",
+      "answer": "Week 05 - Day 03",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/Training Notes (03 Dec 2025).pdf"
+    },
+    {
       "question": "Algorithms can take 0 or more inputs. Its data type should be specified, and the input must be precise",
       "answer": "Well-Defined Input",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
@@ -17060,9 +18006,79 @@
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
     },
     {
+      "question": "Data Structures and Algorithms (DSA) exist to help systems remain efficient as they grow",
+      "answer": "What Data Structures & Algorithms Really Are",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_5_January_2026.pdf"
+    },
+    {
+      "question": "Every system works when it's small; DSA ensures it still works when it becomes large",
+      "answer": "What Data Structures & Algorithms Really Are",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_5_January_2026.pdf"
+    },
+    {
+      "question": "2. In what order must things be processed?",
+      "answer": "What DSA Is Actually Teaching You",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_29_January_2026 (LAST DSA DAY).pdf"
+    },
+    {
+      "question": "3. How expensive is this in time?",
+      "answer": "What DSA Is Actually Teaching You",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_29_January_2026 (LAST DSA DAY).pdf"
+    },
+    {
+      "question": "4. How expensive is this in memory?",
+      "answer": "What DSA Is Actually Teaching You",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_29_January_2026 (LAST DSA DAY).pdf"
+    },
+    {
+      "question": "Big-O is not math",
+      "answer": "What DSA Is Actually Teaching You",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_29_January_2026 (LAST DSA DAY).pdf"
+    },
+    {
+      "question": "DSA is not about clever code",
+      "answer": "What DSA Is Actually Teaching You",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_29_January_2026 (LAST DSA DAY).pdf"
+    },
+    {
+      "question": "If you answer those four questions, the data structure reveals itself",
+      "answer": "What DSA Is Actually Teaching You",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_29_January_2026 (LAST DSA DAY).pdf"
+    },
+    {
+      "question": "It is about constraints, tradeoffs, and control",
+      "answer": "What DSA Is Actually Teaching You",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_29_January_2026 (LAST DSA DAY).pdf"
+    },
+    {
+      "question": "It is scale awareness",
+      "answer": "What DSA Is Actually Teaching You",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_29_January_2026 (LAST DSA DAY).pdf"
+    },
+    {
       "question": "Print each with index, date, topic, duration, and maybe notes (truncated)",
       "answer": "What StudyTide v1 should do",
       "sourceFile": "MSSA Training App.docx"
+    },
+    {
+      "question": "T-SQL is declarative, not procedural",
+      "answer": "What T-SQL Is (Big Picture)",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/Training Notes (09 Feb 2026).pdf"
+    },
+    {
+      "question": "Transact-SQL (T-SQL) is Microsoft's implementation of SQL used by SQL Server and Azure SQL",
+      "answer": "What T-SQL Is (Big Picture)",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/Training Notes (09 Feb 2026).pdf"
+    },
+    {
+      "question": "Core Binary Rules Internalized a b carry result new carry 0 0 0 0 0 0 1 0 1 0 1 0 0 1 0 1 1 0 0 1 1 1 1 1 1 Every correct solution is a consequence of this table",
+      "answer": "What the Problem Really Is",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_27_January_2026.pdf"
+    },
+    {
+      "question": "No abstraction. No magic",
+      "answer": "What the Problem Really Is",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_27_January_2026.pdf"
     },
     {
       "question": "Takes all rows that List rows present in a table just gave us",
@@ -17075,9 +18091,34 @@
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
     },
     {
+      "question": "Stacks exist to enforce that certainty",
+      "answer": "What today was actually about",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_28_January_2026.pdf"
+    },
+    {
+      "question": "Today was about learning how computers enforce order when humans are vague",
+      "answer": "What today was actually about",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_28_January_2026.pdf"
+    },
+    {
+      "question": "Today wasn't \"learning stacks.\"",
+      "answer": "What today was actually about",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_28_January_2026.pdf"
+    },
+    {
+      "question": "Infix notation is for humans",
+      "answer": "What you finally saw today is this",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_28_January_2026.pdf"
+    },
+    {
       "question": "edge cases first. Bugs live at the borders",
       "answer": "When coding",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
+    },
+    {
+      "question": "1. Identify data shape (array, tree, graph, stream) 2. Identify order requirement (LIFO, FIFO, sorted, arbitrary) 3. Identify constraints (time, space) 4. Choose the simplest structure that satisfies all three That's DSA",
+      "answer": "When handed a new problem",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_29_January_2026 (LAST DSA DAY).pdf"
     },
     {
       "question": "You are rewiring pointers, not shifting data Order matters: o Save references o Point new node correctly o Reconnect neighbors If you lose a reference, the list breaks This is why instructors call it \"surgery\"",
@@ -17088,6 +18129,21 @@
       "question": "write Expected vs Actual, then list 3 hypotheses",
       "answer": "When stuck",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
+    },
+    {
+      "question": "What am I tracking?",
+      "answer": "When stuck, ask",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_29_January_2026 (LAST DSA DAY).pdf"
+    },
+    {
+      "question": "\"Orders arrive and are executed immediately\" and prefix as: \"Intent declared first, assets execute afterward\" you weren't simplifying - you were correct",
+      "answer": "When you framed postfix as",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_28_January_2026.pdf"
+    },
+    {
+      "question": "\"This is unfinished business. I cannot move on until this is resolved.\" That's a profoundly useful mental model",
+      "answer": "When you push something onto a stack, you are saying",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_28_January_2026.pdf"
     },
     {
       "question": "1) Is it running?",
@@ -17135,6 +18191,11 @@
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
     },
     {
+      "question": "o Have no direct index access o Require sequential traversal to reach a position Finding the \"middle\" node already costs O(n) time Binary search loses its advantage and degrades to linear time Conclusion Binary search is efficient only on random-access structures (arrays)",
+      "answer": "Why Binary Search Does Not Work on Linked Lists Linked lists",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_22_January_2026.pdf"
+    },
+    {
       "question": "The class evolves from non-generic to generic (MSSAArrayCollection ) so the same algorithms work across multiple types",
       "answer": "Why Generics Matter Here",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
@@ -17143,6 +18204,26 @@
       "question": "Bruteforce string matching rechecks characters unnecessarily",
       "answer": "Why KMP Exists",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
+    },
+    {
+      "question": "DSA didn't break you",
+      "answer": "Why performance matters before failure, not after",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_29_January_2026 (LAST DSA DAY).pdf"
+    },
+    {
+      "question": "That's the real win",
+      "answer": "Why performance matters before failure, not after",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_29_January_2026 (LAST DSA DAY).pdf"
+    },
+    {
+      "question": "o expression parsing o tree traversal o algorithm execution flow Mental Models to Internalize State matters more than syntax Constraints shape solutions Most problems reduce to tracking 1-2 critical variables Data structures encode rules about access and order Status at End of...",
+      "answer": "Why stacks underpin",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_27_January_2026.pdf"
+    },
+    {
+      "question": "it was accurate This mattered, so I'm calling it out explicitly",
+      "answer": "Why the military analogy wasn't just cute",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_28_January_2026.pdf"
     },
     {
       "question": "\u007f You are now working with a real C# architecture, not just single-file labs",
@@ -17300,9 +18381,19 @@
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
     },
     {
+      "question": "Even when you don't sort, you often reason as if sorted",
+      "answer": "Worst-case thinking",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_29_January_2026 (LAST DSA DAY).pdf"
+    },
+    {
       "question": "Run `dotnet test` after every change dotnet test CLI Notes `dotnet test` builds your solution and runs tests via a test platform (VSTest or Microsoft Testing Platform depending on configuration). cite turn6search1 turn6search4 Debugging: High-Signal Moves Set a breakpoint befo...",
       "answer": "Write 5 unit tests for InsertionSort",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
+    },
+    {
+      "question": "Schemas organize database objects",
+      "answer": "Written to transaction logs before commit completes",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/Training Notes (09 Feb 2026).pdf"
     },
     {
       "question": "Use left <= right; update left = mid+1 or right = mid-1",
@@ -17365,6 +18456,11 @@
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
     },
     {
+      "question": "\"What is this really doing?\"",
+      "answer": "You asked",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_28_January_2026.pdf"
+    },
+    {
       "question": "\u007f Valid int values",
       "answer": "You built InputHelpers to safely get",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
@@ -17378,6 +18474,21 @@
       "question": "A correct bruteforce solution beats a broken \"optimal\" one",
       "answer": "You can explain its limits",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
+    },
+    {
+      "question": "SQL operates on sets of rows, not one row at a time",
+      "answer": "You describe what result you want",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/Training Notes (09 Feb 2026).pdf"
+    },
+    {
+      "question": "You do not describe how to loop, iterate, or fetch rows The query optimizer decides the execution plan This is fundamentally different from C#, Java, or JavaScript",
+      "answer": "You describe what result you want",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/Training Notes (09 Feb 2026).pdf"
+    },
+    {
+      "question": "Clear the chamber before removing the magazine",
+      "answer": "You don't",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_28_January_2026.pdf"
     },
     {
       "question": "folder layouts (layouts), repeatable local copies (instances), language templates, VS Code configs (launch.json, tasks.json), formatting (.editorconfig, formatters), and Git/GitHub workflows (branching, remotes, merge vs rebase)",
@@ -17413,6 +18524,11 @@
       "question": "\u007f Arrays like IRemoteControl[] are fixed size. You choose the length up front and then use numeric indexes",
       "answer": "You reinforced how different collection types behave",
       "sourceFile": "MSSA_CAD_Ultimate_Guide_22_Jan_2026.pdf"
+    },
+    {
+      "question": "they are about obligation",
+      "answer": "You saw that stacks are not about storage",
+      "sourceFile": "Training Notes.zip::Training Notes/Daily Training Notes/DSA - January 2026/DSA_Foundations_Study_Guide_28_January_2026.pdf"
     },
     {
       "question": "inheritance, type checking, casting, partial and sealed classes, enums, and polymorphism",

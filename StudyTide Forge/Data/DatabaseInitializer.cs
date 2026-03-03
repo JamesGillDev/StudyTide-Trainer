@@ -187,9 +187,64 @@ public static class DatabaseInitializer
 
     private static readonly IReadOnlyDictionary<string, int> CategoryCoverageTargets = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase)
     {
+        ["Azure"] = 500,
         ["C#"] = 450,
         ["System Design"] = 300
     };
+
+    private static readonly IReadOnlyList<string> AzureConcepts =
+    [
+        "Resource groups and lifecycle boundaries",
+        "Subscriptions and management groups",
+        "Role-based access control least privilege",
+        "Microsoft Entra identity integration",
+        "Managed identities for workload auth",
+        "Azure Key Vault secret governance",
+        "Storage account redundancy options",
+        "Blob lifecycle and tiering strategy",
+        "Virtual network segmentation and subnets",
+        "Network security groups and rules",
+        "Private endpoints and service isolation",
+        "Azure DNS and name resolution",
+        "Load Balancer vs Application Gateway",
+        "Azure Front Door global routing",
+        "App Service deployment slots",
+        "Container Apps scaling and revisions",
+        "AKS node pool planning",
+        "Function Apps trigger selection",
+        "Event Grid event-driven integration",
+        "Service Bus queue vs topic usage",
+        "Event Hubs partition and throughput design",
+        "API Management policy and governance",
+        "Azure Monitor metric and log strategy",
+        "Application Insights distributed tracing",
+        "Log Analytics KQL diagnostics",
+        "Alert rules and action groups",
+        "Azure Policy compliance guardrails",
+        "Defender for Cloud recommendations",
+        "Cost Management budgets and alerts",
+        "Reservations and savings plans",
+        "Backup and disaster recovery planning",
+        "Availability zones and regional design",
+        "Bicep IaC module composition",
+        "ARM deployment modes and drift",
+        "Terraform state management in Azure",
+        "Azure DevOps multi-stage pipelines",
+        "GitHub Actions OIDC to Azure",
+        "Zero-downtime blue-green deployment",
+        "Canary rollout with health checks",
+        "Caching with Azure Cache for Redis",
+        "Azure SQL scaling and failover groups",
+        "Cosmos DB partition key strategy",
+        "Data Factory orchestration patterns",
+        "Synapse analytics architecture",
+        "Sentinel security operations workflow",
+        "Purview data governance cataloging",
+        "Governance with tags and naming standards",
+        "Landing zone architecture principles",
+        "Well-Architected Framework in Azure",
+        "Incident response runbooks in Azure"
+    ];
 
     private static readonly IReadOnlyList<string> CSharpConcepts =
     [
@@ -1426,12 +1481,54 @@ public static class DatabaseInitializer
         int variantIndex,
         string titlePrefix)
     {
+        if (string.Equals(category, "Azure", StringComparison.OrdinalIgnoreCase))
+        {
+            return BuildAzureSeedBlock(lessonTitle, concept, sequence, variantIndex, titlePrefix);
+        }
+
         if (string.Equals(category, "System Design", StringComparison.OrdinalIgnoreCase))
         {
             return BuildSystemDesignSeedBlock(lessonTitle, concept, sequence, variantIndex, titlePrefix);
         }
 
         return BuildCSharpSeedBlock(lessonTitle, concept, sequence, variantIndex, titlePrefix);
+    }
+
+    private static SeedBlock BuildAzureSeedBlock(
+        string lessonTitle,
+        string concept,
+        int sequence,
+        int variantIndex,
+        string titlePrefix)
+    {
+        var prefix = string.IsNullOrWhiteSpace(titlePrefix)
+            ? string.Empty
+            : $"{titlePrefix} - ";
+
+        return variantIndex switch
+        {
+            0 => new SeedBlock(
+                ModuleCategory: "Azure",
+                LessonTitle: lessonTitle,
+                Title: $"{prefix}Azure #{sequence:000}: {concept} (Core)",
+                Response: $"{concept} is a core Azure cloud skill used to build secure, resilient, and maintainable production workloads.",
+                Example: $"During Azure architecture review, define {concept.ToLowerInvariant()} so decisions align with reliability, security, and operational goals.",
+                Difficulty: 3),
+            1 => new SeedBlock(
+                ModuleCategory: "Azure",
+                LessonTitle: lessonTitle,
+                Title: $"{prefix}Azure #{sequence:000}: {concept} (Implementation)",
+                Response: $"Apply {concept.ToLowerInvariant()} when implementing Azure services to improve governance, observability, and deployment consistency.",
+                Example: $"In a deployment sprint, configure {concept.ToLowerInvariant()} before go-live to reduce avoidable production incidents.",
+                Difficulty: 3),
+            _ => new SeedBlock(
+                ModuleCategory: "Azure",
+                LessonTitle: lessonTitle,
+                Title: $"{prefix}Azure #{sequence:000}: {concept} (Pitfall)",
+                Response: $"A common Azure pitfall with {concept.ToLowerInvariant()} is treating it as a one-time setup instead of an operational discipline reviewed over time.",
+                Example: $"During post-incident review, reassess {concept.ToLowerInvariant()} controls to close recurring reliability and security gaps.",
+                Difficulty: 4)
+        };
     }
 
     private static SeedBlock BuildCSharpSeedBlock(
@@ -1503,6 +1600,11 @@ public static class DatabaseInitializer
 
     private static IReadOnlyList<string> GetConceptsForCategory(string category)
     {
+        if (string.Equals(category, "Azure", StringComparison.OrdinalIgnoreCase))
+        {
+            return AzureConcepts;
+        }
+
         return string.Equals(category, "System Design", StringComparison.OrdinalIgnoreCase)
             ? SystemDesignConcepts
             : CSharpConcepts;
@@ -1510,6 +1612,11 @@ public static class DatabaseInitializer
 
     private static int GetVariantCountForCategory(string category)
     {
+        if (string.Equals(category, "Azure", StringComparison.OrdinalIgnoreCase))
+        {
+            return 3;
+        }
+
         return string.Equals(category, "System Design", StringComparison.OrdinalIgnoreCase)
             ? 2
             : 3;
