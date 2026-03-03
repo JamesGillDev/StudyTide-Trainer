@@ -25,74 +25,76 @@ else if (_session.Blocks.Count == 0)
 }
 else
 {
-    <h1>@_session.LessonTitle</h1>
+    <div class="lesson-study-page">
+        <h1>@_session.LessonTitle</h1>
 
-    <div class="lesson-meta-row">
-        <p class="meta-text">
-            Module: @_session.ModuleName |
-            Slide @(_currentIndex + 1) of @_session.Blocks.Count |
-            Status: <span class="status-pill @GetStatusClass(GetLessonStatus())">@GetStatusLabel(GetLessonStatus())</span>
-        </p>
-        <label class="checkbox-inline">
-            <input type="checkbox" checked="@_isLessonFlagged" @onchange="OnLessonFlagChangedAsync" />
-            Flag lesson
-        </label>
-    </div>
+        <div class="lesson-meta-row">
+            <p class="meta-text">
+                Module: @_session.ModuleName |
+                Slide @(_currentIndex + 1) of @_session.Blocks.Count |
+                Status: <span class="status-pill @GetStatusClass(GetLessonStatus())">@GetStatusLabel(GetLessonStatus())</span>
+            </p>
+            <label class="checkbox-inline">
+                <input type="checkbox" checked="@_isLessonFlagged" @onchange="OnLessonFlagChangedAsync" />
+                Flag lesson
+            </label>
+        </div>
 
-    <div class="study-layout" tabindex="0" @onkeydown="HandleKeyNavigationAsync" @ref="_studyContainer">
-        <section class="panel study-slide-panel">
-            <h2>@CurrentBlock!.Title</h2>
+        <div class="study-layout" tabindex="0" @onkeydown="HandleKeyNavigationAsync" @ref="_studyContainer">
+            <section class="panel study-slide-panel">
+                <h2>@CurrentBlock!.Title</h2>
 
-            <div class="training-sections">
-                <section class="training-section">
-                    <h4>Prompt</h4>
-                    <pre class="training-content">@CurrentBlock.Prompt</pre>
-                </section>
-                <section class="training-section">
-                    <h4>Response</h4>
-                    <pre class="training-content">@CurrentBlock.Response</pre>
-                </section>
-                <section class="training-section">
-                    <h4>Example</h4>
-                    <pre class="training-content">@CurrentBlock.Example</pre>
-                </section>
-                <section class="training-section study-expanded">
-                    <h4>Expanded Context</h4>
-                    <ul class="study-cue-list">
-                        @foreach (var point in CurrentBlock.ExpandedExample)
-                        {
-                            <li>@point</li>
-                        }
-                    </ul>
-                </section>
-            </div>
+                <div class="training-sections">
+                    <section class="training-section">
+                        <h4>Prompt</h4>
+                        <pre class="training-content">@CurrentBlock.Prompt</pre>
+                    </section>
+                    <section class="training-section">
+                        <h4>Response</h4>
+                        <pre class="training-content">@CurrentBlock.Response</pre>
+                    </section>
+                    <section class="training-section">
+                        <h4>Example</h4>
+                        <pre class="training-content">@CurrentBlock.Example</pre>
+                    </section>
+                    <section class="training-section study-expanded">
+                        <h4>Expanded Context</h4>
+                        <ul class="study-cue-list">
+                            @foreach (var point in CurrentBlock.ExpandedExample)
+                            {
+                                <li>@point</li>
+                            }
+                        </ul>
+                    </section>
+                </div>
 
-            <div class="actions">
-                <button class="secondary" @onclick="GoPreviousAsync" disabled="@(!CanGoPrevious)">Previous</button>
-                <button @onclick="GoNextAsync" disabled="@(!CanGoNext)">Next</button>
-                <a class="button-link secondary" href="/practice">Practice</a>
-                <a class="button-link secondary" href="/modules/flashcards">Flashcards</a>
-            </div>
+                <div class="actions">
+                    <button class="secondary" @onclick="GoPreviousAsync" disabled="@(!CanGoPrevious)">Previous</button>
+                    <button @onclick="GoNextAsync" disabled="@(!CanGoNext)">Next</button>
+                    <a class="button-link secondary" href="/practice">Practice</a>
+                    <a class="button-link secondary" href="/modules/flashcards">Flashcards</a>
+                </div>
 
-            <p class="meta-text">Use Left/Right arrow keys to navigate slides.</p>
-        </section>
+                <p class="meta-text">Use Left/Right arrow keys to navigate slides.</p>
+            </section>
 
-        <aside class="panel study-outline-panel">
-            <h2>Outline</h2>
-            <ol class="study-outline-list">
-                @for (var index = 0; index < _session.Blocks.Count; index++)
-                {
-                    var block = _session.Blocks[index];
-                    <li>
-                        <button class="outline-item @GetOutlineClass(index)"
-                                @onclick="() => JumpToIndexAsync(index)">
-                            <span class="outline-order">@(@index + 1)</span>
-                            <span class="outline-title">@block.Title</span>
-                        </button>
-                    </li>
-                }
-            </ol>
-        </aside>
+            <aside class="panel study-outline-panel">
+                <h2>Outline</h2>
+                <ol class="study-outline-list">
+                    @for (var index = 0; index < _session.Blocks.Count; index++)
+                    {
+                        var block = _session.Blocks[index];
+                        <li>
+                            <button class="outline-item @GetOutlineClass(index)"
+                                    @onclick="() => JumpToIndexAsync(index)">
+                                <span class="outline-order">@(@index + 1)</span>
+                                <span class="outline-title">@block.Title</span>
+                            </button>
+                        </li>
+                    }
+                </ol>
+            </aside>
+        </div>
     </div>
 }
 

@@ -159,6 +159,23 @@ public sealed class StudyLibraryService(IDbContextFactory<ForgeDbContext> dbFact
         await db.SaveChangesAsync();
     }
 
+    public async Task<bool> ResetLessonProgressAsync(int lessonId)
+    {
+        await using var db = await dbFactory.CreateDbContextAsync();
+
+        var progress = await db.StudyLessonProgresses
+            .FirstOrDefaultAsync(x => x.LessonId == lessonId);
+
+        if (progress is null)
+        {
+            return false;
+        }
+
+        db.StudyLessonProgresses.Remove(progress);
+        await db.SaveChangesAsync();
+        return true;
+    }
+
     private static StudyLessonCard BuildLessonCard(LessonRow row, StudyLessonProgress? progress)
     {
         var status = progress switch

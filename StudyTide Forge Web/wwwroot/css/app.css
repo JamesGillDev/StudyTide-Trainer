@@ -469,6 +469,16 @@ button.danger {
     gap: 0.3rem;
 }
 
+.lesson-study-page {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    min-height: calc(100vh - 12.5rem);
+    min-height: calc(100dvh - 12.5rem);
+    max-height: calc(100vh - 12.5rem);
+    max-height: calc(100dvh - 12.5rem);
+}
+
 .study-layout {
     display: grid;
     grid-template-columns: minmax(0, 1.7fr) minmax(260px, 1fr);
@@ -476,14 +486,31 @@ button.danger {
     align-items: start;
 }
 
+.lesson-study-page .study-layout {
+    flex: 1 1 auto;
+    min-height: 0;
+    align-items: stretch;
+}
+
 .study-slide-panel {
     margin-bottom: 0;
+}
+
+.lesson-study-page .study-slide-panel {
+    min-height: 0;
+    max-height: 100%;
+    overflow: auto;
 }
 
 .study-outline-panel {
     margin-bottom: 0;
     max-height: 72vh;
     overflow: auto;
+}
+
+.lesson-study-page .study-outline-panel {
+    min-height: 0;
+    max-height: 100%;
 }
 
 .study-outline-list {
@@ -720,5 +747,19 @@ code {
 
     .study-layout {
         grid-template-columns: 1fr;
+    }
+
+    .lesson-study-page {
+        min-height: auto;
+        max-height: none;
+    }
+
+    .lesson-study-page .study-layout {
+        flex: initial;
+    }
+
+    .lesson-study-page .study-slide-panel,
+    .lesson-study-page .study-outline-panel {
+        max-height: none;
     }
 }

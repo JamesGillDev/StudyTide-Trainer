@@ -13,6 +13,45 @@ public static class DatabaseInitializer
         @"(?<=[.!?])\s+",
         RegexOptions.Compiled | RegexOptions.CultureInvariant);
 
+    private static readonly string[] ImperativeLeadWords =
+    [
+        "use ",
+        "add ",
+        "create ",
+        "build ",
+        "run ",
+        "open ",
+        "press ",
+        "select ",
+        "configure ",
+        "set ",
+        "define ",
+        "implement ",
+        "apply ",
+        "map ",
+        "call ",
+        "invoke "
+    ];
+
+    private static readonly string[] SubjectVerbLeadWords =
+    [
+        "is ",
+        "are ",
+        "was ",
+        "were ",
+        "can ",
+        "could ",
+        "should ",
+        "would ",
+        "will ",
+        "may ",
+        "might ",
+        "must ",
+        "has ",
+        "have ",
+        "had "
+    ];
+
     private static readonly IReadOnlyList<SeedBlock> SupplementalSeedBlocks =
     [
         new(
@@ -489,30 +528,36 @@ public static class DatabaseInitializer
     private static string BuildConcreteExample(string prompt, string response)
     {
         var term = NormalizeForSentence(ExtractTerm(prompt, response), 90);
-        var action = NormalizeForSentence(ExtractActionPhrase(response), 180);
+        var action = NormalizeForSentence(ExtractActionPhrase(prompt, response, term), 180);
 
         if (string.IsNullOrWhiteSpace(action))
         {
-            action = NormalizeForSentence(response, 180);
+            action = NormalizeForSentence(prompt, 180);
         }
 
+        if (string.IsNullOrWhiteSpace(term))
+        {
+            term = NormalizeForSentence(TrimSentenceEnding(response), 90);
+        }
+
+        var scenario = BuildScenarioClause(action);
         string sentence;
 
         if (LooksLikeKeyboardShortcut(term))
         {
-            sentence = $"In Visual Studio Code, press {term} to {action}.";
+            sentence = $"In Visual Studio Code, press {term} {scenario}.";
         }
         else if (LooksLikeCliCommand(term))
         {
-            sentence = $"In a terminal session, run {term} to {action}.";
+            sentence = $"In a terminal session, run {term} {scenario}.";
         }
         else if (LooksLikeCodeKeyword(term))
         {
-            sentence = $"In code, use {term} when {action}.";
+            sentence = $"In code, use {term} {scenario}.";
         }
         else
         {
-            sentence = $"In a real project, apply {term} when {action}.";
+            sentence = $"In a real project, apply {term} {scenario}.";
         }
 
         return NormalizeExampleSentence(sentence);
@@ -520,34 +565,80 @@ public static class DatabaseInitializer
 
     private static string ExtractTerm(string prompt, string response)
     {
-        var normalizedPrompt = NormalizeForSentence(prompt, 120);
+        var normalizedPrompt = NormalizeForSentence(prompt, 220);
+        var normalizedResponse = NormalizeForSentence(response, 120);
 
-        if (normalizedPrompt.StartsWith("Identify the term:", StringComparison.OrdinalIgnoreCase))
+        var promptCandidate = ExtractPromptCandidate(normalizedPrompt);
+        var responseCandidate = CleanTermCandidate(normalizedResponse);
+        var promptLooksTerm = LooksLikeTermCandidate(promptCandidate);
+        var responseLooksTerm = LooksLikeTermCandidate(responseCandidate);
+
+        if (LooksLikeDefinitionPhrase(promptCandidate) && responseLooksTerm)
         {
-            var extracted = normalizedPrompt["Identify the term:".Length..].Trim();
-            if (!string.IsNullOrWhiteSpace(extracted))
-            {
-                return TrimSentenceEnding(extracted);
-            }
+            return responseCandidate;
         }
 
-        if (!string.IsNullOrWhiteSpace(normalizedPrompt) && normalizedPrompt.Length <= 100)
+        if (promptLooksTerm && responseLooksTerm)
         {
-            return TrimSentenceEnding(normalizedPrompt);
+            var promptWordCount = CountWords(promptCandidate);
+            var responseWordCount = CountWords(responseCandidate);
+            return responseWordCount <= promptWordCount
+                ? responseCandidate
+                : promptCandidate;
         }
 
-        return TrimSentenceEnding(NormalizeForSentence(response, 80));
+        if (responseLooksTerm)
+        {
+            return responseCandidate;
+        }
+
+        if (promptLooksTerm)
+        {
+            return promptCandidate;
+        }
+
+        return string.IsNullOrWhiteSpace(responseCandidate)
+            ? promptCandidate
+            : responseCandidate;
     }
 
-    private static string ExtractActionPhrase(string response)
+    private static string ExtractActionPhrase(string prompt, string response, string term)
     {
-        var firstSentence = GetFirstSentence(response, 220);
+        var responseAction = ExtractActionFromText(response);
+        if (!string.IsNullOrWhiteSpace(responseAction) && !IsEquivalentPhrase(responseAction, term))
+        {
+            return responseAction;
+        }
+
+        var promptAction = ExtractActionFromPrompt(prompt);
+        if (!string.IsNullOrWhiteSpace(promptAction))
+        {
+            return promptAction;
+        }
+
+        return responseAction;
+    }
+
+    private static string ExtractActionFromPrompt(string prompt)
+    {
+        var normalizedPrompt = NormalizeForSentence(prompt, 220);
+        if (normalizedPrompt.StartsWith("Identify the term:", StringComparison.OrdinalIgnoreCase))
+        {
+            normalizedPrompt = normalizedPrompt["Identify the term:".Length..].Trim();
+        }
+
+        return ExtractActionFromText(normalizedPrompt);
+    }
+
+    private static string ExtractActionFromText(string text)
+    {
+        var firstSentence = GetFirstSentence(text, 220);
         if (string.IsNullOrWhiteSpace(firstSentence))
         {
             return string.Empty;
         }
 
-        var normalized = TrimSentenceEnding(firstSentence);
+        var normalized = NormalizeLeadPhrase(TrimSentenceEnding(firstSentence));
         var lower = normalized.ToLowerInvariant();
 
         if (lower.StartsWith("use ", StringComparison.Ordinal))
@@ -571,6 +662,143 @@ public static class DatabaseInitializer
         }
 
         return NormalizeLeadPhrase(normalized);
+    }
+
+    private static string ExtractPromptCandidate(string prompt)
+    {
+        var candidate = prompt;
+
+        if (candidate.StartsWith("Identify the term:", StringComparison.OrdinalIgnoreCase))
+        {
+            candidate = candidate["Identify the term:".Length..].Trim();
+        }
+
+        return CleanTermCandidate(candidate);
+    }
+
+    private static string CleanTermCandidate(string value)
+    {
+        var trimmed = TrimSentenceEnding(value).Trim().Trim('"', '\'');
+        if (string.IsNullOrWhiteSpace(trimmed))
+        {
+            return string.Empty;
+        }
+
+        trimmed = TrimDemonstrativeLead(trimmed);
+        return trimmed.Trim();
+    }
+
+    private static string BuildScenarioClause(string action)
+    {
+        var normalized = NormalizeLeadPhrase(TrimSentenceEnding(action));
+        if (string.IsNullOrWhiteSpace(normalized))
+        {
+            return "in a practical scenario";
+        }
+
+        if (normalized.StartsWith("when ", StringComparison.OrdinalIgnoreCase))
+        {
+            return normalized;
+        }
+
+        if (normalized.StartsWith("to ", StringComparison.OrdinalIgnoreCase))
+        {
+            return $"to {normalized[3..].Trim()}";
+        }
+
+        if (normalized.StartsWith("you ", StringComparison.OrdinalIgnoreCase))
+        {
+            return $"when {normalized}";
+        }
+
+        if (normalized.StartsWith("where ", StringComparison.OrdinalIgnoreCase))
+        {
+            return $"in scenarios where {normalized[6..].Trim()}";
+        }
+
+        if (StartsWithImperativeLead(normalized))
+        {
+            return $"when you need to {normalized}";
+        }
+
+        return $"when {normalized}";
+    }
+
+    private static bool LooksLikeTermCandidate(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return false;
+        }
+
+        var wordCount = value.Split(' ', StringSplitOptions.RemoveEmptyEntries).Length;
+        var lower = value.ToLowerInvariant();
+
+        if (lower.StartsWith("this ", StringComparison.Ordinal) ||
+            lower.StartsWith("these ", StringComparison.Ordinal))
+        {
+            var remainder = lower.StartsWith("this ", StringComparison.Ordinal)
+                ? lower[5..].TrimStart()
+                : lower[6..].TrimStart();
+
+            if (remainder.StartsWith("is ", StringComparison.Ordinal) ||
+                remainder.StartsWith("are ", StringComparison.Ordinal) ||
+                remainder.StartsWith("was ", StringComparison.Ordinal) ||
+                remainder.StartsWith("were ", StringComparison.Ordinal) ||
+                StartsWithImperativeLead(remainder))
+            {
+                return false;
+            }
+        }
+
+        return wordCount <= 8 &&
+               value.Length <= 100 &&
+               !LooksLikeNumberedList(value) &&
+               !value.Contains(": ", StringComparison.Ordinal);
+    }
+
+    private static bool LooksLikeDefinitionPhrase(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return false;
+        }
+
+        if (LooksLikeNumberedList(value) || StartsWithImperativeLead(value))
+        {
+            return true;
+        }
+
+        var wordCount = value.Split(' ', StringSplitOptions.RemoveEmptyEntries).Length;
+        return wordCount > 8 || value.Contains(": ", StringComparison.Ordinal);
+    }
+
+    private static bool StartsWithImperativeLead(string value)
+    {
+        return ImperativeLeadWords.Any(lead => value.StartsWith(lead, StringComparison.OrdinalIgnoreCase));
+    }
+
+    private static bool LooksLikeNumberedList(string value)
+    {
+        return Regex.IsMatch(value, @"^\d+(\.|\))\s*", RegexOptions.CultureInvariant);
+    }
+
+    private static bool IsEquivalentPhrase(string left, string right)
+    {
+        if (string.IsNullOrWhiteSpace(left) || string.IsNullOrWhiteSpace(right))
+        {
+            return false;
+        }
+
+        return string.Equals(
+            NormalizeDuplicateKey(left),
+            NormalizeDuplicateKey(right),
+            StringComparison.Ordinal);
+    }
+
+    private static int CountWords(string value)
+    {
+        return value.Split(' ', StringSplitOptions.RemoveEmptyEntries).Length;
     }
 
     private static string GetFirstSentence(string value, int maxLength)
@@ -598,7 +826,58 @@ public static class DatabaseInitializer
             return string.Empty;
         }
 
-        return char.ToLowerInvariant(trimmed[0]) + trimmed[1..];
+        trimmed = TrimDemonstrativeLead(trimmed);
+        if (string.IsNullOrWhiteSpace(trimmed))
+        {
+            return string.Empty;
+        }
+
+        if (trimmed.Length == 1)
+        {
+            return trimmed.ToLowerInvariant();
+        }
+
+        if (char.IsUpper(trimmed[0]) && char.IsLower(trimmed[1]))
+        {
+            return char.ToLowerInvariant(trimmed[0]) + trimmed[1..];
+        }
+
+        return trimmed;
+    }
+
+    private static string TrimDemonstrativeLead(string value)
+    {
+        var normalized = value.Trim();
+
+        while (normalized.StartsWith("this ", StringComparison.OrdinalIgnoreCase) ||
+               normalized.StartsWith("these ", StringComparison.OrdinalIgnoreCase))
+        {
+            var candidate = normalized.StartsWith("this ", StringComparison.OrdinalIgnoreCase)
+                ? normalized[5..].TrimStart()
+                : normalized[6..].TrimStart();
+
+            if (string.IsNullOrWhiteSpace(candidate))
+            {
+                break;
+            }
+
+            if (NeedsSubjectPronoun(candidate))
+            {
+                normalized = normalized.StartsWith("this ", StringComparison.OrdinalIgnoreCase)
+                    ? $"it {candidate}"
+                    : $"they {candidate}";
+                break;
+            }
+
+            normalized = candidate;
+        }
+
+        return normalized;
+    }
+
+    private static bool NeedsSubjectPronoun(string value)
+    {
+        return SubjectVerbLeadWords.Any(lead => value.StartsWith(lead, StringComparison.OrdinalIgnoreCase));
     }
 
     private static string TrimSentenceEnding(string value)

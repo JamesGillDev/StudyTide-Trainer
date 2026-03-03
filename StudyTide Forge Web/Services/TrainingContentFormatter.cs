@@ -4,13 +4,23 @@ namespace StudyTideForge.Services;
 
 public static class TrainingContentFormatter
 {
-    private static readonly string[] PromptDefinitionLeads =
+    private static readonly string[] SubjectVerbLeadWords =
     [
-        "this ",
-        "these ",
-        "the ",
-        "a ",
-        "an "
+        "is ",
+        "are ",
+        "was ",
+        "were ",
+        "can ",
+        "could ",
+        "should ",
+        "would ",
+        "will ",
+        "may ",
+        "might ",
+        "must ",
+        "has ",
+        "have ",
+        "had "
     ];
 
     private static readonly Regex LabeledContentPattern = new(
@@ -145,7 +155,14 @@ public static class TrainingContentFormatter
         var normalizedPrompt = NormalizeInline(prompt);
         var normalizedResponse = NormalizeInline(response);
 
-        if (string.IsNullOrWhiteSpace(normalizedPrompt) || string.IsNullOrWhiteSpace(normalizedResponse))
+        if (string.IsNullOrWhiteSpace(normalizedPrompt))
+        {
+            return normalizedPrompt;
+        }
+
+        normalizedPrompt = NormalizeIdentifyPrompt(normalizedPrompt);
+
+        if (string.IsNullOrWhiteSpace(normalizedResponse))
         {
             return normalizedPrompt;
         }
@@ -164,6 +181,22 @@ public static class TrainingContentFormatter
 
         var definition = BuildDefinitionSentence(TrimSentenceEnding(match.Groups["answer"].Value));
         return $"Identify the term: {definition}";
+    }
+
+    private static string NormalizeIdentifyPrompt(string prompt)
+    {
+        if (!prompt.StartsWith("Identify the term:", StringComparison.OrdinalIgnoreCase))
+        {
+            return prompt;
+        }
+
+        var definition = prompt["Identify the term:".Length..].Trim();
+        if (string.IsNullOrWhiteSpace(definition))
+        {
+            return "Identify the term:";
+        }
+
+        return $"Identify the term: {BuildDefinitionSentence(definition)}";
     }
 
     private static string NormalizeInline(string value)
@@ -218,7 +251,7 @@ public static class TrainingContentFormatter
             return string.Empty;
         }
 
-        var trimmed = TrimSentenceEnding(NormalizeInline(value));
+        var trimmed = NormalizeLeadPhrase(TrimSentenceEnding(NormalizeInline(value)));
         if (string.IsNullOrWhiteSpace(trimmed))
         {
             return string.Empty;
@@ -226,19 +259,59 @@ public static class TrainingContentFormatter
 
         if (trimmed.StartsWith("is ", StringComparison.OrdinalIgnoreCase))
         {
-            trimmed = $"This {trimmed}";
+            trimmed = $"It {trimmed}";
         }
         else if (trimmed.StartsWith("are ", StringComparison.OrdinalIgnoreCase))
         {
-            trimmed = $"These {trimmed}";
+            trimmed = $"They {trimmed}";
         }
-        else if (!PromptDefinitionLeads.Any(prefix => trimmed.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)))
+        else if (LooksLikeNumberedList(trimmed))
         {
-            trimmed = $"This {trimmed}";
+            trimmed = $"The following sequence applies: {trimmed}";
         }
 
         trimmed = CapitalizeFirst(trimmed);
         return $"{trimmed}.";
+    }
+
+    private static bool LooksLikeNumberedList(string value)
+    {
+        return Regex.IsMatch(value, @"^\d+(\.|\))\s*", RegexOptions.CultureInvariant);
+    }
+
+    private static string NormalizeLeadPhrase(string value)
+    {
+        var normalized = value.Trim();
+
+        while (normalized.StartsWith("this ", StringComparison.OrdinalIgnoreCase) ||
+               normalized.StartsWith("these ", StringComparison.OrdinalIgnoreCase))
+        {
+            var candidate = normalized.StartsWith("this ", StringComparison.OrdinalIgnoreCase)
+                ? normalized[5..].TrimStart()
+                : normalized[6..].TrimStart();
+
+            if (string.IsNullOrWhiteSpace(candidate))
+            {
+                break;
+            }
+
+            if (NeedsSubjectPronoun(candidate))
+            {
+                normalized = normalized.StartsWith("this ", StringComparison.OrdinalIgnoreCase)
+                    ? $"It {candidate}"
+                    : $"They {candidate}";
+                break;
+            }
+
+            normalized = candidate;
+        }
+
+        return normalized;
+    }
+
+    private static bool NeedsSubjectPronoun(string value)
+    {
+        return SubjectVerbLeadWords.Any(lead => value.StartsWith(lead, StringComparison.OrdinalIgnoreCase));
     }
 
     private static string CapitalizeFirst(string value)

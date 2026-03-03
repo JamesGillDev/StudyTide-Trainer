@@ -34,7 +34,8 @@ else
             </p>
             <div class="actions">
                 <a class="button-link" href="@BuildStudyLink(_snapshot.LastResumeTarget.ModuleId, _snapshot.LastResumeTarget.LessonId, resume: true)">Resume</a>
-                <a class="button-link secondary" href="@BuildStudyLink(_snapshot.LastResumeTarget.ModuleId, _snapshot.LastResumeTarget.LessonId, resume: false)">Start From Beginning</a>
+                <a class="button-link secondary" href="@BuildStudyLink(_snapshot.LastResumeTarget.ModuleId, _snapshot.LastResumeTarget.LessonId, resume: false)">Start</a>
+                <button class="danger" @onclick="() => ResetLessonAsync(_snapshot.LastResumeTarget.LessonId, _snapshot.LastResumeTarget.LessonTitle)">Reset</button>
             </div>
         </section>
     }
@@ -103,6 +104,7 @@ else
                                 <div class="actions compact-actions">
                                     <a class="button-link secondary" href="@BuildStudyLink(module.ModuleId, lesson.LessonId, resume: false)">Start</a>
                                     <a class="button-link" href="@BuildStudyLink(module.ModuleId, lesson.LessonId, resume: true)">Resume</a>
+                                    <button class="danger" @onclick="() => ResetLessonAsync(lesson.LessonId, lesson.LessonTitle)">Reset</button>
                                 </div>
                             </td>
                         </tr>
@@ -132,6 +134,24 @@ else
         {
             _statusMessage = $"Unable to load study library. {exception.Message}";
             Console.Error.WriteLine($"[StudyTide] Unable to load study library. {exception}");
+        }
+    }
+
+    private async Task ResetLessonAsync(int lessonId, string lessonTitle)
+    {
+        try
+        {
+            var resetApplied = await StudyLibraryService.ResetLessonProgressAsync(lessonId);
+            _statusMessage = resetApplied
+                ? $"Reset study progress for \"{lessonTitle}\"."
+                : $"\"{lessonTitle}\" is already at Not Started.";
+
+            await LoadSnapshotAsync();
+        }
+        catch (Exception exception)
+        {
+            _statusMessage = $"Unable to reset study progress. {exception.Message}";
+            Console.Error.WriteLine($"[StudyTide] Unable to reset lesson progress. {exception}");
         }
     }
 

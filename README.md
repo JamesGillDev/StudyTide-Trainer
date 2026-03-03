@@ -4,7 +4,7 @@ StudyTide Forge is structured cognitive reinforcement training for software engi
 
 ## Release Status
 
-StudyTide Forge desktop (`v2.7.0`) is marked **ready for public release** as of `2026-03-03`.
+StudyTide Forge desktop (`v2.8.0`) is marked **ready for public release** as of `2026-03-03`.
 
 ## Solution Layout
 
@@ -81,6 +81,14 @@ Current extraction output (`2026-03-03`):
   - `6972` combined entries
 - Example migration runs at startup and rewrites existing training item `Example` sections from Prompt/Response context when needed.
 - Study-view action buttons use a fixed minimum height for consistent visual alignment (`Previous`, `Next`, `Practice`, `Flashcards`).
+
+## Study UX and Grammar Cleanup
+
+- Fixed Training Materials nav state so `Study Library` is no longer highlighted while viewing `Flashcards` or `Flagged Material`.
+- Added `Reset` controls in Study Library next to `Start`/`Resume` to clear per-lesson checkpoint progress back to `Not Started`.
+- Updated prompt normalization so forced stems like `Identify the term: This Use...` and `Identify the term: This 1...` are rewritten into clean phrasing.
+- Regenerated examples with stricter term/action extraction so malformed patterns like `In code, use This Use...` are removed.
+- Updated lesson study layout to keep scrolling inside the slide/outline panels instead of scrolling the full page.
 
 ## Verbatim Practice Behavior
 

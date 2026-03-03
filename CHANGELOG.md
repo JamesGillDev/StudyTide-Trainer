@@ -4,6 +4,27 @@ All notable changes to this project are documented in this file.
 
 The format is based on semantic versioning (`MAJOR.MINOR.PATCH`).
 
+## [2.8.0] - 2026-03-03
+
+### Added
+- Study Library lesson reset workflow:
+  - added `Reset` button next to `Start`/`Resume` actions.
+  - added persisted reset service path (`ResetLessonProgressAsync`) to clear lesson checkpoints back to `Not Started`.
+
+### Changed
+- Navigation active-state logic for Training Materials now correctly isolates:
+  - `Study Library`
+  - `Flashcards`
+  - `Flagged Material`
+  so `Study Library` is no longer highlighted while viewing `Flashcards` or `Flagged Material`.
+- Prompt normalization now removes malformed `Identify the term: This ...` lead artifacts and rephrases list/instruction stems for cleaner grammar.
+- Concrete example regeneration now uses improved term/action extraction to remove malformed forms like `use This Use...` and `when where...`.
+- Lesson study layout now constrains scrolling to study panels (slide + outline) instead of scrolling the entire page.
+- App version bumped to `2.8.0` (`ApplicationVersion` `2800`).
+
+### Release
+- Marked `v2.8.0` as **ready for public release** on `2026-03-03`.
+
 ## [2.7.0] - 2026-03-03
 
 ### Added

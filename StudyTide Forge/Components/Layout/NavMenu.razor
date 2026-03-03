@@ -1,3 +1,6 @@
+@implements IDisposable
+@inject NavigationManager Navigation
+
 <nav class="nav-root">
     <div class="brand-panel">
         <div class="brand-title">StudyTide Forge</div>
@@ -7,9 +10,57 @@
     <NavLink class="nav-link" href="/" Match="NavLinkMatch.All">Dashboard</NavLink>
     <div class="nav-group">
         <div class="nav-group-label">Training Materials</div>
-        <NavLink class="nav-link nav-sublink" href="/modules" Match="NavLinkMatch.Prefix">Study Library</NavLink>
-        <NavLink class="nav-link nav-sublink" href="/modules/flashcards">Flashcards</NavLink>
-        <NavLink class="nav-link nav-sublink" href="/modules/flagged">Flagged Material</NavLink>
+        <a class="@GetStudyLibraryClass()" href="/modules">Study Library</a>
+        <NavLink class="nav-link nav-sublink" href="/modules/flashcards" Match="NavLinkMatch.All">Flashcards</NavLink>
+        <NavLink class="nav-link nav-sublink" href="/modules/flagged" Match="NavLinkMatch.All">Flagged Material</NavLink>
     </div>
     <NavLink class="nav-link" href="/practice">Practice</NavLink>
 </nav>
+
+@code {
+    protected override void OnInitialized()
+    {
+        Navigation.LocationChanged += HandleLocationChanged;
+    }
+
+    public void Dispose()
+    {
+        Navigation.LocationChanged -= HandleLocationChanged;
+    }
+
+    private void HandleLocationChanged(object? sender, LocationChangedEventArgs eventArgs)
+    {
+        _ = InvokeAsync(StateHasChanged);
+    }
+
+    private string GetStudyLibraryClass()
+    {
+        return IsStudyLibraryRoute()
+            ? "nav-link nav-sublink active"
+            : "nav-link nav-sublink";
+    }
+
+    private bool IsStudyLibraryRoute()
+    {
+        var relativePath = Navigation.ToBaseRelativePath(Navigation.Uri);
+        var path = relativePath.Split('?', '#')[0];
+        var segments = path.Split('/', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+
+        if (segments.Length == 0)
+        {
+            return false;
+        }
+
+        if (!string.Equals(segments[0], "modules", StringComparison.OrdinalIgnoreCase))
+        {
+            return false;
+        }
+
+        if (segments.Length == 1)
+        {
+            return true;
+        }
+
+        return int.TryParse(segments[1], out _);
+    }
+}

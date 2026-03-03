@@ -13,8 +13,8 @@
 
     <ApplicationTitle>StudyTide Forge</ApplicationTitle>
     <ApplicationId>com.studytide.forge</ApplicationId>
-    <ApplicationDisplayVersion>2.7.0</ApplicationDisplayVersion>
-    <ApplicationVersion>2700</ApplicationVersion>
+    <ApplicationDisplayVersion>2.8.0</ApplicationDisplayVersion>
+    <ApplicationVersion>2800</ApplicationVersion>
     <WindowsPackageType>None</WindowsPackageType>
 
     <SupportedOSPlatformVersion>10.0.17763.0</SupportedOSPlatformVersion>
