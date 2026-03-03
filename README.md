@@ -4,7 +4,7 @@ StudyTide Forge is structured cognitive reinforcement training for software engi
 
 ## Release Status
 
-StudyTide Forge desktop (`v2.6.0`) is marked **ready for public release** as of `2026-03-03`.
+StudyTide Forge desktop (`v2.7.0`) is marked **ready for public release** as of `2026-03-03`.
 
 ## Solution Layout
 
@@ -71,6 +71,16 @@ Current extraction output (`2026-03-03`):
   - `ArrowLeft` -> previous slide
   - `ArrowRight` -> next slide
 - Practice now includes an `Expanded Context` section derived from Prompt/Response/Example while preserving strict verbatim scoring against section values.
+
+## Concrete Example Refresh
+
+- Training item examples were regenerated to remove the old generic `When practicing...` template.
+- Current seeded inventory now contains concrete examples across all combined entries:
+  - `3488` training items
+  - `3484` flashcards
+  - `6972` combined entries
+- Example migration runs at startup and rewrites existing training item `Example` sections from Prompt/Response context when needed.
+- Study-view action buttons use a fixed minimum height for consistent visual alignment (`Previous`, `Next`, `Practice`, `Flashcards`).
 
 ## Verbatim Practice Behavior
 

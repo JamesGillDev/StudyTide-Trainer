@@ -9,6 +9,10 @@ namespace StudyTideForge.Data;
 
 public static class DatabaseInitializer
 {
+    private static readonly Regex SentenceSplitPattern = new(
+        @"(?<=[.!?])\s+",
+        RegexOptions.Compiled | RegexOptions.CultureInvariant);
+
     private static readonly IReadOnlyList<SeedBlock> SupplementalSeedBlocks =
     [
         new(
@@ -192,6 +196,7 @@ public static class DatabaseInitializer
         await ReplaceDuplicateTrainingBlocksAsync(db);
         await ApplyTargetedCoverageBoostAsync(db);
         await ApplyPromptResponseOrientationMigrationAsync(db);
+        await ApplyConcreteExampleMigrationAsync(db);
         await ReplaceDuplicateTrainingBlocksAsync(db);
     }
 
@@ -466,9 +471,7 @@ public static class DatabaseInitializer
 
     private static string BuildExample(string prompt, string response)
     {
-        var normalizedPrompt = NormalizeForSentence(prompt, 180);
-        var normalizedResponse = NormalizeForSentence(response, 180);
-        return $"When practicing, map \"{normalizedPrompt}\" to \"{normalizedResponse}\" and restate it from memory.";
+        return BuildConcreteExample(prompt, response);
     }
 
     private static string NormalizeForSentence(string value, int maxLength)
@@ -481,6 +484,170 @@ public static class DatabaseInitializer
         }
 
         return $"{normalized[..(maxLength - 3)].TrimEnd()}...";
+    }
+
+    private static string BuildConcreteExample(string prompt, string response)
+    {
+        var term = NormalizeForSentence(ExtractTerm(prompt, response), 90);
+        var action = NormalizeForSentence(ExtractActionPhrase(response), 180);
+
+        if (string.IsNullOrWhiteSpace(action))
+        {
+            action = NormalizeForSentence(response, 180);
+        }
+
+        string sentence;
+
+        if (LooksLikeKeyboardShortcut(term))
+        {
+            sentence = $"In Visual Studio Code, press {term} to {action}.";
+        }
+        else if (LooksLikeCliCommand(term))
+        {
+            sentence = $"In a terminal session, run {term} to {action}.";
+        }
+        else if (LooksLikeCodeKeyword(term))
+        {
+            sentence = $"In code, use {term} when {action}.";
+        }
+        else
+        {
+            sentence = $"In a real project, apply {term} when {action}.";
+        }
+
+        return NormalizeExampleSentence(sentence);
+    }
+
+    private static string ExtractTerm(string prompt, string response)
+    {
+        var normalizedPrompt = NormalizeForSentence(prompt, 120);
+
+        if (normalizedPrompt.StartsWith("Identify the term:", StringComparison.OrdinalIgnoreCase))
+        {
+            var extracted = normalizedPrompt["Identify the term:".Length..].Trim();
+            if (!string.IsNullOrWhiteSpace(extracted))
+            {
+                return TrimSentenceEnding(extracted);
+            }
+        }
+
+        if (!string.IsNullOrWhiteSpace(normalizedPrompt) && normalizedPrompt.Length <= 100)
+        {
+            return TrimSentenceEnding(normalizedPrompt);
+        }
+
+        return TrimSentenceEnding(NormalizeForSentence(response, 80));
+    }
+
+    private static string ExtractActionPhrase(string response)
+    {
+        var firstSentence = GetFirstSentence(response, 220);
+        if (string.IsNullOrWhiteSpace(firstSentence))
+        {
+            return string.Empty;
+        }
+
+        var normalized = TrimSentenceEnding(firstSentence);
+        var lower = normalized.ToLowerInvariant();
+
+        if (lower.StartsWith("use ", StringComparison.Ordinal))
+        {
+            var remainder = normalized[4..].Trim();
+            return NormalizeLeadPhrase(remainder);
+        }
+
+        var isIndex = lower.IndexOf(" is ", StringComparison.Ordinal);
+        if (isIndex > 0 && isIndex < normalized.Length - 4)
+        {
+            var remainder = normalized[(isIndex + 4)..].Trim();
+            return NormalizeLeadPhrase(remainder);
+        }
+
+        var helpsToIndex = lower.IndexOf(" to ", StringComparison.Ordinal);
+        if (helpsToIndex > 0 && helpsToIndex < normalized.Length - 4)
+        {
+            var remainder = normalized[(helpsToIndex + 4)..].Trim();
+            return NormalizeLeadPhrase(remainder);
+        }
+
+        return NormalizeLeadPhrase(normalized);
+    }
+
+    private static string GetFirstSentence(string value, int maxLength)
+    {
+        var normalized = NormalizeForSentence(value, maxLength);
+        if (string.IsNullOrWhiteSpace(normalized))
+        {
+            return string.Empty;
+        }
+
+        var parts = SentenceSplitPattern.Split(normalized);
+        if (parts.Length == 0)
+        {
+            return normalized;
+        }
+
+        return parts[0].Trim();
+    }
+
+    private static string NormalizeLeadPhrase(string value)
+    {
+        var trimmed = value.Trim();
+        if (string.IsNullOrWhiteSpace(trimmed))
+        {
+            return string.Empty;
+        }
+
+        return char.ToLowerInvariant(trimmed[0]) + trimmed[1..];
+    }
+
+    private static string TrimSentenceEnding(string value)
+    {
+        return value.Trim().TrimEnd('.', '!', '?', ';', ':');
+    }
+
+    private static string NormalizeExampleSentence(string sentence)
+    {
+        var normalized = Regex.Replace(sentence, @"\s+", " ").Trim();
+        normalized = normalized.Replace("..", ".", StringComparison.Ordinal);
+
+        if (!normalized.EndsWith(".", StringComparison.Ordinal))
+        {
+            normalized = $"{normalized}.";
+        }
+
+        return NormalizeForSentence(normalized, 240);
+    }
+
+    private static bool LooksLikeKeyboardShortcut(string term)
+    {
+        return term.Contains("Ctrl+", StringComparison.OrdinalIgnoreCase) ||
+               term.Contains("Alt+", StringComparison.OrdinalIgnoreCase) ||
+               term.Contains("Shift+", StringComparison.OrdinalIgnoreCase) ||
+               term.Contains("Command Palette", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static bool LooksLikeCliCommand(string term)
+    {
+        var lowered = term.ToLowerInvariant();
+        return lowered.StartsWith("git ", StringComparison.Ordinal) ||
+               lowered.StartsWith("dotnet ", StringComparison.Ordinal) ||
+               lowered.StartsWith("az ", StringComparison.Ordinal) ||
+               lowered.StartsWith("docker ", StringComparison.Ordinal) ||
+               lowered.StartsWith("npm ", StringComparison.Ordinal) ||
+               lowered.StartsWith("python ", StringComparison.Ordinal) ||
+               lowered.StartsWith("pwsh ", StringComparison.Ordinal);
+    }
+
+    private static bool LooksLikeCodeKeyword(string term)
+    {
+        var lowered = term.ToLowerInvariant();
+        return lowered is "public" or "private" or "static" or "void" ||
+               lowered.Contains("class", StringComparison.Ordinal) ||
+               lowered.Contains("interface", StringComparison.Ordinal) ||
+               lowered.Contains("method", StringComparison.Ordinal) ||
+               lowered.Contains("async", StringComparison.Ordinal) ||
+               lowered.Contains("await", StringComparison.Ordinal);
     }
 
     private static async Task MigrateModuleNamePrefixAsync(ForgeDbContext db)
@@ -950,6 +1117,41 @@ public static class DatabaseInitializer
         if (updated)
         {
             await db.SaveChangesAsync();
+        }
+    }
+
+    private static async Task ApplyConcreteExampleMigrationAsync(ForgeDbContext db)
+    {
+        var trainingBlocks = await db.TrainingBlocks.ToListAsync();
+        var updated = 0;
+
+        foreach (var block in trainingBlocks)
+        {
+            if (!TrainingContentFormatter.TryParseLabeledSections(block.Content, out var sections))
+            {
+                continue;
+            }
+
+            var normalized = TrainingContentFormatter.ReversePromptResponse(sections);
+            var example = BuildConcreteExample(normalized.Prompt, normalized.Response);
+
+            if (string.Equals(normalized.Example, example, StringComparison.Ordinal))
+            {
+                continue;
+            }
+
+            block.Content = TrainingContentFormatter.BuildLabeledContent(
+                normalized.Prompt,
+                normalized.Response,
+                example);
+
+            updated++;
+        }
+
+        if (updated > 0)
+        {
+            await db.SaveChangesAsync();
+            Console.WriteLine($"[StudyTide] Regenerated concrete examples for {updated} training items.");
         }
     }
 

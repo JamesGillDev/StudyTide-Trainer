@@ -1,21 +1,21 @@
 # Release Notes
 
-## v2.6.0 (2026-03-03)
+## v2.7.0 (2026-03-03)
 
 This release is **ready for public release**.
 
 ### Highlights
 
-- Added `Study Library` with persistent lesson/module status (`Not Started`, `In Progress`, `Completed`).
-- Added module-level and global `Resume` actions to continue exactly where the user left off.
-- Added slide-based lesson study experience with:
-  - one item at a time (`Prompt`, `Response`, `Example`)
-  - `Previous` / `Next` controls
-  - left/right keyboard navigation
-  - outline jump panel for instant navigation
-- Moved `Flashcards` and `Flagged Material` into nested `Training Materials` navigation.
-- Updated Practice view with `Expanded Context` while preserving strict verbatim scoring behavior.
-- Added persistent checkpoint model/service support (`StudyLessonProgress`, `StudyLibraryService`) and startup schema extension checks for desktop/web compatibility.
+- Replaced generic training-item example text (`When practicing...`) with concrete, context-aware examples generated from each item's prompt/response content.
+- Startup migration now upgrades existing training data in-place so older databases are brought forward automatically.
+- Verified combined seeded inventory at `6972` entries:
+  - `3488` training items
+  - `3484` flashcards
+- Standardized lesson-study action button heights for visual consistency across:
+  - `Previous`
+  - `Next`
+  - `Practice`
+  - `Flashcards`
 
 ### Local Publish Outputs
 

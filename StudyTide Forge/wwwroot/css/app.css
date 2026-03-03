@@ -224,6 +224,14 @@ button.danger {
     flex-wrap: wrap;
 }
 
+.actions > button,
+.actions > .button-link {
+    min-height: 2.35rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
 .filter-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));

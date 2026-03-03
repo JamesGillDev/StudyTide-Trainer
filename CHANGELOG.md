@@ -4,6 +4,21 @@ All notable changes to this project are documented in this file.
 
 The format is based on semantic versioning (`MAJOR.MINOR.PATCH`).
 
+## [2.7.0] - 2026-03-03
+
+### Added
+- Concrete example regeneration pipeline for training items:
+  - replaced generic `When practicing...` example text with contextual, usage-oriented examples derived from prompt/response content.
+  - applied to existing datasets through startup migration logic (`ApplyConcreteExampleMigrationAsync`).
+
+### Changed
+- Updated training-content example generation (`BuildExample`) to always create concrete usage examples for newly seeded entries.
+- Lesson-study action controls (`Previous`, `Next`, `Practice`, `Flashcards`) now share a fixed minimum button height for consistent UI alignment.
+- App version bumped to `2.7.0` (`ApplicationVersion` `2700`).
+
+### Release
+- Marked `v2.7.0` as **ready for public release** on `2026-03-03`.
+
 ## [2.6.0] - 2026-03-03
 
 ### Added
