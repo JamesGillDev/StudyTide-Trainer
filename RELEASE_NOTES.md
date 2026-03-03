@@ -3,6 +3,7 @@
 ## v2.9.1 (2026-03-03)
 
 This release is **ready for public release**.
+Public release verification refreshed on `2026-03-03`.
 
 ### Highlights
 
