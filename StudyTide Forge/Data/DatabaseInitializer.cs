@@ -314,7 +314,6 @@ public static class DatabaseInitializer
         try
         {
             imported = importer.Import();
-            imported = FilterImportedPairs(imported);
         }
         catch (Exception exception)
         {
@@ -339,8 +338,8 @@ public static class DatabaseInitializer
         await ApplyPromptResponseOrientationMigrationAsync(db);
         await ApplyGeneratedTitleCleanupAsync(db);
         await ApplyConcreteExampleMigrationAsync(db);
-        await ApplyNonTrainingMaterialCleanupAsync(db);
         await ReplaceDuplicateTrainingBlocksAsync(db);
+        await ApplyTargetedCoverageBoostAsync(db);
     }
 
     private static async Task<bool> RequiresReseedAsync(ForgeDbContext db, int importedPairCount)
@@ -365,6 +364,11 @@ public static class DatabaseInitializer
         var itemCount = await db.TrainingBlocks.CountAsync();
 
         if (flashcardCount < minimumExpected || itemCount < minimumExpected)
+        {
+            return true;
+        }
+
+        if (flashcardCount < importedPairCount)
         {
             return true;
         }
