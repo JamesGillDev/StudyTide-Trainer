@@ -4,7 +4,7 @@ StudyTide Forge is structured cognitive reinforcement training for software engi
 
 ## Release Status
 
-StudyTide Forge desktop (`v2.9.2`) is marked **ready for public release** as of `2026-03-03`.
+StudyTide Forge desktop (`v2.9.3`) is marked **ready for public release** as of `2026-03-03`.
 Public release verification refreshed on `2026-03-03` after local desktop/web publish validation.
 
 ## Solution Layout
@@ -97,6 +97,12 @@ Current extraction output (`2026-03-03`):
   - auto-injected `when ...` / `when you need to ...`
 - Study cues now render with direct cue phrasing and strip duplicated term prefixes for cleaner grammar.
 
+## v2.9.3 Dashboard Auto-Sync and Content Sweep
+
+- Dashboard metrics now auto-refresh every 15 seconds while the dashboard is open, so totals/progress stay current after training content is added, deleted, or altered.
+- Added broader non-training material filtering and cleanup for imported content (for example document headings/schedule labels such as `MSSA ...`, `Week ...`, `Morning/Afternoon`, `Appendix`, and CAD manual title artifacts).
+- Startup cleanup now removes those non-training items from both Study Library and Flashcards, then removes empty lessons/modules caused by cleanup.
+
 ## Study UX and Grammar Cleanup
 
 - Fixed Training Materials nav state so `Study Library` is no longer highlighted while viewing `Flashcards` or `Flagged Material`.
@@ -143,24 +149,13 @@ Dashboard now includes:
 
 ### Current Local Inventory Snapshot (Desktop DB)
 
-As measured on `2026-03-02` from the local desktop database:
+As measured on `2026-03-03` from the local desktop database after non-training sweep:
 
 - `6` modules
-- `35` lessons
-- `3191` training (retype) items
-- `2924` flashcards
-- `6115` combined mode entries (`3191 + 2924`)
-- `3191` unique logical items (`2924` mirrored + `267` retype-only + `0` flashcard-only)
-
-Coverage highlights:
-
-- All target categories meet or exceed recommended minimums.
-- Focus-category targets achieved:
-  - `C#` reached `450` training items.
-  - `System Design` reached `300` training items.
-- Duplicate sweep status:
-  - Duplicate lesson/title groups: `0`
-  - Duplicate content groups: `0`
+- `28` lessons
+- `2059` training (retype) items
+- `1877` flashcards
+- `3936` combined mode entries (`2059 + 1877`)
 
 ## Source File Placement
 

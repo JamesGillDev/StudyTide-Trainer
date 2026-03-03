@@ -52,6 +52,107 @@ public static class DatabaseInitializer
         "had "
     ];
 
+    private static readonly string[] NonTrainingFragments =
+    [
+        "a practical arc for cad month",
+        "the following sequence applies",
+        "by synthesizing cross-domain knowledge",
+        "appendix g - flashcards expanded",
+        "appendix f - notebook pages",
+        "afternoon - conditionals and methods",
+        "afternoon - types, memory, and operators",
+        "morning - loops and 99 bottles refactor",
+        "retype rule",
+        "started lesson from the beginning",
+        "resumed where you left off",
+        "by the end of week",
+        "week 02 wrap-up",
+        "week 03 core wins",
+        "week 01 training summary",
+        "mssa cad months",
+        "mssa ccad21",
+        "mssa cohort ccad21",
+        "daily training notes",
+        "this manual is designed to be big and useful",
+        "for printing",
+        "at the top, where it says",
+        "closing guidance and forward context",
+        "post a progress message to teams",
+        "now fill them: date"
+    ];
+
+    private static readonly HashSet<string> NonTrainingExactTitles = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "A practical arc for CAD Month 1-2",
+        "Additional Reflection",
+        "Advantages",
+        "Afternoon - Conditionals and methods",
+        "After sorting, you would now have the following",
+        "Answer: A",
+        "Answer: B",
+        "Answer: C",
+        "Answer: D",
+        "Act",
+        "Arrange",
+        "Assignments",
+        "Big idea",
+        "Big Picture",
+        "ClassNamePlaceholder",
+        "Contents",
+        "allVehicles",
+        "MSSA CAD Months 1-2 Mega Manual v6",
+        "MSSA CCAD21",
+        "MSSA CCAD21 - Daily Training Notes",
+        "MSSA Cohort CCAD21",
+        "MSSA CAD Training Guide",
+        "MSSA Week 02",
+        "MSSA Week 03",
+        "MSSA Week03 Training Summary",
+        "This manual is designed to be big and useful",
+        "Appendix F - Notebook Pages (for printing)",
+        "Afternoon - Types, memory, and operators",
+        "Morning",
+        "Morning - Loops and 99 Bottles refactor",
+        "Week 01",
+        "Week 02 wrap-up",
+        "Week 03 Core Wins",
+        "End-of-Day Summary",
+        "Day Overview",
+        "Module Review and Takeaways",
+        "Module Reviews and Takeaway",
+        "Scenario",
+        "Objectives",
+        "Topic Objectives",
+        "Key Takeaways",
+        "High-Level Overview",
+        "Instructor Notes & Emphasis",
+        "My focus points & next steps",
+        "End-of-Day Reality Check",
+        "Certification Readiness",
+        "Personal Practice Checklist",
+        "Now fill them: Date",
+        "Post a progress message to Teams",
+        "Run the Program",
+        "Disadvantages"
+    };
+
+    private static readonly string[] SentenceLeadNoiseWords =
+    [
+        "a ",
+        "an ",
+        "the ",
+        "also ",
+        "at ",
+        "by ",
+        "after ",
+        "before ",
+        "assuming ",
+        "during ",
+        "while ",
+        "when ",
+        "if "
+    ];
+
     private static readonly IReadOnlyList<SeedBlock> SupplementalSeedBlocks =
     [
         new(
@@ -213,6 +314,7 @@ public static class DatabaseInitializer
         try
         {
             imported = importer.Import();
+            imported = FilterImportedPairs(imported);
         }
         catch (Exception exception)
         {
@@ -237,6 +339,7 @@ public static class DatabaseInitializer
         await ApplyPromptResponseOrientationMigrationAsync(db);
         await ApplyGeneratedTitleCleanupAsync(db);
         await ApplyConcreteExampleMigrationAsync(db);
+        await ApplyNonTrainingMaterialCleanupAsync(db);
         await ReplaceDuplicateTrainingBlocksAsync(db);
     }
 
@@ -507,6 +610,150 @@ public static class DatabaseInitializer
         var sections = new ParsedTrainingContent(prompt, response, example);
         var normalized = TrainingContentFormatter.ReversePromptResponse(sections);
         return TrainingContentFormatter.BuildLabeledContent(normalized.Prompt, normalized.Response, normalized.Example);
+    }
+
+    private static ImportedQaResult FilterImportedPairs(ImportedQaResult imported)
+    {
+        if (imported.Pairs.Count == 0)
+        {
+            return imported;
+        }
+
+        var filteredPairs = imported.Pairs
+            .Where(pair => IsLikelyTrainingMaterial(pair.Answer, pair.Question, pair.Question))
+            .ToList();
+
+        var removedCount = imported.Pairs.Count - filteredPairs.Count;
+
+        if (removedCount > 0)
+        {
+            Console.WriteLine($"[StudyTide] Filtered {removedCount} non-training imported pairs.");
+            return new ImportedQaResult(imported.SourcePath, filteredPairs);
+        }
+
+        return imported;
+    }
+
+    private static bool IsLikelyTrainingMaterial(string prompt, string response, string title)
+    {
+        var normalizedPrompt = NormalizeForComparison(prompt);
+        var normalizedResponse = NormalizeForComparison(response);
+        var normalizedTitle = NormalizeForComparison(title);
+
+        if (string.IsNullOrWhiteSpace(normalizedPrompt) || string.IsNullOrWhiteSpace(normalizedResponse))
+        {
+            return false;
+        }
+
+        if (ContainsAnyFragment(normalizedPrompt, NonTrainingFragments) ||
+            ContainsAnyFragment(normalizedResponse, NonTrainingFragments) ||
+            ContainsAnyFragment(normalizedTitle, NonTrainingFragments))
+        {
+            return false;
+        }
+
+        if (NonTrainingExactTitles.Contains(title.Trim()))
+        {
+            return false;
+        }
+
+        if (normalizedTitle.StartsWith("answer:", StringComparison.Ordinal) ||
+            normalizedResponse.StartsWith("answer:", StringComparison.Ordinal))
+        {
+            return false;
+        }
+
+        if (title.Contains("...", StringComparison.Ordinal) || response.Contains("...", StringComparison.Ordinal))
+        {
+            return false;
+        }
+
+        if (LooksLikeOperationalSentence(normalizedTitle))
+        {
+            return false;
+        }
+
+        if (LooksLikeDocumentOrScheduleHeading(normalizedPrompt, normalizedResponse, normalizedTitle))
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    private static bool LooksLikeDocumentOrScheduleHeading(string normalizedPrompt, string normalizedResponse, string normalizedTitle)
+    {
+        return LooksLikeDocumentOrScheduleHeadingValue(normalizedTitle) ||
+               LooksLikeDocumentOrScheduleHeadingValue(normalizedResponse) ||
+               LooksLikeDocumentOrScheduleHeadingValue(normalizedPrompt);
+    }
+
+    private static bool LooksLikeDocumentOrScheduleHeadingValue(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return false;
+        }
+
+        if (Regex.IsMatch(value, @"^mssa\b", RegexOptions.CultureInvariant))
+        {
+            return true;
+        }
+
+        if (Regex.IsMatch(value, @"^week\s+\d{1,2}\b", RegexOptions.CultureInvariant) ||
+            Regex.IsMatch(value, @"^day\s+\d{1,2}\b", RegexOptions.CultureInvariant))
+        {
+            return true;
+        }
+
+        if (Regex.IsMatch(value, @"^(morning|afternoon|evening)\b", RegexOptions.CultureInvariant))
+        {
+            return true;
+        }
+
+        if (value.StartsWith("appendix ", StringComparison.Ordinal))
+        {
+            return true;
+        }
+
+        if (value.Contains("manual", StringComparison.Ordinal) &&
+            (value.Contains("month", StringComparison.Ordinal) || value.Contains("training", StringComparison.Ordinal)))
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    private static bool LooksLikeOperationalSentence(string normalizedTitle)
+    {
+        var wordCount = CountWords(normalizedTitle);
+        if (wordCount < 6)
+        {
+            return false;
+        }
+
+        if (SentenceLeadNoiseWords.Any(prefix => normalizedTitle.StartsWith(prefix, StringComparison.Ordinal)))
+        {
+            return true;
+        }
+
+        return normalizedTitle.Contains(" click ", StringComparison.Ordinal) ||
+               normalizedTitle.Contains(" rename ", StringComparison.Ordinal) ||
+               normalizedTitle.Contains(" the following ", StringComparison.Ordinal) ||
+               normalizedTitle.Contains(" by the end ", StringComparison.Ordinal) ||
+               normalizedTitle.Contains(" you ", StringComparison.Ordinal);
+    }
+
+    private static bool ContainsAnyFragment(string value, IEnumerable<string> fragments)
+    {
+        return fragments.Any(fragment => value.Contains(fragment, StringComparison.Ordinal));
+    }
+
+    private static string NormalizeForComparison(string value)
+    {
+        var withoutControls = Regex.Replace(value, @"[\u0000-\u001F\u007F]+", " ", RegexOptions.CultureInvariant);
+        return Regex.Replace(withoutControls, @"\s+", " ", RegexOptions.CultureInvariant).Trim().ToLowerInvariant();
     }
 
     private static string BuildExample(string prompt, string response)
@@ -1567,6 +1814,84 @@ public static class DatabaseInitializer
         {
             await db.SaveChangesAsync();
             Console.WriteLine($"[StudyTide] Regenerated concrete examples for {updated} training items.");
+        }
+    }
+
+    private static async Task ApplyNonTrainingMaterialCleanupAsync(ForgeDbContext db)
+    {
+        var trainingBlocks = await db.TrainingBlocks.ToListAsync();
+        var blocksToRemove = new List<TrainingBlock>();
+
+        foreach (var block in trainingBlocks)
+        {
+            string prompt;
+            string response;
+
+            if (TrainingContentFormatter.TryParseLabeledSections(block.Content, out var sections))
+            {
+                var normalized = TrainingContentFormatter.ReversePromptResponse(sections);
+                prompt = normalized.Prompt;
+                response = normalized.Response;
+            }
+            else
+            {
+                prompt = block.Content;
+                response = block.Title;
+            }
+
+            if (!IsLikelyTrainingMaterial(prompt, response, block.Title))
+            {
+                blocksToRemove.Add(block);
+            }
+        }
+
+        var flashcards = await db.Flashcards.ToListAsync();
+        var flashcardsToRemove = flashcards
+            .Where(card => !IsLikelyTrainingMaterial(card.Question, card.Answer, card.Answer))
+            .ToList();
+
+        if (blocksToRemove.Count > 0)
+        {
+            db.TrainingBlocks.RemoveRange(blocksToRemove);
+        }
+
+        if (flashcardsToRemove.Count > 0)
+        {
+            db.Flashcards.RemoveRange(flashcardsToRemove);
+        }
+
+        if (blocksToRemove.Count > 0 || flashcardsToRemove.Count > 0)
+        {
+            await db.SaveChangesAsync();
+        }
+
+        var emptyLessons = await db.TrainingLessons
+            .Include(x => x.TrainingBlocks)
+            .Include(x => x.Flashcards)
+            .Where(x => !x.TrainingBlocks.Any() && !x.Flashcards.Any())
+            .ToListAsync();
+
+        if (emptyLessons.Count > 0)
+        {
+            db.TrainingLessons.RemoveRange(emptyLessons);
+            await db.SaveChangesAsync();
+        }
+
+        var emptyModules = await db.TrainingModules
+            .Include(x => x.Lessons)
+            .Where(x => !x.Lessons.Any())
+            .ToListAsync();
+
+        if (emptyModules.Count > 0)
+        {
+            db.TrainingModules.RemoveRange(emptyModules);
+            await db.SaveChangesAsync();
+        }
+
+        if (blocksToRemove.Count > 0 || flashcardsToRemove.Count > 0 || emptyLessons.Count > 0 || emptyModules.Count > 0)
+        {
+            Console.WriteLine(
+                $"[StudyTide] Removed non-training material: blocks={blocksToRemove.Count}, flashcards={flashcardsToRemove.Count}, empty lessons={emptyLessons.Count}, empty modules={emptyModules.Count}.");
         }
     }
 

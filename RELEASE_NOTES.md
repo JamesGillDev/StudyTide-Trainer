@@ -1,5 +1,22 @@
 # Release Notes
 
+## v2.9.3 (2026-03-03)
+
+This release is **ready for public release**.
+
+### Highlights
+
+- Dashboard now auto-refreshes metrics every 15 seconds while the page is open, so totals and completion bars stay in sync after content add/delete/update operations.
+- Expanded non-training content sweep in startup cleanup to remove heading/schedule artifacts (for example `MSSA...`, `Week ...`, `Morning/Afternoon`, `Appendix`, and CAD manual title noise) from both Study Library items and Flashcards.
+- Cleanup now also prunes empty lessons/modules produced by the non-training removal pass.
+
+### Local Publish Outputs
+
+- Desktop publish target:
+  - `StudyTide Forge\bin\Release\net10.0-windows10.0.19041.0\win-x64\StudyTideForge.exe`
+- Web publish target:
+  - `artifacts\publish\studytide-forge-web-win-x64\StudyTideForgeWeb.exe`
+
 ## v2.9.2 (2026-03-03)
 
 This release is **ready for public release**.

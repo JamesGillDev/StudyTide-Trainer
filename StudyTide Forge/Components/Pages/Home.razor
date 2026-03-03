@@ -1,5 +1,6 @@
 @page "/"
 @inject DashboardService DashboardService
+@implements IAsyncDisposable
 
 <PageTitle>Dashboard</PageTitle>
 
@@ -201,18 +202,96 @@ else
 @code {
     private DashboardSnapshot? _snapshot;
     private string? _loadError;
+    private CancellationTokenSource? _refreshCancellation;
+    private Task? _refreshTask;
 
     protected override async Task OnInitializedAsync()
+    {
+        _refreshCancellation = new CancellationTokenSource();
+
+        await LoadSnapshotAsync();
+
+        _refreshTask = StartAutoRefreshAsync(_refreshCancellation.Token);
+    }
+
+    private async Task LoadSnapshotAsync()
     {
         try
         {
             _snapshot = await DashboardService.GetSnapshotAsync();
+            _loadError = null;
         }
         catch (Exception exception)
         {
             _loadError = exception.Message;
-            Console.Error.WriteLine($"[StudyTide] Dashboard initialization failed. {exception}");
+            Console.Error.WriteLine($"[StudyTide] Dashboard load failed. {exception}");
         }
+    }
+
+    private async Task StartAutoRefreshAsync(CancellationToken cancellationToken)
+    {
+        using var timer = new PeriodicTimer(TimeSpan.FromSeconds(15));
+
+        try
+        {
+            while (await timer.WaitForNextTickAsync(cancellationToken))
+            {
+                DashboardSnapshot? refreshed = null;
+                string? refreshError = null;
+
+                try
+                {
+                    refreshed = await DashboardService.GetSnapshotAsync();
+                }
+                catch (Exception exception)
+                {
+                    refreshError = exception.Message;
+                    Console.Error.WriteLine($"[StudyTide] Dashboard refresh failed. {exception}");
+                }
+
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    break;
+                }
+
+                await InvokeAsync(() =>
+                {
+                    if (refreshed is not null)
+                    {
+                        _snapshot = refreshed;
+                        _loadError = null;
+                    }
+                    else if (!string.IsNullOrWhiteSpace(refreshError))
+                    {
+                        _loadError = refreshError;
+                    }
+
+                    StateHasChanged();
+                });
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            // Expected when leaving the page.
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_refreshCancellation is null)
+        {
+            return;
+        }
+
+        await _refreshCancellation.CancelAsync();
+
+        if (_refreshTask is not null)
+        {
+            await _refreshTask;
+        }
+
+        _refreshCancellation.Dispose();
+        _refreshCancellation = null;
     }
 
     private static string Truncate(string value, int maxLength)
