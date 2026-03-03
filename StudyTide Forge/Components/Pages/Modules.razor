@@ -1,92 +1,164 @@
 @page "/modules"
-@inject IDbContextFactory<ForgeDbContext> DbFactory
+@inject StudyLibraryService StudyLibraryService
 
-<PageTitle>Training Materials</PageTitle>
+<PageTitle>Study Library</PageTitle>
 
-<h1>Structured Curriculum</h1>
+<h1>Study Library</h1>
 
-<section class="panel">
-    <h2>Training Materials</h2>
+@if (!string.IsNullOrWhiteSpace(_statusMessage))
+{
+    <p class="status-message">@_statusMessage</p>
+}
 
-    @if (_modules.Count == 0)
-    {
+@if (_snapshot is null)
+{
+    <section class="panel">
+        <p>Loading study library...</p>
+    </section>
+}
+else if (_snapshot.Modules.Count == 0)
+{
+    <section class="panel">
         <p>No modules available.</p>
-    }
-    else
+    </section>
+}
+else
+{
+    if (_snapshot.LastResumeTarget is not null)
     {
-        <table class="data-table">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Category</th>
-                    <th>Lessons</th>
-                    <th>Training Items</th>
-                    <th>Flashcards</th>
-                    <th>Created</th>
-                    <th>Open</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var module in _modules)
-                {
-                    <tr>
-                        <td>@module.Name</td>
-                        <td>@module.Category</td>
-                        <td>@module.LessonCount</td>
-                        <td>@module.BlockCount</td>
-                        <td>@module.FlashcardCount</td>
-                        <td>@module.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm")</td>
-                        <td>
-                            <a class="button-link" href="/modules/@module.Id">View</a>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+        <section class="panel library-resume-panel">
+            <h2>Resume Last Study Session</h2>
+            <p class="meta-text">
+                Module: @_snapshot.LastResumeTarget.ModuleName |
+                Lesson: @_snapshot.LastResumeTarget.LessonTitle
+            </p>
+            <div class="actions">
+                <a class="button-link" href="@BuildStudyLink(_snapshot.LastResumeTarget.ModuleId, _snapshot.LastResumeTarget.LessonId, resume: true)">Resume</a>
+                <a class="button-link secondary" href="@BuildStudyLink(_snapshot.LastResumeTarget.ModuleId, _snapshot.LastResumeTarget.LessonId, resume: false)">Start From Beginning</a>
+            </div>
+        </section>
     }
-</section>
+
+    @foreach (var module in _snapshot.Modules)
+    {
+        <section class="panel library-module-panel">
+            <div class="library-module-header">
+                <div>
+                    <h2>@module.Name</h2>
+                    <p class="meta-text">Category: @module.Category</p>
+                </div>
+                <div class="library-module-actions">
+                    <span class="status-pill @GetStatusClass(module.Status)">@GetStatusLabel(module.Status)</span>
+                    @if (module.ResumeTarget is not null)
+                    {
+                        <a class="button-link" href="@BuildStudyLink(module.ResumeTarget.ModuleId, module.ResumeTarget.LessonId, resume: true)">Resume</a>
+                    }
+                    @if (module.Lessons.Count > 0)
+                    {
+                        <a class="button-link secondary" href="@BuildStudyLink(module.ModuleId, module.Lessons[0].LessonId, resume: false)">Study</a>
+                    }
+                    <a class="button-link secondary" href="/modules/@module.ModuleId">Module Details</a>
+                </div>
+            </div>
+
+            <div class="library-module-meta">
+                <span>Lessons: @module.LessonCount</span>
+                <span>Training items: @module.TrainingItemCount</span>
+                <span>Flashcards: @module.FlashcardCount</span>
+            </div>
+
+            <table class="data-table library-table">
+                <thead>
+                    <tr>
+                        <th>Order</th>
+                        <th>Lesson</th>
+                        <th>Status</th>
+                        <th>Progress</th>
+                        <th>Training Items</th>
+                        <th>Flashcards</th>
+                        <th>Last Viewed</th>
+                        <th>Study</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var lesson in module.Lessons)
+                    {
+                        <tr>
+                            <td>@lesson.OrderIndex</td>
+                            <td>
+                                @lesson.LessonTitle
+                                @if (lesson.IsFlagged)
+                                {
+                                    <span class="flag-pill">Flagged</span>
+                                }
+                            </td>
+                            <td>
+                                <span class="status-pill @GetStatusClass(lesson.Status)">@GetStatusLabel(lesson.Status)</span>
+                            </td>
+                            <td>@lesson.CompletionPercent.ToString("0.##")%</td>
+                            <td>@lesson.BlockCount</td>
+                            <td>@lesson.FlashcardCount</td>
+                            <td>@(lesson.LastViewedAt?.ToLocalTime().ToString("yyyy-MM-dd HH:mm") ?? "-")</td>
+                            <td>
+                                <div class="actions compact-actions">
+                                    <a class="button-link secondary" href="@BuildStudyLink(module.ModuleId, lesson.LessonId, resume: false)">Start</a>
+                                    <a class="button-link" href="@BuildStudyLink(module.ModuleId, lesson.LessonId, resume: true)">Resume</a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </section>
+    }
+}
 
 @code {
-    private readonly List<ModuleSummary> _modules = [];
+    private StudyLibrarySnapshot? _snapshot;
+    private string? _statusMessage;
 
     protected override async Task OnInitializedAsync()
     {
-        await using var db = await DbFactory.CreateDbContextAsync();
-
-        var rows = await db.TrainingModules
-            .AsNoTracking()
-            .Select(x => new ModuleSummary
-            {
-                Id = x.Id,
-                Name = x.Name,
-                Category = x.Category,
-                CreatedAt = x.CreatedAt,
-                LessonCount = x.Lessons.Count,
-                BlockCount = x.Lessons.SelectMany(lesson => lesson.TrainingBlocks).Count(),
-                FlashcardCount = x.Lessons.SelectMany(lesson => lesson.Flashcards).Count()
-            })
-            .OrderBy(x => x.Category)
-            .ThenBy(x => x.Name)
-            .ToListAsync();
-
-        _modules.Clear();
-        _modules.AddRange(rows);
+        await LoadSnapshotAsync();
     }
 
-    private sealed class ModuleSummary
+    private async Task LoadSnapshotAsync()
     {
-        public int Id { get; init; }
+        try
+        {
+            _snapshot = await StudyLibraryService.GetLibrarySnapshotAsync();
+        }
+        catch (Exception exception)
+        {
+            _statusMessage = $"Unable to load study library. {exception.Message}";
+            Console.Error.WriteLine($"[StudyTide] Unable to load study library. {exception}");
+        }
+    }
 
-        public string Name { get; init; } = string.Empty;
+    private static string BuildStudyLink(int moduleId, int lessonId, bool resume)
+    {
+        return $"/modules/{moduleId}/lessons/{lessonId}?resume={resume.ToString().ToLowerInvariant()}";
+    }
 
-        public string Category { get; init; } = string.Empty;
+    private static string GetStatusLabel(StudyProgressStatus status)
+    {
+        return status switch
+        {
+            StudyProgressStatus.NotStarted => "Not Started",
+            StudyProgressStatus.InProgress => "In Progress",
+            StudyProgressStatus.Completed => "Completed",
+            _ => "Not Started"
+        };
+    }
 
-        public DateTime CreatedAt { get; init; }
-
-        public int LessonCount { get; init; }
-
-        public int BlockCount { get; init; }
-
-        public int FlashcardCount { get; init; }
+    private static string GetStatusClass(StudyProgressStatus status)
+    {
+        return status switch
+        {
+            StudyProgressStatus.NotStarted => "status-not-started",
+            StudyProgressStatus.InProgress => "status-in-progress",
+            StudyProgressStatus.Completed => "status-completed",
+            _ => "status-not-started"
+        };
     }
 }

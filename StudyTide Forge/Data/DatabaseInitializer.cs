@@ -1,3 +1,5 @@
+using System.Data;
+using System.Data.Common;
 using System.Text.RegularExpressions;
 using Microsoft.EntityFrameworkCore;
 using StudyTideForge.Models;
@@ -160,6 +162,7 @@ public static class DatabaseInitializer
         await using var db = await dbFactory.CreateDbContextAsync();
 
         await db.Database.MigrateAsync();
+        await EnsureExtendedSchemaAsync(db);
 
         var importer = new LegacyQaSourceImporter();
         ImportedQaResult imported;
@@ -958,6 +961,63 @@ public static class DatabaseInitializer
         }
 
         return value[..maxLength].TrimEnd();
+    }
+
+    private static async Task EnsureExtendedSchemaAsync(ForgeDbContext db)
+    {
+        await using var connection = db.Database.GetDbConnection();
+
+        if (connection.State != ConnectionState.Open)
+        {
+            await connection.OpenAsync();
+        }
+
+        if (!await ColumnExistsAsync(connection, "TrainingLessons", "IsFlagged"))
+        {
+            await ExecuteNonQueryAsync(connection, "ALTER TABLE TrainingLessons ADD COLUMN IsFlagged INTEGER NOT NULL DEFAULT 0;");
+        }
+
+        await ExecuteNonQueryAsync(connection, """
+            CREATE TABLE IF NOT EXISTS StudyLessonProgresses (
+                Id INTEGER NOT NULL CONSTRAINT PK_StudyLessonProgresses PRIMARY KEY AUTOINCREMENT,
+                LessonId INTEGER NOT NULL,
+                CurrentTrainingBlockId INTEGER NULL,
+                CurrentBlockIndex INTEGER NOT NULL DEFAULT 0,
+                HighestBlockIndex INTEGER NOT NULL DEFAULT -1,
+                IsCompleted INTEGER NOT NULL DEFAULT 0,
+                LastViewedAt TEXT NOT NULL,
+                CONSTRAINT FK_StudyLessonProgresses_TrainingLessons_LessonId FOREIGN KEY (LessonId) REFERENCES TrainingLessons (Id) ON DELETE CASCADE,
+                CONSTRAINT FK_StudyLessonProgresses_TrainingBlocks_CurrentTrainingBlockId FOREIGN KEY (CurrentTrainingBlockId) REFERENCES TrainingBlocks (Id) ON DELETE SET NULL
+            );
+            """);
+
+        await ExecuteNonQueryAsync(connection, "CREATE UNIQUE INDEX IF NOT EXISTS IX_StudyLessonProgresses_LessonId ON StudyLessonProgresses (LessonId);");
+        await ExecuteNonQueryAsync(connection, "CREATE INDEX IF NOT EXISTS IX_StudyLessonProgresses_LastViewedAt ON StudyLessonProgresses (LastViewedAt);");
+    }
+
+    private static async Task<bool> ColumnExistsAsync(DbConnection connection, string tableName, string columnName)
+    {
+        await using var command = connection.CreateCommand();
+        command.CommandText = $"PRAGMA table_info('{tableName}');";
+
+        await using var reader = await command.ExecuteReaderAsync();
+        while (await reader.ReadAsync())
+        {
+            var existingColumnName = reader.GetString(1);
+            if (string.Equals(existingColumnName, columnName, StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static async Task ExecuteNonQueryAsync(DbConnection connection, string sql)
+    {
+        await using var command = connection.CreateCommand();
+        command.CommandText = sql;
+        await command.ExecuteNonQueryAsync();
     }
 
     private sealed record SeedBlock(

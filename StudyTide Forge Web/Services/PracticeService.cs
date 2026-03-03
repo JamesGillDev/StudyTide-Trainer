@@ -6,7 +6,10 @@ namespace StudyTideForge.Services;
 
 public sealed class PracticeService(IDbContextFactory<ForgeDbContext> dbFactory)
 {
-    public async Task<TrainingBlock?> GetNextDueBlockAsync(int? moduleId, int? lessonId)
+    public async Task<TrainingBlock?> GetNextDueBlockAsync(
+        int? moduleId,
+        int? lessonId,
+        IReadOnlyCollection<int>? excludedBlockIds = null)
     {
         await using var db = await dbFactory.CreateDbContextAsync();
         var now = DateTime.UtcNow;
@@ -25,6 +28,11 @@ public sealed class PracticeService(IDbContextFactory<ForgeDbContext> dbFactory)
         if (lessonId.HasValue)
         {
             query = query.Where(x => x.LessonId == lessonId.Value);
+        }
+
+        if (excludedBlockIds is { Count: > 0 })
+        {
+            query = query.Where(x => !excludedBlockIds.Contains(x.Id));
         }
 
         var dueBlock = await query

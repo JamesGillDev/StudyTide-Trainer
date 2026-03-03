@@ -1,6 +1,9 @@
+using System.Data;
+using System.Data.Common;
 using System.Text.RegularExpressions;
 using Microsoft.EntityFrameworkCore;
 using StudyTideForge.Models;
+using StudyTideForge.Services;
 
 namespace StudyTideForge.Data;
 
@@ -159,6 +162,7 @@ public static class DatabaseInitializer
         await using var db = await dbFactory.CreateDbContextAsync();
 
         await db.Database.MigrateAsync();
+        await EnsureExtendedSchemaAsync(db);
 
         var importer = new LegacyQaSourceImporter();
         ImportedQaResult imported;
@@ -187,6 +191,8 @@ public static class DatabaseInitializer
         await ApplySupplementalSeedBlocksAsync(db);
         await ReplaceDuplicateTrainingBlocksAsync(db);
         await ApplyTargetedCoverageBoostAsync(db);
+        await ApplyPromptResponseOrientationMigrationAsync(db);
+        await ReplaceDuplicateTrainingBlocksAsync(db);
     }
 
     private static async Task<bool> RequiresReseedAsync(ForgeDbContext db, int importedPairCount)
@@ -453,7 +459,9 @@ public static class DatabaseInitializer
     private static string BuildTrainingContent(string prompt, string response)
     {
         var example = BuildExample(prompt, response);
-        return $"Prompt:\n{prompt}\n\nResponse:\n{response}\n\nExample:\n{example}";
+        var sections = new ParsedTrainingContent(prompt, response, example);
+        var normalized = TrainingContentFormatter.ReversePromptResponse(sections);
+        return TrainingContentFormatter.BuildLabeledContent(normalized.Prompt, normalized.Response, normalized.Example);
     }
 
     private static string BuildExample(string prompt, string response)
@@ -882,7 +890,134 @@ public static class DatabaseInitializer
 
     private static string BuildSeedBlockContent(SeedBlock seedBlock)
     {
-        return $"Prompt:\n{seedBlock.Title}\n\nResponse:\n{seedBlock.Response}\n\nExample:\n{seedBlock.Example}";
+        var sections = new ParsedTrainingContent(seedBlock.Title, seedBlock.Response, seedBlock.Example);
+        var normalized = TrainingContentFormatter.ReversePromptResponse(sections);
+        return TrainingContentFormatter.BuildLabeledContent(normalized.Prompt, normalized.Response, normalized.Example);
+    }
+
+    private static async Task ApplyPromptResponseOrientationMigrationAsync(ForgeDbContext db)
+    {
+        var updated = false;
+
+        var trainingBlocks = await db.TrainingBlocks.ToListAsync();
+        foreach (var block in trainingBlocks)
+        {
+            if (!TrainingContentFormatter.TryParseLabeledSections(block.Content, out var sections))
+            {
+                continue;
+            }
+
+            var normalized = TrainingContentFormatter.ReversePromptResponse(sections);
+            if (normalized == sections)
+            {
+                continue;
+            }
+
+            block.Content = TrainingContentFormatter.BuildLabeledContent(
+                normalized.Prompt,
+                normalized.Response,
+                normalized.Example);
+
+            updated = true;
+        }
+
+        var flashcards = await db.Flashcards.ToListAsync();
+        foreach (var flashcard in flashcards)
+        {
+            var question = flashcard.Question;
+            var answer = flashcard.Answer;
+
+            if (TrainingContentFormatter.NeedsPromptResponseReversal(question, answer))
+            {
+                question = TrainingContentFormatter.BuildPromptFromResponse(answer);
+                answer = TrainingContentFormatter.BuildResponseFromPrompt(flashcard.Question);
+            }
+
+            question = TrainingContentFormatter.NormalizePromptForTermResponse(question, answer);
+
+            var normalizedQuestion = TruncateValue(question, 500);
+            var normalizedAnswer = TruncateValue(answer, 500);
+
+            if (!string.Equals(flashcard.Question, normalizedQuestion, StringComparison.Ordinal) ||
+                !string.Equals(flashcard.Answer, normalizedAnswer, StringComparison.Ordinal))
+            {
+                flashcard.Question = normalizedQuestion;
+                flashcard.Answer = normalizedAnswer;
+                updated = true;
+            }
+        }
+
+        if (updated)
+        {
+            await db.SaveChangesAsync();
+        }
+    }
+
+    private static string TruncateValue(string value, int maxLength)
+    {
+        if (value.Length <= maxLength)
+        {
+            return value;
+        }
+
+        return value[..maxLength].TrimEnd();
+    }
+
+    private static async Task EnsureExtendedSchemaAsync(ForgeDbContext db)
+    {
+        await using var connection = db.Database.GetDbConnection();
+
+        if (connection.State != ConnectionState.Open)
+        {
+            await connection.OpenAsync();
+        }
+
+        if (!await ColumnExistsAsync(connection, "TrainingLessons", "IsFlagged"))
+        {
+            await ExecuteNonQueryAsync(connection, "ALTER TABLE TrainingLessons ADD COLUMN IsFlagged INTEGER NOT NULL DEFAULT 0;");
+        }
+
+        await ExecuteNonQueryAsync(connection, """
+            CREATE TABLE IF NOT EXISTS StudyLessonProgresses (
+                Id INTEGER NOT NULL CONSTRAINT PK_StudyLessonProgresses PRIMARY KEY AUTOINCREMENT,
+                LessonId INTEGER NOT NULL,
+                CurrentTrainingBlockId INTEGER NULL,
+                CurrentBlockIndex INTEGER NOT NULL DEFAULT 0,
+                HighestBlockIndex INTEGER NOT NULL DEFAULT -1,
+                IsCompleted INTEGER NOT NULL DEFAULT 0,
+                LastViewedAt TEXT NOT NULL,
+                CONSTRAINT FK_StudyLessonProgresses_TrainingLessons_LessonId FOREIGN KEY (LessonId) REFERENCES TrainingLessons (Id) ON DELETE CASCADE,
+                CONSTRAINT FK_StudyLessonProgresses_TrainingBlocks_CurrentTrainingBlockId FOREIGN KEY (CurrentTrainingBlockId) REFERENCES TrainingBlocks (Id) ON DELETE SET NULL
+            );
+            """);
+
+        await ExecuteNonQueryAsync(connection, "CREATE UNIQUE INDEX IF NOT EXISTS IX_StudyLessonProgresses_LessonId ON StudyLessonProgresses (LessonId);");
+        await ExecuteNonQueryAsync(connection, "CREATE INDEX IF NOT EXISTS IX_StudyLessonProgresses_LastViewedAt ON StudyLessonProgresses (LastViewedAt);");
+    }
+
+    private static async Task<bool> ColumnExistsAsync(DbConnection connection, string tableName, string columnName)
+    {
+        await using var command = connection.CreateCommand();
+        command.CommandText = $"PRAGMA table_info('{tableName}');";
+
+        await using var reader = await command.ExecuteReaderAsync();
+        while (await reader.ReadAsync())
+        {
+            var existingColumnName = reader.GetString(1);
+            if (string.Equals(existingColumnName, columnName, StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static async Task ExecuteNonQueryAsync(DbConnection connection, string sql)
+    {
+        await using var command = connection.CreateCommand();
+        command.CommandText = sql;
+        await command.ExecuteNonQueryAsync();
     }
 
     private sealed record SeedBlock(

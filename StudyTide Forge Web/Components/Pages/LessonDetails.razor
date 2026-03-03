@@ -1,82 +1,99 @@
 @page "/modules/{ModuleId:int}/lessons/{LessonId:int}"
+@inject StudyLibraryService StudyLibraryService
 @inject IDbContextFactory<ForgeDbContext> DbFactory
 
-<PageTitle>Lesson Details</PageTitle>
+<PageTitle>Lesson Study</PageTitle>
 
-@if (_lesson is null)
+@if (!string.IsNullOrWhiteSpace(_statusMessage))
 {
-    <h1>Lesson not found</h1>
+    <p class="status-message">@_statusMessage</p>
+}
+
+@if (_session is null)
+{
+    <section class="panel">
+        <h1>Lesson not found</h1>
+    </section>
+}
+else if (_session.Blocks.Count == 0)
+{
+    <section class="panel">
+        <h1>@_session.LessonTitle</h1>
+        <p class="meta-text">Module: @_session.ModuleName</p>
+        <p>No training items are available in this lesson.</p>
+    </section>
 }
 else
 {
-    <h1>@_lesson.Title</h1>
-    <p class="meta-text">Module: @_lesson.Module?.Name</p>
+    <h1>@_session.LessonTitle</h1>
 
-    <section class="panel">
-        <h2>Training items</h2>
+    <div class="lesson-meta-row">
+        <p class="meta-text">
+            Module: @_session.ModuleName |
+            Slide @(_currentIndex + 1) of @_session.Blocks.Count |
+            Status: <span class="status-pill @GetStatusClass(GetLessonStatus())">@GetStatusLabel(GetLessonStatus())</span>
+        </p>
+        <label class="checkbox-inline">
+            <input type="checkbox" checked="@_isLessonFlagged" @onchange="OnLessonFlagChangedAsync" />
+            Flag lesson
+        </label>
+    </div>
 
-        @if (_blocks.Count == 0)
-        {
-            <p>No training items in this lesson.</p>
-        }
-        else
-        {
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>Title</th>
-                        <th>Difficulty</th>
-                        <th>Practiced</th>
-                        <th>Next due</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var block in _blocks)
-                    {
-                        <tr>
-                            <td>@block.Title</td>
-                            <td>@block.Difficulty</td>
-                            <td>@block.TimesPracticed</td>
-                            <td>@(block.NextDueAt.HasValue ? block.NextDueAt.Value.ToLocalTime().ToString("yyyy-MM-dd HH:mm") : "Now")</td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        }
-    </section>
+    <div class="study-layout" tabindex="0" @onkeydown="HandleKeyNavigationAsync" @ref="_studyContainer">
+        <section class="panel study-slide-panel">
+            <h2>@CurrentBlock!.Title</h2>
 
-    <section class="panel">
-        <h2>Flashcards</h2>
+            <div class="training-sections">
+                <section class="training-section">
+                    <h4>Prompt</h4>
+                    <pre class="training-content">@CurrentBlock.Prompt</pre>
+                </section>
+                <section class="training-section">
+                    <h4>Response</h4>
+                    <pre class="training-content">@CurrentBlock.Response</pre>
+                </section>
+                <section class="training-section">
+                    <h4>Example</h4>
+                    <pre class="training-content">@CurrentBlock.Example</pre>
+                </section>
+                <section class="training-section study-expanded">
+                    <h4>Expanded Context</h4>
+                    <ul class="study-cue-list">
+                        @foreach (var point in CurrentBlock.ExpandedExample)
+                        {
+                            <li>@point</li>
+                        }
+                    </ul>
+                </section>
+            </div>
 
-        @if (_flashcards.Count == 0)
-        {
-            <p>No flashcards in this lesson.</p>
-        }
-        else
-        {
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>Question</th>
-                        <th>Difficulty</th>
-                        <th>Correct</th>
-                        <th>Incorrect</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var card in _flashcards)
-                    {
-                        <tr>
-                            <td>@Trim(card.Question, 110)</td>
-                            <td>@card.Difficulty</td>
-                            <td>@card.TimesCorrect</td>
-                            <td>@card.TimesIncorrect</td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        }
-    </section>
+            <div class="actions">
+                <button class="secondary" @onclick="GoPreviousAsync" disabled="@(!CanGoPrevious)">Previous</button>
+                <button @onclick="GoNextAsync" disabled="@(!CanGoNext)">Next</button>
+                <a class="button-link secondary" href="/practice">Practice</a>
+                <a class="button-link secondary" href="/modules/flashcards">Flashcards</a>
+            </div>
+
+            <p class="meta-text">Use Left/Right arrow keys to navigate slides.</p>
+        </section>
+
+        <aside class="panel study-outline-panel">
+            <h2>Outline</h2>
+            <ol class="study-outline-list">
+                @for (var index = 0; index < _session.Blocks.Count; index++)
+                {
+                    var block = _session.Blocks[index];
+                    <li>
+                        <button class="outline-item @GetOutlineClass(index)"
+                                @onclick="() => JumpToIndexAsync(index)">
+                            <span class="outline-order">@(@index + 1)</span>
+                            <span class="outline-title">@block.Title</span>
+                        </button>
+                    </li>
+                }
+            </ol>
+        </aside>
+    </div>
 }
 
 @code {
@@ -86,42 +103,241 @@ else
     [Parameter]
     public int LessonId { get; set; }
 
-    private TrainingLesson? _lesson;
-    private readonly List<TrainingBlock> _blocks = [];
-    private readonly List<Flashcard> _flashcards = [];
+    [SupplyParameterFromQuery(Name = "resume")]
+    public bool? ResumeQuery { get; set; }
+
+    private LessonStudySession? _session;
+    private int _currentIndex;
+    private int _highestVisitedIndex;
+    private bool _isLessonFlagged;
+    private string? _statusMessage;
+    private ElementReference _studyContainer;
+    private bool _requestFocus;
+
+    private StudyBlockView? CurrentBlock
+        => _session is { Blocks.Count: > 0 }
+            ? _session.Blocks[_currentIndex]
+            : null;
+
+    private bool CanGoPrevious => _session is { Blocks.Count: > 0 } && _currentIndex > 0;
+
+    private bool CanGoNext => _session is { Blocks.Count: > 0 } && _currentIndex < _session.Blocks.Count - 1;
 
     protected override async Task OnParametersSetAsync()
     {
-        await using var db = await DbFactory.CreateDbContextAsync();
+        var resume = ResumeQuery is not false;
 
-        _lesson = await db.TrainingLessons
-            .AsNoTracking()
-            .Include(x => x.Module)
-            .FirstOrDefaultAsync(x => x.Id == LessonId && x.ModuleId == ModuleId);
+        _session = await StudyLibraryService.GetLessonStudySessionAsync(ModuleId, LessonId, resume);
 
-        var blocks = await db.TrainingBlocks
-            .AsNoTracking()
-            .Where(x => x.LessonId == LessonId)
-            .OrderBy(x => x.Id)
-            .ToListAsync();
+        if (_session is null || _session.Blocks.Count == 0)
+        {
+            _currentIndex = 0;
+            _highestVisitedIndex = -1;
+            _isLessonFlagged = false;
+            _requestFocus = false;
+            return;
+        }
 
-        var flashcards = await db.Flashcards
-            .AsNoTracking()
-            .Where(x => x.LessonId == LessonId)
-            .OrderBy(x => x.Id)
-            .ToListAsync();
-
-        _blocks.Clear();
-        _blocks.AddRange(blocks);
-
-        _flashcards.Clear();
-        _flashcards.AddRange(flashcards);
+        _currentIndex = Math.Clamp(_session.StartIndex, 0, _session.Blocks.Count - 1);
+        _highestVisitedIndex = Math.Max(_session.HighestVisitedIndex, _currentIndex);
+        _isLessonFlagged = _session.IsFlagged;
+        _requestFocus = true;
+        _statusMessage = resume
+            ? "Resumed where you left off."
+            : "Started lesson from the beginning.";
     }
 
-    private static string Trim(string value, int maxLength)
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        return value.Length <= maxLength
-            ? value
-            : $"{value[..maxLength]}...";
+        if (!_requestFocus)
+        {
+            return;
+        }
+
+        _requestFocus = false;
+        await _studyContainer.FocusAsync();
+    }
+
+    private async Task HandleKeyNavigationAsync(KeyboardEventArgs eventArgs)
+    {
+        if (string.Equals(eventArgs.Key, "ArrowRight", StringComparison.Ordinal))
+        {
+            await GoNextAsync();
+            return;
+        }
+
+        if (string.Equals(eventArgs.Key, "ArrowLeft", StringComparison.Ordinal))
+        {
+            await GoPreviousAsync();
+        }
+    }
+
+    private async Task GoPreviousAsync()
+    {
+        if (!CanGoPrevious)
+        {
+            return;
+        }
+
+        await SetCurrentIndexAsync(_currentIndex - 1);
+    }
+
+    private async Task GoNextAsync()
+    {
+        if (!CanGoNext)
+        {
+            return;
+        }
+
+        await SetCurrentIndexAsync(_currentIndex + 1);
+    }
+
+    private async Task JumpToIndexAsync(int index)
+    {
+        await SetCurrentIndexAsync(index);
+    }
+
+    private async Task SetCurrentIndexAsync(int index)
+    {
+        if (_session is null || _session.Blocks.Count == 0)
+        {
+            return;
+        }
+
+        var boundedIndex = Math.Clamp(index, 0, _session.Blocks.Count - 1);
+        if (_currentIndex == boundedIndex)
+        {
+            return;
+        }
+
+        _currentIndex = boundedIndex;
+        _highestVisitedIndex = Math.Max(_highestVisitedIndex, _currentIndex);
+
+        await SaveCheckpointAsync();
+
+        _requestFocus = true;
+    }
+
+    private async Task SaveCheckpointAsync()
+    {
+        if (_session is null || _session.Blocks.Count == 0)
+        {
+            return;
+        }
+
+        var block = _session.Blocks[_currentIndex];
+
+        try
+        {
+            await StudyLibraryService.SaveCheckpointAsync(LessonId, block.BlockId, _currentIndex, _session.Blocks.Count);
+        }
+        catch (Exception exception)
+        {
+            _statusMessage = $"Unable to save study checkpoint. {exception.Message}";
+            Console.Error.WriteLine($"[StudyTide] Unable to save study checkpoint. {exception}");
+        }
+    }
+
+    private async Task OnLessonFlagChangedAsync(ChangeEventArgs eventArgs)
+    {
+        if (_session is null)
+        {
+            return;
+        }
+
+        var isFlagged = ParseCheckboxValue(eventArgs.Value);
+
+        try
+        {
+            await using var db = await DbFactory.CreateDbContextAsync();
+            var lesson = await db.TrainingLessons.FirstOrDefaultAsync(x => x.Id == LessonId && x.ModuleId == ModuleId);
+
+            if (lesson is null)
+            {
+                return;
+            }
+
+            lesson.IsFlagged = isFlagged;
+            await db.SaveChangesAsync();
+
+            _isLessonFlagged = isFlagged;
+            _statusMessage = isFlagged
+                ? "Lesson flagged for focused review."
+                : "Lesson removed from flagged materials.";
+        }
+        catch (Exception exception)
+        {
+            _statusMessage = $"Unable to update lesson flag. {exception.Message}";
+            Console.Error.WriteLine($"[StudyTide] Unable to update lesson flag. {exception}");
+        }
+    }
+
+    private StudyProgressStatus GetLessonStatus()
+    {
+        if (_session is null || _session.Blocks.Count == 0)
+        {
+            return StudyProgressStatus.NotStarted;
+        }
+
+        if (_highestVisitedIndex >= _session.Blocks.Count - 1)
+        {
+            return StudyProgressStatus.Completed;
+        }
+
+        return StudyProgressStatus.InProgress;
+    }
+
+    private string GetOutlineClass(int index)
+    {
+        var classes = new List<string>();
+
+        if (index == _currentIndex)
+        {
+            classes.Add("active");
+        }
+
+        if (index <= _highestVisitedIndex)
+        {
+            classes.Add("visited");
+        }
+
+        return string.Join(" ", classes);
+    }
+
+    private static bool ParseCheckboxValue(object? value)
+    {
+        if (value is bool boolValue)
+        {
+            return boolValue;
+        }
+
+        if (value is string stringValue && bool.TryParse(stringValue, out var parsed))
+        {
+            return parsed;
+        }
+
+        return false;
+    }
+
+    private static string GetStatusLabel(StudyProgressStatus status)
+    {
+        return status switch
+        {
+            StudyProgressStatus.NotStarted => "Not Started",
+            StudyProgressStatus.InProgress => "In Progress",
+            StudyProgressStatus.Completed => "Completed",
+            _ => "Not Started"
+        };
+    }
+
+    private static string GetStatusClass(StudyProgressStatus status)
+    {
+        return status switch
+        {
+            StudyProgressStatus.NotStarted => "status-not-started",
+            StudyProgressStatus.InProgress => "status-in-progress",
+            StudyProgressStatus.Completed => "status-completed",
+            _ => "status-not-started"
+        };
     }
 }

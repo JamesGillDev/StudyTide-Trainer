@@ -23,4 +23,6 @@ public sealed class TrainingLesson
     public ICollection<TrainingBlock> TrainingBlocks { get; set; } = new List<TrainingBlock>();
 
     public ICollection<Flashcard> Flashcards { get; set; } = new List<Flashcard>();
+
+    public StudyLessonProgress? StudyProgress { get; set; }
 }

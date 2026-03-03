@@ -45,7 +45,7 @@ else
                                 <input type="checkbox" checked="@lesson.IsFlagged" @onchange="@((eventArgs) => UpdateLessonFlagAsync(lesson, eventArgs))" />
                             </td>
                             <td>
-                                <a class="button-link" href="/modules/@ModuleId/lessons/@lesson.Id">View</a>
+                                <a class="button-link" href="/modules/@ModuleId/lessons/@lesson.Id?resume=true">Study</a>
                             </td>
                         </tr>
                     }

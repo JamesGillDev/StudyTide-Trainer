@@ -35,6 +35,7 @@ builder.Services.AddDbContextFactory<ForgeDbContext>(options =>
 builder.Services.AddScoped<PracticeService>();
 builder.Services.AddScoped<FlashcardService>();
 builder.Services.AddScoped<DashboardService>();
+builder.Services.AddScoped<StudyLibraryService>();
 
 var app = builder.Build();
 

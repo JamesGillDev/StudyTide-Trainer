@@ -4,6 +4,33 @@ All notable changes to this project are documented in this file.
 
 The format is based on semantic versioning (`MAJOR.MINOR.PATCH`).
 
+## [2.6.0] - 2026-03-03
+
+### Added
+- New `Study Library` experience with persistent progress states across modules/lessons:
+  - `Not Started`
+  - `In Progress`
+  - `Completed`
+- New slide-based `Lesson Study` view with:
+  - One training item at a time (`Prompt`, `Response`, `Example`)
+  - `Previous` / `Next` navigation
+  - Left/right keyboard arrow navigation
+  - Outline panel for instant jump to any item
+- Persistent lesson checkpoint storage via `StudyLessonProgress` model and `StudyLibraryService`.
+- New nested training navigation structure:
+  - `Training Materials > Study Library`
+  - `Training Materials > Flashcards`
+  - `Training Materials > Flagged Material`
+
+### Changed
+- Practice view now includes an `Expanded Context` section derived from Prompt/Response/Example while keeping verbatim scoring behavior unchanged.
+- `Flashcards` and `Flagged Material` routes now support `/modules/flashcards` and `/modules/flagged` in addition to legacy paths.
+- Desktop and web data initialization now ensure extended schema compatibility for persistent study progress and lesson-flag support.
+- App version bumped to `2.6.0` (`ApplicationVersion` `2600`).
+
+### Release
+- Marked `v2.6.0` as **ready for public release** on `2026-03-03`.
+
 ## [2.5.0] - 2026-03-03
 
 ### Added

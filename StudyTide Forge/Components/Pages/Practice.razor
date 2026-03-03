@@ -110,6 +110,15 @@ else
                             <h4>Example</h4>
                             <pre class="training-content">@_parsedContent.Example</pre>
                         </section>
+                        <section class="training-section study-expanded">
+                            <h4>Expanded Context</h4>
+                            <ul class="study-cue-list">
+                                @foreach (var point in _parsedContent.ExpandedCues)
+                                {
+                                    <li>@point</li>
+                                }
+                            </ul>
+                        </section>
                     </div>
                     <p class="meta-text retype-note">Retype only the text values above in this order: Prompt line, Response line, Example line.</p>
                 }
@@ -503,12 +512,40 @@ else
 
         if (!TrainingContentFormatter.TryParseLabeledSections(normalized, out var sections))
         {
-            return new DisplayTrainingContent(string.Empty, string.Empty, string.Empty, normalized, false);
+            return new DisplayTrainingContent(string.Empty, string.Empty, string.Empty, normalized, false, []);
         }
 
         var oriented = TrainingContentFormatter.ReversePromptResponse(sections);
         var retypeTarget = TrainingContentFormatter.BuildRetypeTarget(oriented);
-        return new DisplayTrainingContent(oriented.Prompt, oriented.Response, oriented.Example, retypeTarget, true);
+        return new DisplayTrainingContent(
+            oriented.Prompt,
+            oriented.Response,
+            oriented.Example,
+            retypeTarget,
+            true,
+            BuildExpandedCues(oriented));
+    }
+
+    private static IReadOnlyList<string> BuildExpandedCues(ParsedTrainingContent sections)
+    {
+        var points = new List<string>();
+
+        if (!string.IsNullOrWhiteSpace(sections.Response))
+        {
+            points.Add($"Core concept: {sections.Response}");
+        }
+
+        if (!string.IsNullOrWhiteSpace(sections.Prompt))
+        {
+            points.Add($"Recognition cue: {sections.Prompt}");
+        }
+
+        if (!string.IsNullOrWhiteSpace(sections.Example))
+        {
+            points.Add($"Application: {sections.Example}");
+        }
+
+        return points;
     }
 
     private string GetTypingPlaceholder()
@@ -539,9 +576,10 @@ else
         string Response,
         string Example,
         string RetypeTarget,
-        bool HasSections)
+        bool HasSections,
+        IReadOnlyList<string> ExpandedCues)
     {
-        public static DisplayTrainingContent Empty { get; } = new(string.Empty, string.Empty, string.Empty, string.Empty, false);
+        public static DisplayTrainingContent Empty { get; } = new(string.Empty, string.Empty, string.Empty, string.Empty, false, []);
     }
 
     private sealed class ModuleOption

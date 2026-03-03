@@ -12,6 +12,8 @@ public sealed class TrainingLesson
     [StringLength(160)]
     public string Title { get; set; } = string.Empty;
 
+    public bool IsFlagged { get; set; }
+
     public int OrderIndex { get; set; }
 
     public DateTime CreatedAt { get; set; }
@@ -21,4 +23,6 @@ public sealed class TrainingLesson
     public ICollection<TrainingBlock> TrainingBlocks { get; set; } = new List<TrainingBlock>();
 
     public ICollection<Flashcard> Flashcards { get; set; } = new List<Flashcard>();
+
+    public StudyLessonProgress? StudyProgress { get; set; }
 }

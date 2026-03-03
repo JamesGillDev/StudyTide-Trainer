@@ -20,6 +20,8 @@ public sealed class ForgeDbContext : DbContext
 
     public DbSet<PracticeAttempt> PracticeAttempts => Set<PracticeAttempt>();
 
+    public DbSet<StudyLessonProgress> StudyLessonProgresses => Set<StudyLessonProgress>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -35,9 +37,11 @@ public sealed class ForgeDbContext : DbContext
         modelBuilder.Entity<TrainingLesson>(entity =>
         {
             entity.Property(x => x.Title).IsRequired().HasMaxLength(160);
+            entity.Property(x => x.IsFlagged).IsRequired().HasDefaultValue(false);
             entity.Property(x => x.OrderIndex).IsRequired();
             entity.Property(x => x.CreatedAt).IsRequired();
             entity.HasIndex(x => new { x.ModuleId, x.OrderIndex });
+            entity.HasIndex(x => x.IsFlagged);
 
             entity.HasOne(x => x.Module)
                 .WithMany(x => x.Lessons)
@@ -69,6 +73,26 @@ public sealed class ForgeDbContext : DbContext
                 .WithMany(x => x.Flashcards)
                 .HasForeignKey(x => x.LessonId)
                 .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<StudyLessonProgress>(entity =>
+        {
+            entity.Property(x => x.CurrentBlockIndex).IsRequired().HasDefaultValue(0);
+            entity.Property(x => x.HighestBlockIndex).IsRequired().HasDefaultValue(-1);
+            entity.Property(x => x.IsCompleted).IsRequired().HasDefaultValue(false);
+            entity.Property(x => x.LastViewedAt).IsRequired();
+            entity.HasIndex(x => x.LessonId).IsUnique();
+            entity.HasIndex(x => x.LastViewedAt);
+
+            entity.HasOne(x => x.Lesson)
+                .WithOne(x => x.StudyProgress)
+                .HasForeignKey<StudyLessonProgress>(x => x.LessonId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(x => x.CurrentTrainingBlock)
+                .WithMany()
+                .HasForeignKey(x => x.CurrentTrainingBlockId)
+                .OnDelete(DeleteBehavior.SetNull);
         });
 
         modelBuilder.Entity<PracticeAttempt>(entity =>

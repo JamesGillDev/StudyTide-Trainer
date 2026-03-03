@@ -4,7 +4,7 @@ StudyTide Forge is structured cognitive reinforcement training for software engi
 
 ## Release Status
 
-StudyTide Forge desktop (`v2.5.0`) is marked **ready for public release** as of `2026-03-03`.
+StudyTide Forge desktop (`v2.6.0`) is marked **ready for public release** as of `2026-03-03`.
 
 ## Solution Layout
 
@@ -52,6 +52,25 @@ Current extraction output (`2026-03-03`):
   - `StudyTide Forge Web\seed-source\legacy-source.cs`
   - `App_Data\training-material\extracted-training-pairs.json`
   - `App_Data\training-material\extraction-report.md`
+
+## Study Library Workflow
+
+- `Training Materials` navigation now uses nested sections:
+  - `Study Library`
+  - `Flashcards`
+  - `Flagged Material`
+- Study Library shows lesson/module progress state:
+  - `Not Started`
+  - `In Progress`
+  - `Completed`
+- Resume support is persistent:
+  - Module-level and global `Resume` buttons jump to the exact lesson slide last viewed.
+  - Checkpoints auto-save on every `Previous`, `Next`, and outline jump.
+- Lesson study view is slide-first with an outline panel for instant navigation.
+- Keyboard navigation is enabled in study view:
+  - `ArrowLeft` -> previous slide
+  - `ArrowRight` -> next slide
+- Practice now includes an `Expanded Context` section derived from Prompt/Response/Example while preserving strict verbatim scoring against section values.
 
 ## Verbatim Practice Behavior
 

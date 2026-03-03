@@ -5,8 +5,11 @@
     </div>
 
     <NavLink class="nav-link" href="/" Match="NavLinkMatch.All">Dashboard</NavLink>
-    <NavLink class="nav-link" href="/modules">Training Materials</NavLink>
+    <div class="nav-group">
+        <div class="nav-group-label">Training Materials</div>
+        <NavLink class="nav-link nav-sublink" href="/modules" Match="NavLinkMatch.Prefix">Study Library</NavLink>
+        <NavLink class="nav-link nav-sublink" href="/modules/flashcards">Flashcards</NavLink>
+        <NavLink class="nav-link nav-sublink" href="/modules/flagged">Flagged Material</NavLink>
+    </div>
     <NavLink class="nav-link" href="/practice">Practice</NavLink>
-    <NavLink class="nav-link" href="/flashcards">Flashcards</NavLink>
-    <NavLink class="nav-link" href="/flagged">Flagged Material</NavLink>
 </nav>

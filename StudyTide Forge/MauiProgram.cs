@@ -41,6 +41,7 @@ public static class MauiProgram
         builder.Services.AddScoped<PracticeService>();
         builder.Services.AddScoped<FlashcardService>();
         builder.Services.AddScoped<DashboardService>();
+        builder.Services.AddScoped<StudyLibraryService>();
 
 #if DEBUG
         builder.Services.AddBlazorWebViewDeveloperTools();
