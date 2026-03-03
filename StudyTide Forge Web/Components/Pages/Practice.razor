@@ -54,7 +54,7 @@
         <article class="instruction-step">
             <span class="step-badge">2</span>
             <h3>Read all three sections</h3>
-            <p>Review Prompt, Response, and Example so context is clear before typing.</p>
+            <p>Review Prompt, Response, and Study Cue so context is clear before typing.</p>
         </article>
         <article class="instruction-step">
             <span class="step-badge">3</span>
@@ -107,7 +107,7 @@ else
                             <pre class="training-content">@_parsedContent.Response</pre>
                         </section>
                         <section class="training-section">
-                            <h4>Example</h4>
+                            <h4>Study Cue</h4>
                             <pre class="training-content">@_parsedContent.Example</pre>
                         </section>
                         <section class="training-section study-expanded">
@@ -120,7 +120,7 @@ else
                             </ul>
                         </section>
                     </div>
-                    <p class="meta-text retype-note">Retype only the text values above in this order: Prompt line, Response line, Example line.</p>
+                    <p class="meta-text retype-note">Retype only the text values above in this order: Prompt line, Response line, Study Cue line.</p>
                 }
                 else
                 {
@@ -542,7 +542,7 @@ else
 
         if (!string.IsNullOrWhiteSpace(sections.Example))
         {
-            points.Add($"Application: {sections.Example}");
+            points.Add($"Study cue: {sections.Example}");
         }
 
         return points;
@@ -551,7 +551,7 @@ else
     private string GetTypingPlaceholder()
     {
         return _parsedContent.HasSections
-            ? "Line 1: Prompt value\nLine 2: Response value\nLine 3: Example value"
+            ? "Line 1: Prompt value\nLine 2: Response value\nLine 3: Study Cue value"
             : "Retype the source content exactly as shown.";
     }
 

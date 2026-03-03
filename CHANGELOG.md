@@ -4,6 +4,20 @@ All notable changes to this project are documented in this file.
 
 The format is based on semantic versioning (`MAJOR.MINOR.PATCH`).
 
+## [2.9.1] - 2026-03-03
+
+### Added
+- Startup cleanup migration to remove generated title prefixes (`Refined - ...`, `Focused - ...`) from existing seeded study content.
+
+### Changed
+- Compacted Lesson Study header/meta spacing so `Imported Set...` and `Module / Slide / Status` consume less height and leave more room for training content.
+- Renamed user-facing `Example` labels to `Study Cue` across Study Library and Practice surfaces where the third field is a cue-style reinforcement line.
+- Renamed Expanded Context bullet wording from `Application` to `Study cue` for clearer grammar alignment with cue text.
+- App version bumped to `2.9.1` (`ApplicationVersion` `2901`).
+
+### Release
+- Marked `v2.9.1` as **ready for public release** on `2026-03-03`.
+
 ## [2.9.0] - 2026-03-03
 
 ### Added

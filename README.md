@@ -4,7 +4,7 @@ StudyTide Forge is structured cognitive reinforcement training for software engi
 
 ## Release Status
 
-StudyTide Forge desktop (`v2.9.0`) is marked **ready for public release** as of `2026-03-03`.
+StudyTide Forge desktop (`v2.9.1`) is marked **ready for public release** as of `2026-03-03`.
 
 ## Solution Layout
 
@@ -32,7 +32,7 @@ Runtime behavior:
 5. Builds `TrainingItem.Content` as:
    - `Prompt:`
    - `Response:`
-   - `Example:`
+   - `Study Cue:` (stored in the `Example` field for compatibility)
 6. Distributes entries across multiple modules/lessons and repairs blank-module states during reseed.
 
 ## Training Material Extraction (MSSA Source Files)
@@ -70,7 +70,7 @@ Current extraction output (`2026-03-03`):
 - Keyboard navigation is enabled in study view:
   - `ArrowLeft` -> previous slide
   - `ArrowRight` -> next slide
-- Practice now includes an `Expanded Context` section derived from Prompt/Response/Example while preserving strict verbatim scoring against section values.
+- Practice now includes an `Expanded Context` section derived from Prompt/Response/Study Cue while preserving strict verbatim scoring against section values.
 
 ## Concrete Example Refresh
 
@@ -82,6 +82,13 @@ Current extraction output (`2026-03-03`):
 - Example migration runs at startup and rewrites existing training item `Example` sections from Prompt/Response context when needed.
 - Study-view action buttons use a fixed minimum height for consistent visual alignment (`Previous`, `Next`, `Practice`, `Flashcards`).
 
+## v2.9.1 Content and Layout Polish
+
+- Compacted Study Library lesson header spacing (`Imported Set...` + module/status row) to show more training content above the fold.
+- Added generated-title cleanup migration to remove `Refined - ...` / `Focused - ...` prefixes from seeded lesson titles/content.
+- Renamed UI labels from `Example` to `Study Cue` where examples are cue-style restatements.
+- Renamed `Expanded Context` bullet label from `Application` to `Study cue` for wording accuracy.
+
 ## Study UX and Grammar Cleanup
 
 - Fixed Training Materials nav state so `Study Library` is no longer highlighted while viewing `Flashcards` or `Flagged Material`.
@@ -92,7 +99,7 @@ Current extraction output (`2026-03-03`):
 
 ## Dashboard and Study View Refinements
 
-- Lesson Study now supports hiding the `Outline` panel with a toggle to expand `Prompt`, `Response`, and `Example` content to full width.
+- Lesson Study now supports hiding the `Outline` panel with a toggle to expand `Prompt`, `Response`, and `Study Cue` content to full width.
 - Dashboard now removes redundant overlap/mirroring inventory math and focuses on core readiness metrics.
 - Added completion progress bars on Dashboard for:
   - `Study Library` (completed lessons)
@@ -101,9 +108,9 @@ Current extraction output (`2026-03-03`):
 
 ## Verbatim Practice Behavior
 
-- Practice displays `Prompt`, `Response`, and `Example` as section labels in the UI.
+- Practice displays `Prompt`, `Response`, and `Study Cue` as section labels in the UI.
 - Retyping and accuracy scoring are performed against the section text only (labels are excluded).
-- Users retype section values in order: `Prompt` text, then `Response` text, then `Example` text.
+- Users retype section values in order: `Prompt` text, then `Response` text, then `Study Cue` text.
 - Practice actions include `Back`, `Skip`, and `Load Another Question`.
 - On first app launch, a quick-start instruction bubble explains the workflow and can be reopened with the floating `i` help button.
 - Character-level scoring uses edit-distance logic, so one missing character/newline no longer collapses the entire score.

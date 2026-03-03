@@ -327,11 +327,11 @@ public sealed class StudyLibraryService(IDbContextFactory<ForgeDbContext> dbFact
 
         if (!string.IsNullOrWhiteSpace(normalizedExample))
         {
-            points.Add($"Application: {normalizedExample}");
+            points.Add($"Study cue: {normalizedExample}");
         }
         else if (!string.IsNullOrWhiteSpace(normalizedResponse))
         {
-            points.Add($"Application: explain {normalizedResponse} in your own words and connect it to a real implementation.");
+            points.Add($"Study cue: explain {normalizedResponse} in your own words and connect it to a real implementation.");
         }
 
         return points;

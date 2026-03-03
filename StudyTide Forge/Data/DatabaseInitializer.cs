@@ -235,6 +235,7 @@ public static class DatabaseInitializer
         await ReplaceDuplicateTrainingBlocksAsync(db);
         await ApplyTargetedCoverageBoostAsync(db);
         await ApplyPromptResponseOrientationMigrationAsync(db);
+        await ApplyGeneratedTitleCleanupAsync(db);
         await ApplyConcreteExampleMigrationAsync(db);
         await ReplaceDuplicateTrainingBlocksAsync(db);
     }
@@ -1050,7 +1051,7 @@ public static class DatabaseInitializer
                 duplicates.Count,
                 lessonTitles,
                 usedContentKeys,
-                "Refined");
+                string.Empty);
 
             for (var index = 0; index < duplicates.Count; index++)
             {
@@ -1086,7 +1087,7 @@ public static class DatabaseInitializer
                     1,
                     lessonTitles,
                     usedContentKeys,
-                    "Refined")[0];
+                    string.Empty)[0];
 
                 ApplyReplacement(duplicate, replacement);
                 updated = true;
@@ -1169,26 +1170,30 @@ public static class DatabaseInitializer
         int variantIndex,
         string titlePrefix)
     {
+        var prefix = string.IsNullOrWhiteSpace(titlePrefix)
+            ? string.Empty
+            : $"{titlePrefix} - ";
+
         return variantIndex switch
         {
             0 => new SeedBlock(
                 ModuleCategory: "C#",
                 LessonTitle: lessonTitle,
-                Title: $"{titlePrefix} - C# #{sequence:000}: {concept} (Core)",
+                Title: $"{prefix}C# #{sequence:000}: {concept} (Core)",
                 Response: $"{concept} is a core C# skill used to keep .NET code readable, reliable, and maintainable in production systems.",
                 Example: $"In an ASP.NET Core service, apply {concept.ToLowerInvariant()} so features remain testable and easy to evolve.",
                 Difficulty: 2),
             1 => new SeedBlock(
                 ModuleCategory: "C#",
                 LessonTitle: lessonTitle,
-                Title: $"{titlePrefix} - C# #{sequence:000}: {concept} (Application)",
+                Title: $"{prefix}C# #{sequence:000}: {concept} (Application)",
                 Response: $"Use {concept.ToLowerInvariant()} when implementing application code that needs clear behavior, strong testability, and stable runtime outcomes.",
                 Example: $"During feature development, evaluate where {concept.ToLowerInvariant()} reduces complexity before adding new code.",
                 Difficulty: 3),
             _ => new SeedBlock(
                 ModuleCategory: "C#",
                 LessonTitle: lessonTitle,
-                Title: $"{titlePrefix} - C# #{sequence:000}: {concept} (Pitfall)",
+                Title: $"{prefix}C# #{sequence:000}: {concept} (Pitfall)",
                 Response: $"A common mistake with {concept.ToLowerInvariant()} is inconsistent use across the codebase, which increases defects and long-term maintenance cost.",
                 Example: $"During code review, standardize {concept.ToLowerInvariant()} usage to prevent regressions and improve team velocity.",
                 Difficulty: 3)
@@ -1202,19 +1207,23 @@ public static class DatabaseInitializer
         int variantIndex,
         string titlePrefix)
     {
+        var prefix = string.IsNullOrWhiteSpace(titlePrefix)
+            ? string.Empty
+            : $"{titlePrefix} - ";
+
         return variantIndex switch
         {
             0 => new SeedBlock(
                 ModuleCategory: "System Design",
                 LessonTitle: lessonTitle,
-                Title: $"{titlePrefix} - System Design #{sequence:000}: {concept} (Principle)",
+                Title: $"{prefix}System Design #{sequence:000}: {concept} (Principle)",
                 Response: $"{concept} is a system-design principle that improves scalability, resiliency, and operational clarity in distributed systems.",
                 Example: $"When designing a cloud platform, explicitly document {concept.ToLowerInvariant()} to align architecture decisions with reliability goals.",
                 Difficulty: 3),
             _ => new SeedBlock(
                 ModuleCategory: "System Design",
                 LessonTitle: lessonTitle,
-                Title: $"{titlePrefix} - System Design #{sequence:000}: {concept} (Trade-off)",
+                Title: $"{prefix}System Design #{sequence:000}: {concept} (Trade-off)",
                 Response: $"{concept} requires evaluating performance, cost, and complexity trade-offs before selecting a final architecture.",
                 Example: $"In architecture review, compare options for {concept.ToLowerInvariant()} and justify the selected trade-off with measurable criteria.",
                 Difficulty: 4)
@@ -1397,6 +1406,113 @@ public static class DatabaseInitializer
         {
             await db.SaveChangesAsync();
         }
+    }
+
+    private static async Task ApplyGeneratedTitleCleanupAsync(ForgeDbContext db)
+    {
+        var updatedTrainingBlocks = 0;
+        var trainingBlocks = await db.TrainingBlocks.ToListAsync();
+
+        foreach (var block in trainingBlocks)
+        {
+            var blockChanged = false;
+            var cleanedTitle = RemoveGeneratedPrefix(block.Title);
+
+            if (!string.Equals(block.Title, cleanedTitle, StringComparison.Ordinal))
+            {
+                block.Title = cleanedTitle;
+                blockChanged = true;
+            }
+
+            if (TrainingContentFormatter.TryParseLabeledSections(block.Content, out var sections))
+            {
+                var normalized = TrainingContentFormatter.ReversePromptResponse(sections);
+                var cleanedPrompt = RemoveGeneratedPrefixFromPrompt(normalized.Prompt);
+                var cleanedResponse = RemoveGeneratedPrefix(normalized.Response);
+                var rebuiltExample = BuildConcreteExample(cleanedPrompt, cleanedResponse);
+
+                if (!string.Equals(normalized.Prompt, cleanedPrompt, StringComparison.Ordinal) ||
+                    !string.Equals(normalized.Response, cleanedResponse, StringComparison.Ordinal) ||
+                    !string.Equals(normalized.Example, rebuiltExample, StringComparison.Ordinal))
+                {
+                    block.Content = TrainingContentFormatter.BuildLabeledContent(
+                        cleanedPrompt,
+                        cleanedResponse,
+                        rebuiltExample);
+                    blockChanged = true;
+                }
+            }
+
+            if (blockChanged)
+            {
+                updatedTrainingBlocks++;
+            }
+        }
+
+        if (updatedTrainingBlocks > 0)
+        {
+            await db.SaveChangesAsync();
+            Console.WriteLine($"[StudyTide] Removed generated prefixes from {updatedTrainingBlocks} training items.");
+        }
+
+        var updatedFlashcards = 0;
+        var flashcards = await db.Flashcards.ToListAsync();
+
+        foreach (var flashcard in flashcards)
+        {
+            var question = RemoveGeneratedPrefixFromPrompt(flashcard.Question);
+            var answer = RemoveGeneratedPrefix(flashcard.Answer);
+            question = TrainingContentFormatter.NormalizePromptForTermResponse(question, answer);
+
+            var normalizedQuestion = TruncateValue(question, 500);
+            var normalizedAnswer = TruncateValue(answer, 500);
+
+            if (string.Equals(flashcard.Question, normalizedQuestion, StringComparison.Ordinal) &&
+                string.Equals(flashcard.Answer, normalizedAnswer, StringComparison.Ordinal))
+            {
+                continue;
+            }
+
+            flashcard.Question = normalizedQuestion;
+            flashcard.Answer = normalizedAnswer;
+            updatedFlashcards++;
+        }
+
+        if (updatedFlashcards > 0)
+        {
+            await db.SaveChangesAsync();
+            Console.WriteLine($"[StudyTide] Removed generated prefixes from {updatedFlashcards} flashcards.");
+        }
+    }
+
+    private static string RemoveGeneratedPrefixFromPrompt(string prompt)
+    {
+        var normalized = prompt.Trim();
+        if (normalized.StartsWith("Identify the term:", StringComparison.OrdinalIgnoreCase))
+        {
+            var definition = normalized["Identify the term:".Length..].Trim();
+            var cleanedDefinition = RemoveGeneratedPrefix(definition);
+            return $"Identify the term: {cleanedDefinition}";
+        }
+
+        return RemoveGeneratedPrefix(normalized);
+    }
+
+    private static string RemoveGeneratedPrefix(string value)
+    {
+        var normalized = value.Trim();
+        var prefixes = new[] { "Refined - ", "Focused - " };
+
+        foreach (var prefix in prefixes)
+        {
+            if (normalized.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+            {
+                normalized = normalized[prefix.Length..].TrimStart();
+                break;
+            }
+        }
+
+        return normalized;
     }
 
     private static async Task ApplyConcreteExampleMigrationAsync(ForgeDbContext db)
