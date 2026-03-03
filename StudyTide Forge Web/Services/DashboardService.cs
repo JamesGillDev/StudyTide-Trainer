@@ -13,25 +13,26 @@ public sealed class DashboardService(IDbContextFactory<ForgeDbContext> dbFactory
         var sevenDaysAgo = now.AddDays(-7);
 
         var totalModules = await db.TrainingModules.CountAsync();
-        var totalLessons = await db.TrainingLessons.CountAsync();
+        var lessonRows = await db.TrainingLessons
+            .AsNoTracking()
+            .Select(x => new
+            {
+                BlockCount = x.TrainingBlocks.Count,
+                IsCompleted = x.StudyProgress != null &&
+                              (x.StudyProgress.IsCompleted ||
+                               (x.TrainingBlocks.Count > 0 && x.StudyProgress.HighestBlockIndex >= x.TrainingBlocks.Count - 1))
+            })
+            .ToListAsync();
+        var totalLessons = lessonRows.Count;
+        var completedStudyLessons = lessonRows.Count(x => x.IsCompleted);
         var totalTrainingItems = await db.TrainingBlocks.CountAsync();
         var totalFlashcards = await db.Flashcards.CountAsync();
+        var completedPracticeItems = await db.TrainingBlocks
+            .CountAsync(x => x.TimesPracticed > 0);
+        var completedFlashcards = await db.Flashcards
+            .CountAsync(x => (x.TimesCorrect + x.TimesIncorrect) > 0);
         var blocksDue = await db.TrainingBlocks.CountAsync(x => !x.NextDueAt.HasValue || x.NextDueAt <= now);
         var flashcardsDue = await db.Flashcards.CountAsync(x => (x.TimesCorrect + x.TimesIncorrect) == 0 || x.TimesIncorrect >= x.TimesCorrect);
-        var importedModuleNames = LegacyImportConstants.ModuleDefinitions
-            .SelectMany(x => new[]
-            {
-                $"{LegacyImportConstants.ModuleNamePrefix}{x.Name}",
-                $"{LegacyImportConstants.PreviousModuleNamePrefix}{x.Name}"
-            })
-            .Distinct(StringComparer.OrdinalIgnoreCase)
-            .ToList();
-        var importedFlashcards = await db.Flashcards
-            .CountAsync(x =>
-                importedModuleNames.Contains(x.Lesson!.Module!.Name));
-        var importedTrainingItems = await db.TrainingBlocks
-            .CountAsync(x =>
-                importedModuleNames.Contains(x.Lesson!.Module!.Name));
         var categoryRows = await db.TrainingModules
             .AsNoTracking()
             .Select(x => new
@@ -121,10 +122,11 @@ public sealed class DashboardService(IDbContextFactory<ForgeDbContext> dbFactory
             TotalLessons = totalLessons,
             TotalTrainingItems = totalTrainingItems,
             TotalFlashcards = totalFlashcards,
+            CompletedStudyLessons = completedStudyLessons,
+            CompletedPracticeItems = completedPracticeItems,
+            CompletedFlashcards = completedFlashcards,
             BlocksDue = blocksDue,
             FlashcardsDue = flashcardsDue,
-            ImportedFlashcards = importedFlashcards,
-            ImportedTrainingItems = importedTrainingItems,
             AccuracyLast7Days = Math.Round(accuracyLast7Days, 2),
             CategoryCoverage = categoryCoverage,
             WeakestBlocks = weakestBlocks,
@@ -157,13 +159,21 @@ public sealed class DashboardSnapshot
 
     public int TotalFlashcards { get; init; }
 
+    public int CompletedStudyLessons { get; init; }
+
+    public int CompletedPracticeItems { get; init; }
+
+    public int CompletedFlashcards { get; init; }
+
+    public double StudyLibraryCompletionPercent => ComputePercent(CompletedStudyLessons, TotalLessons);
+
+    public double PracticeCompletionPercent => ComputePercent(CompletedPracticeItems, TotalTrainingItems);
+
+    public double FlashcardsCompletionPercent => ComputePercent(CompletedFlashcards, TotalFlashcards);
+
     public int BlocksDue { get; init; }
 
     public int FlashcardsDue { get; init; }
-
-    public int ImportedFlashcards { get; init; }
-
-    public int ImportedTrainingItems { get; init; }
 
     public double AccuracyLast7Days { get; init; }
 
@@ -172,6 +182,16 @@ public sealed class DashboardSnapshot
     public IReadOnlyList<WeakBlock> WeakestBlocks { get; init; } = [];
 
     public IReadOnlyList<WeakFlashcard> WeakestFlashcards { get; init; } = [];
+
+    private static double ComputePercent(int completed, int total)
+    {
+        if (total <= 0)
+        {
+            return 100;
+        }
+
+        return Math.Round((double)completed / total * 100, 2);
+    }
 }
 
 public sealed class CategoryCoverage

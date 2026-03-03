@@ -34,13 +34,18 @@ else
                 Slide @(_currentIndex + 1) of @_session.Blocks.Count |
                 Status: <span class="status-pill @GetStatusClass(GetLessonStatus())">@GetStatusLabel(GetLessonStatus())</span>
             </p>
-            <label class="checkbox-inline">
-                <input type="checkbox" checked="@_isLessonFlagged" @onchange="OnLessonFlagChangedAsync" />
-                Flag lesson
-            </label>
+            <div class="lesson-meta-actions">
+                <button type="button" class="secondary" @onclick="ToggleOutline">
+                    @(_isOutlineVisible ? "Hide Outline" : "Show Outline")
+                </button>
+                <label class="checkbox-inline">
+                    <input type="checkbox" checked="@_isLessonFlagged" @onchange="OnLessonFlagChangedAsync" />
+                    Flag lesson
+                </label>
+            </div>
         </div>
 
-        <div class="study-layout" tabindex="0" @onkeydown="HandleKeyNavigationAsync" @ref="_studyContainer">
+        <div class="@GetStudyLayoutClass()" tabindex="0" @onkeydown="HandleKeyNavigationAsync" @ref="_studyContainer">
             <section class="panel study-slide-panel">
                 <h2>@CurrentBlock!.Title</h2>
 
@@ -78,22 +83,25 @@ else
                 <p class="meta-text">Use Left/Right arrow keys to navigate slides.</p>
             </section>
 
-            <aside class="panel study-outline-panel">
-                <h2>Outline</h2>
-                <ol class="study-outline-list">
-                    @for (var index = 0; index < _session.Blocks.Count; index++)
-                    {
-                        var block = _session.Blocks[index];
-                        <li>
-                            <button class="outline-item @GetOutlineClass(index)"
-                                    @onclick="() => JumpToIndexAsync(index)">
-                                <span class="outline-order">@(@index + 1)</span>
-                                <span class="outline-title">@block.Title</span>
-                            </button>
-                        </li>
-                    }
-                </ol>
-            </aside>
+            @if (_isOutlineVisible)
+            {
+                <aside class="panel study-outline-panel">
+                    <h2>Outline</h2>
+                    <ol class="study-outline-list">
+                        @for (var index = 0; index < _session.Blocks.Count; index++)
+                        {
+                            var block = _session.Blocks[index];
+                            <li>
+                                <button class="outline-item @GetOutlineClass(index)"
+                                        @onclick="() => JumpToIndexAsync(index)">
+                                    <span class="outline-order">@(@index + 1)</span>
+                                    <span class="outline-title">@block.Title</span>
+                                </button>
+                            </li>
+                        }
+                    </ol>
+                </aside>
+            }
         </div>
     </div>
 }
@@ -115,6 +123,7 @@ else
     private string? _statusMessage;
     private ElementReference _studyContainer;
     private bool _requestFocus;
+    private bool _isOutlineVisible = true;
 
     private StudyBlockView? CurrentBlock
         => _session is { Blocks.Count: > 0 }
@@ -238,6 +247,19 @@ else
             _statusMessage = $"Unable to save study checkpoint. {exception.Message}";
             Console.Error.WriteLine($"[StudyTide] Unable to save study checkpoint. {exception}");
         }
+    }
+
+    private void ToggleOutline()
+    {
+        _isOutlineVisible = !_isOutlineVisible;
+        _requestFocus = true;
+    }
+
+    private string GetStudyLayoutClass()
+    {
+        return _isOutlineVisible
+            ? "study-layout"
+            : "study-layout outline-hidden";
     }
 
     private async Task OnLessonFlagChangedAsync(ChangeEventArgs eventArgs)

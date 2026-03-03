@@ -4,6 +4,25 @@ All notable changes to this project are documented in this file.
 
 The format is based on semantic versioning (`MAJOR.MINOR.PATCH`).
 
+## [2.9.0] - 2026-03-03
+
+### Added
+- Lesson Study Outline visibility toggle:
+  - `Hide Outline` / `Show Outline` control in lesson view.
+  - full-width slide layout when outline is hidden.
+- New dashboard completion progress bars for:
+  - `Study Library`
+  - `Flashcards`
+  - `Practice`
+
+### Changed
+- Dashboard now removes redundant overlap/mirroring summary metrics and keeps the readiness view focused on actionable totals, due counts, and completion status.
+- Study layout styles updated so outline-hidden mode expands prompt/response/example content horizontally.
+- App version bumped to `2.9.0` (`ApplicationVersion` `2900`).
+
+### Release
+- Marked `v2.9.0` as **ready for public release** on `2026-03-03`.
+
 ## [2.8.0] - 2026-03-03
 
 ### Added
