@@ -530,6 +530,7 @@ public static class DatabaseInitializer
     {
         var term = NormalizeForSentence(ExtractTerm(prompt, response), 90);
         var action = NormalizeForSentence(ExtractActionPhrase(prompt, response, term), 180);
+        action = StripRepeatedTermPrefix(action, term);
 
         if (string.IsNullOrWhiteSpace(action))
         {
@@ -546,19 +547,19 @@ public static class DatabaseInitializer
 
         if (LooksLikeKeyboardShortcut(term))
         {
-            sentence = $"In Visual Studio Code, press {term} {scenario}.";
+            sentence = $"Press {term}: {scenario}.";
         }
         else if (LooksLikeCliCommand(term))
         {
-            sentence = $"In a terminal session, run {term} {scenario}.";
+            sentence = $"Run {term}: {scenario}.";
         }
         else if (LooksLikeCodeKeyword(term))
         {
-            sentence = $"In code, use {term} {scenario}.";
+            sentence = $"Use {term}: {scenario}.";
         }
         else
         {
-            sentence = $"In a real project, apply {term} {scenario}.";
+            sentence = $"{term}: {scenario}.";
         }
 
         return NormalizeExampleSentence(sentence);
@@ -694,35 +695,54 @@ public static class DatabaseInitializer
         var normalized = NormalizeLeadPhrase(TrimSentenceEnding(action));
         if (string.IsNullOrWhiteSpace(normalized))
         {
-            return "in a practical scenario";
+            return "supports the intended outcome";
         }
 
         if (normalized.StartsWith("when ", StringComparison.OrdinalIgnoreCase))
         {
-            return normalized;
+            return normalized[5..].Trim();
         }
 
         if (normalized.StartsWith("to ", StringComparison.OrdinalIgnoreCase))
         {
-            return $"to {normalized[3..].Trim()}";
+            return normalized[3..].Trim();
         }
 
         if (normalized.StartsWith("you ", StringComparison.OrdinalIgnoreCase))
         {
-            return $"when {normalized}";
+            return normalized;
         }
 
         if (normalized.StartsWith("where ", StringComparison.OrdinalIgnoreCase))
         {
-            return $"in scenarios where {normalized[6..].Trim()}";
+            return $"scenarios where {normalized[6..].Trim()}";
         }
 
-        if (StartsWithImperativeLead(normalized))
+        return normalized;
+    }
+
+    private static string StripRepeatedTermPrefix(string action, string term)
+    {
+        if (string.IsNullOrWhiteSpace(action) || string.IsNullOrWhiteSpace(term))
         {
-            return $"when you need to {normalized}";
+            return action;
         }
 
-        return $"when {normalized}";
+        var normalizedAction = action.Trim();
+        var normalizedTerm = term.Trim();
+
+        if (normalizedAction.Equals(normalizedTerm, StringComparison.OrdinalIgnoreCase))
+        {
+            return string.Empty;
+        }
+
+        var prefixedTerm = $"{normalizedTerm} ";
+        if (normalizedAction.StartsWith(prefixedTerm, StringComparison.OrdinalIgnoreCase))
+        {
+            return normalizedAction[prefixedTerm.Length..].TrimStart();
+        }
+
+        return normalizedAction;
     }
 
     private static bool LooksLikeTermCandidate(string value)

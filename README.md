@@ -4,7 +4,7 @@ StudyTide Forge is structured cognitive reinforcement training for software engi
 
 ## Release Status
 
-StudyTide Forge desktop (`v2.9.1`) is marked **ready for public release** as of `2026-03-03`.
+StudyTide Forge desktop (`v2.9.2`) is marked **ready for public release** as of `2026-03-03`.
 Public release verification refreshed on `2026-03-03` after local desktop/web publish validation.
 
 ## Solution Layout
@@ -89,6 +89,13 @@ Current extraction output (`2026-03-03`):
 - Added generated-title cleanup migration to remove `Refined - ...` / `Focused - ...` prefixes from seeded lesson titles/content.
 - Renamed UI labels from `Example` to `Study Cue` where examples are cue-style restatements.
 - Renamed `Expanded Context` bullet label from `Application` to `Study cue` for wording accuracy.
+
+## v2.9.2 Study Cue Phrasing Cleanup
+
+- Removed Study Cue boilerplate phrasing that did not match training voice:
+  - `In a real project, apply ...`
+  - auto-injected `when ...` / `when you need to ...`
+- Study cues now render with direct cue phrasing and strip duplicated term prefixes for cleaner grammar.
 
 ## Study UX and Grammar Cleanup
 

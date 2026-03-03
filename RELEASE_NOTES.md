@@ -1,5 +1,24 @@
 # Release Notes
 
+## v2.9.2 (2026-03-03)
+
+This release is **ready for public release**.
+
+### Highlights
+
+- Updated Study Cue generation to remove boilerplate phrasing that was mismatched with training material tone:
+  - removed `In a real project, apply ...`
+  - removed injected `when ...` / `when you need to ...`
+- Study cues now generate as direct cue-style phrasing and trim duplicated term prefixes.
+- Existing training items are refreshed by startup migration (`ApplyConcreteExampleMigrationAsync`) so stored Study Cue text is rewritten automatically.
+
+### Local Publish Outputs
+
+- Desktop publish target:
+  - `StudyTide Forge\bin\Release\net10.0-windows10.0.19041.0\win-x64\StudyTideForge.exe`
+- Web publish target:
+  - `artifacts\publish\studytide-forge-web-win-x64\StudyTideForgeWeb.exe`
+
 ## v2.9.1 (2026-03-03)
 
 This release is **ready for public release**.

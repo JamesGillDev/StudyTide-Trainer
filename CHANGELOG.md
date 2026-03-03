@@ -4,6 +4,18 @@ All notable changes to this project are documented in this file.
 
 The format is based on semantic versioning (`MAJOR.MINOR.PATCH`).
 
+## [2.9.2] - 2026-03-03
+
+### Changed
+- Updated Study Cue generation templates to remove phrasing that did not match training material voice:
+  - removed `In a real project, apply ...`
+  - removed injected `when ...` / `when you need to ...` prefixes
+- Simplified generated Study Cue sentences to direct cue-style phrasing (`Term: cue detail`) and added duplicate-term stripping for cleaner output.
+- App version bumped to `2.9.2` (`ApplicationVersion` `2902`).
+
+### Release
+- Marked `v2.9.2` as **ready for public release** on `2026-03-03`.
+
 ## [2.9.1] - 2026-03-03
 
 ### Added
