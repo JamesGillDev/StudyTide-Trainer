@@ -4,6 +4,24 @@ All notable changes to this project are documented in this file.
 
 The format is based on semantic versioning (`MAJOR.MINOR.PATCH`).
 
+## [2.5.0] - 2026-03-03
+
+### Added
+- New extraction pipeline script: `tools/extract_training_material.py` to ingest the provided MSSA training PDFs/Docx/Xlsx, apply OCR fallback when needed, and produce deduplicated Q/A seed material.
+- Generated training data artifacts under `App_Data/training-material`:
+  - `extracted-training-pairs.json`
+  - `extraction-report.md`
+- Bundled import source for desktop app at `StudyTide Forge/seed-source/legacy-source.cs` (in addition to web seed source).
+
+### Changed
+- Refreshed importer seed source (`legacy-source.cs`) with `3484` unique training pairs extracted from the supplied MSSA training document set.
+- Desktop startup now auto-sets `FORGE_IMPORT_SOURCE_FILE` to bundled `seed-source/legacy-source.cs` when no override is defined.
+- Desktop project now copies bundled seed source into build/publish output and excludes it from compile.
+- App version bumped to `2.5.0` (`ApplicationVersion` `2500`).
+
+### Release
+- Marked `v2.5.0` as **ready for public release** on `2026-03-03`.
+
 ## [2.4.0] - 2026-03-02
 
 ### Added

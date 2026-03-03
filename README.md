@@ -4,7 +4,7 @@ StudyTide Forge is structured cognitive reinforcement training for software engi
 
 ## Release Status
 
-StudyTide Forge desktop (`v2.4.0`) is marked **ready for public release** as of `2026-03-02`.
+StudyTide Forge desktop (`v2.5.0`) is marked **ready for public release** as of `2026-03-03`.
 
 ## Solution Layout
 
@@ -34,6 +34,24 @@ Runtime behavior:
    - `Response:`
    - `Example:`
 6. Distributes entries across multiple modules/lessons and repairs blank-module states during reseed.
+
+## Training Material Extraction (MSSA Source Files)
+
+Extraction command:
+
+```powershell
+py .\tools\extract_training_material.py
+```
+
+Current extraction output (`2026-03-03`):
+
+- `3484` deduplicated training pairs generated from the provided MSSA PDFs/Docx/Xlsx files.
+- OCR fallback applied to image-only pages (notably `az2006_portrait_dark_teal.pdf`).
+- Generated artifacts:
+  - `StudyTide Forge\seed-source\legacy-source.cs`
+  - `StudyTide Forge Web\seed-source\legacy-source.cs`
+  - `App_Data\training-material\extracted-training-pairs.json`
+  - `App_Data\training-material\extraction-report.md`
 
 ## Verbatim Practice Behavior
 
@@ -85,15 +103,16 @@ Coverage highlights:
 
 ## Source File Placement
 
-Set environment variable:
+Set environment variable (optional override):
 
 ```powershell
 $env:FORGE_IMPORT_SOURCE_FILE = "C:\path\to\legacy\Shared\legacy-source.cs"
 ```
 
-For the web container build, a bundled copy is included at:
+Bundled defaults (used automatically when override is not set):
 
-`StudyTide Forge Web/seed-source/legacy-source.cs`
+- Desktop: `StudyTide Forge/seed-source/legacy-source.cs`
+- Web: `StudyTide Forge Web/seed-source/legacy-source.cs`
 
 ## Dashboard Metrics
 

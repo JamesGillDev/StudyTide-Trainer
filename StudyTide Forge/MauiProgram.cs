@@ -26,6 +26,12 @@ public static class MauiProgram
 
         builder.Services.AddMauiBlazorWebView();
 
+        var bundledSourcePath = Path.Combine(AppContext.BaseDirectory, "seed-source", "legacy-source.cs");
+        if (string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("FORGE_IMPORT_SOURCE_FILE")) && File.Exists(bundledSourcePath))
+        {
+            Environment.SetEnvironmentVariable("FORGE_IMPORT_SOURCE_FILE", bundledSourcePath);
+        }
+
         var databasePath = Path.Combine(FileSystem.AppDataDirectory, "studytide-forge.db");
         var connectionString = $"Data Source={databasePath}";
 

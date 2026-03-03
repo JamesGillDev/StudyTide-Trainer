@@ -13,8 +13,8 @@
 
     <ApplicationTitle>StudyTide Forge</ApplicationTitle>
     <ApplicationId>com.studytide.forge</ApplicationId>
-    <ApplicationDisplayVersion>2.4.0</ApplicationDisplayVersion>
-    <ApplicationVersion>2400</ApplicationVersion>
+    <ApplicationDisplayVersion>2.5.0</ApplicationDisplayVersion>
+    <ApplicationVersion>2500</ApplicationVersion>
     <WindowsPackageType>None</WindowsPackageType>
 
     <SupportedOSPlatformVersion>10.0.17763.0</SupportedOSPlatformVersion>
@@ -42,6 +42,14 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="seed-source\**\*.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="seed-source\legacy-source.cs" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>
 
   <Target Name="SyncNewIconExecutableAlias" AfterTargets="Publish">
