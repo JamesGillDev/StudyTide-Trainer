@@ -4,8 +4,8 @@ StudyTide Forge is structured cognitive reinforcement training for software engi
 
 ## Release Status
 
-StudyTide Forge desktop (`v2.10.6`) is marked **in Public Release** as of `2026-03-04`.
-Public release verification refreshed on `2026-03-04` after local desktop/web publish validation in updated VS Code.
+StudyTide Forge desktop (`v2.10.7`) is marked **in Public Release** as of `2026-03-04`.
+Public release verification refreshed on `2026-03-04` after local desktop/web publish validation.
 
 ## Solution Layout
 
@@ -82,6 +82,16 @@ Current extraction output (`2026-03-03`):
   - `7400` combined entries
 - Example migration runs at startup and rewrites existing training item `Example` sections from Prompt/Response context when needed.
 - Study-view action buttons use a fixed minimum height for consistent visual alignment (`Previous`, `Next`, `Practice`, `Flashcards`).
+
+## v2.10.7 Media Player MP3 Playback + Playlist Layout Fixes
+
+- Improved media source handling so file-browse audio tracks (including `.mp3`) are started with explicit MIME hints for more reliable playback.
+- Added fail-safe Alpha Waves handling when the bundled source is unavailable:
+  - clears the unavailable bundled track from the active playlist path
+  - disables Alpha Waves toggle state to prevent repeated failed autoplay attempts
+  - surfaces guidance to add a local `.mp3` via `Browse`
+- Updated playlist item layout in the sidebar media panel so controls wrap cleanly and track titles render on their own row without vertical text collapse or horizontal overflow.
+- Updated audio-only mini-screen hiding behavior to collapse the video frame without removing the media element from playback.
 
 ## v2.10.2 Azure Supplemental Pack + Flashcard Sync
 

@@ -4,6 +4,21 @@ All notable changes to this project are documented in this file.
 
 The format is based on semantic versioning (`MAJOR.MINOR.PATCH`).
 
+## [2.10.7] - 2026-03-04
+
+### Fixed
+- Updated media playback source initialization so local playlist audio files (including `.mp3`) are started with explicit MIME hints.
+- Added fail-safe handling for unavailable bundled Alpha Waves source to avoid repeated dead-track playback attempts.
+- Updated sidebar playlist item layout to prevent narrow-width title collapse/overflow by separating controls from track title rendering.
+
+### Changed
+- Audio mini-screen hidden-state styling now collapses the frame while preserving media element playback behavior for audio-only tracks.
+- `AlphaWavesDefaultPath` now targets web-root path `/audio/8_Hour_Alpha_Waves.mp3` instead of an environment-specific absolute development path.
+- App version bumped to `2.10.7` (`ApplicationVersion` `21007`).
+
+### Release
+- Marked `v2.10.7` as **in Public Release** on `2026-03-04`.
+
 ## [2.10.6] - 2026-03-04
 
 ### Added

@@ -1,5 +1,27 @@
 # Release Notes
 
+## v2.10.7 (2026-03-04)
+
+This release is **in Public Release**.
+Public release verification refreshed on `2026-03-04` after local desktop/web publish.
+
+### Highlights
+
+- Fixed media source setup for local playlist files so `.mp3` and other audio selections are passed with explicit MIME hints during playback startup.
+- Added guardrails for missing bundled Alpha Waves source:
+  - remove unavailable bundled track from active playback path
+  - disable Alpha Waves toggle state when source is unavailable
+  - show guidance to add local `.mp3` files via `Browse`
+- Reworked playlist row layout in the sidebar media panel so controls wrap cleanly and long track titles no longer collapse vertically or overflow horizontally.
+- Updated audio mini-screen hiding to collapse the visual frame while keeping media playback element behavior stable for audio-only tracks.
+
+### Local Publish Outputs
+
+- Desktop publish target:
+  - `StudyTide Forge\bin\Release\net10.0-windows10.0.19041.0\win-x64\StudyTideForge.exe`
+- Web publish target:
+  - `artifacts\publish\studytide-forge-web-win-x64\StudyTideForgeWeb.exe`
+
 ## v2.10.6 (2026-03-04)
 
 This release is **in Public Release**.

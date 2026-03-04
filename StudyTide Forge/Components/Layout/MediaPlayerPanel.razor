@@ -52,15 +52,17 @@
             {
                 var track = _playlist[index];
                 <li class="playlist-item @(track.Id == _currentTrackId ? "active" : string.Empty)">
-                    <input type="checkbox"
-                           checked="@_selectedTrackIds.Contains(track.Id)"
-                           @onchange="eventArgs => ToggleTrackSelection(track.Id, eventArgs)" />
-                    <button type="button" class="secondary" @onclick="() => MoveTrackUp(index)" disabled="@(index == 0)">Up</button>
-                    <button type="button" class="secondary" @onclick="() => MoveTrackDown(index)" disabled="@(index >= _playlist.Count - 1)">Down</button>
-                    <button type="button" class="secondary" @onclick="() => QueuePlayNext(track.Id)">Play Next</button>
-                    <button type="button" class="secondary" @onclick="() => QueueTrack(track.Id)">+</button>
-                    <button type="button" @onclick="() => PlayTrackAsync(track.Id)">Play</button>
-                    <span class="playlist-track-title">@track.Title</span>
+                    <div class="playlist-item-controls">
+                        <input type="checkbox"
+                               checked="@_selectedTrackIds.Contains(track.Id)"
+                               @onchange="eventArgs => ToggleTrackSelection(track.Id, eventArgs)" />
+                        <button type="button" class="secondary" @onclick="() => MoveTrackUp(index)" disabled="@(index == 0)">Up</button>
+                        <button type="button" class="secondary" @onclick="() => MoveTrackDown(index)" disabled="@(index >= _playlist.Count - 1)">Down</button>
+                        <button type="button" class="secondary" @onclick="() => QueuePlayNext(track.Id)">Play Next</button>
+                        <button type="button" class="secondary" @onclick="() => QueueTrack(track.Id)">+</button>
+                        <button type="button" @onclick="() => PlayTrackAsync(track.Id)">Play</button>
+                    </div>
+                    <span class="playlist-track-title" title="@track.Title">@track.Title</span>
                 </li>
             }
         </ol>
@@ -166,23 +168,34 @@
                 return;
             }
 
+            Guid? firstAddedTrackId = null;
             foreach (var file in picked)
             {
-                _playlist.Add(new MediaTrack
+                var track = new MediaTrack
                 {
                     Title = file.Name,
                     SourceUrl = file.ObjectUrl,
+                    MimeType = file.MimeType,
                     IsVideo = file.IsVideo,
                     IsObjectUrl = true
-                });
+                };
+
+                firstAddedTrackId ??= track.Id;
+                _playlist.Add(track);
             }
 
             await _module.InvokeVoidAsync("clearInput", _browseInput);
             _statusMessage = $"Added {picked.Count} item(s) to playlist.";
 
-            if (_currentTrackId is null && _playlist.Count > 0)
+            var currentTrack = _playlist.FirstOrDefault(x => x.Id == _currentTrackId);
+            var shouldAutoplayNewTrack = firstAddedTrackId.HasValue && (
+                _currentTrackId is null ||
+                !_isPlaying ||
+                currentTrack?.IsBundledAlpha == true);
+
+            if (shouldAutoplayNewTrack)
             {
-                await PlayTrackAsync(_playlist[0].Id);
+                await PlayTrackAsync(firstAddedTrackId!.Value);
             }
         }
         catch (Exception exception)
@@ -240,13 +253,25 @@
             "setSourceAndPlay",
             _mediaElement,
             track.SourceUrl,
+            track.MimeType,
             ShellState.MediaVolume);
 
         _currentTrackId = track.Id;
         _isPlaying = started;
-        _statusMessage = started
-            ? $"Now playing: {track.Title}"
-            : $"Unable to play: {track.Title}";
+        if (started)
+        {
+            _statusMessage = $"Now playing: {track.Title}";
+            return;
+        }
+
+        if (track.IsBundledAlpha)
+        {
+            _currentTrackId = null;
+            _statusMessage = "Bundled Alpha Waves track is unavailable. Use Browse to add a local .mp3.";
+            return;
+        }
+
+        _statusMessage = $"Unable to play: {track.Title}";
     }
 
     private async Task PlayNextAsync()
@@ -499,13 +524,39 @@
 
     private async Task EnsureAlphaTrackAsync(bool playImmediately)
     {
+        await EnsureModuleAsync();
+
+        var alphaSource = BuildAlphaTrackSource();
+        var alphaSourceAvailable = !string.IsNullOrWhiteSpace(alphaSource)
+            && _module is not null
+            && await _module.InvokeAsync<bool>("sourceExists", alphaSource);
+
+        if (!alphaSourceAvailable)
+        {
+            var removedCurrent = RemoveBundledAlphaTracks();
+            _statusMessage = "Bundled Alpha Waves track is unavailable in this build. Use Browse to add a local .mp3.";
+
+            if (ShellState.AlphaWavesEnabled)
+            {
+                ShellState.SetAlphaWavesEnabled(false);
+            }
+
+            if (removedCurrent && _playlist.Count > 0)
+            {
+                await PlayTrackAsync(_playlist[0].Id);
+            }
+
+            return;
+        }
+
         var alphaTrack = _playlist.FirstOrDefault(x => x.IsBundledAlpha);
         if (alphaTrack is null)
         {
             alphaTrack = new MediaTrack
             {
                 Title = AlphaWavesTitle,
-                SourceUrl = BuildAlphaTrackSource(),
+                SourceUrl = alphaSource,
+                MimeType = "audio/mpeg",
                 IsVideo = false,
                 IsObjectUrl = false,
                 IsBundledAlpha = true
@@ -522,16 +573,36 @@
         await PlayTrackAsync(alphaTrack.Id);
     }
 
+    private bool RemoveBundledAlphaTracks()
+    {
+        var alphaTrackIds = _playlist
+            .Where(x => x.IsBundledAlpha)
+            .Select(x => x.Id)
+            .ToHashSet();
+
+        if (alphaTrackIds.Count == 0)
+        {
+            return false;
+        }
+
+        var removedCurrent = _currentTrackId.HasValue && alphaTrackIds.Contains(_currentTrackId.Value);
+
+        _playlist.RemoveAll(x => alphaTrackIds.Contains(x.Id));
+        _queuedTrackIds.RemoveAll(x => alphaTrackIds.Contains(x));
+        _selectedTrackIds.RemoveWhere(x => alphaTrackIds.Contains(x));
+
+        if (removedCurrent)
+        {
+            _currentTrackId = null;
+            _isPlaying = false;
+        }
+
+        return removedCurrent;
+    }
+
     private static string BuildAlphaTrackSource()
     {
-        try
-        {
-            return new Uri(AppShellStateService.AlphaWavesDefaultPath).AbsoluteUri;
-        }
-        catch
-        {
-            return AppShellStateService.AlphaWavesDefaultPath;
-        }
+        return AppShellStateService.AlphaWavesDefaultPath;
     }
 
     [JSInvokable]
@@ -571,6 +642,8 @@
         public string Title { get; init; } = string.Empty;
 
         public string SourceUrl { get; init; } = string.Empty;
+
+        public string MimeType { get; init; } = string.Empty;
 
         public bool IsVideo { get; init; }
 

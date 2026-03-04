@@ -7,7 +7,7 @@
   "targets": {
     ".NETCoreApp,Version=v10.0": {},
     ".NETCoreApp,Version=v10.0/win-x64": {
-      "StudyTideForge/2.10.6": {
+      "StudyTideForge/2.10.7": {
         "dependencies": {
           "Microsoft.AspNetCore.Components.WebView.Maui": "10.0.1",
           "Microsoft.EntityFrameworkCore.Sqlite": "8.0.12",
@@ -879,7 +879,7 @@
     }
   },
   "libraries": {
-    "StudyTideForge/2.10.6": {
+    "StudyTideForge/2.10.7": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
