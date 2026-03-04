@@ -1,5 +1,6 @@
 @implements IDisposable
 @inject NavigationManager Navigation
+@inject AppShellStateService ShellState
 
 <nav class="nav-root">
     <div class="brand-panel">
@@ -15,20 +16,32 @@
         <NavLink class="nav-link nav-sublink" href="/modules/flagged" Match="NavLinkMatch.All">Flagged Material</NavLink>
     </div>
     <NavLink class="nav-link" href="/practice">Practice</NavLink>
+
+    @if (ShellState.ShowMediaPlayer)
+    {
+        <MediaPlayerPanel />
+    }
 </nav>
 
 @code {
     protected override void OnInitialized()
     {
         Navigation.LocationChanged += HandleLocationChanged;
+        ShellState.Changed += HandleShellStateChanged;
     }
 
     public void Dispose()
     {
         Navigation.LocationChanged -= HandleLocationChanged;
+        ShellState.Changed -= HandleShellStateChanged;
     }
 
     private void HandleLocationChanged(object? sender, LocationChangedEventArgs eventArgs)
+    {
+        _ = InvokeAsync(StateHasChanged);
+    }
+
+    private void HandleShellStateChanged()
     {
         _ = InvokeAsync(StateHasChanged);
     }

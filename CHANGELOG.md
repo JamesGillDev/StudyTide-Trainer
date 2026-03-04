@@ -4,6 +4,23 @@ All notable changes to this project are documented in this file.
 
 The format is based on semantic versioning (`MAJOR.MINOR.PATCH`).
 
+## [2.10.5] - 2026-03-04
+
+### Added
+- Practice session progress bar below the `Verbatim Practice` heading.
+- Practice scope `Reset` action with warning modal, `!` alert marker, and `Reset Now` confirmation flow.
+- Bottom-left settings gear with consolidated help/training guidance in the Settings modal.
+- New settings toggles for launch-tip banner, sidebar media player visibility, and Alpha Waves concentration music.
+- Sidebar media player with local multi-file browse, scrolling now-playing title, queue/playlist controls, and video-only mini-screen behavior.
+
+### Changed
+- Moved `Random` into the main Practice action row beside `Submit Attempt`, `Back`, `Skip`, and `Next`.
+- Standardized modal overlays to blurred backdrop styling for consistency.
+- App version bumped to `2.10.5` (`ApplicationVersion` `21005`).
+
+### Release
+- Marked `v2.10.5` as **in Public Release** on `2026-03-04`.
+
 ## [2.10.4] - 2026-03-04
 
 ### Added

@@ -4,7 +4,7 @@ StudyTide Forge is structured cognitive reinforcement training for software engi
 
 ## Release Status
 
-StudyTide Forge desktop (`v2.10.4`) is marked **ready for public release** as of `2026-03-04`.
+StudyTide Forge desktop (`v2.10.5`) is marked **in Public Release** as of `2026-03-04`.
 Public release verification refreshed on `2026-03-04` after local desktop/web publish validation.
 
 ## Solution Layout
@@ -96,6 +96,26 @@ Current extraction output (`2026-03-03`):
 - Outline visibility is reset to hidden each time a lesson page loads so focus stays on Prompt/Response/Study Cue content.
 - `Show Outline` remains available for manual expansion at any time.
 
+## v2.10.5 Practice Session Controls + Settings + Media Sidebar
+
+- Added a session progress bar directly below `Verbatim Practice`.
+- Added `Reset` next to `Scope` with a warning bubble (`!` icon + `Reset Now`) and blurred backdrop.
+- Moved `Random` into the main Practice action row (`Submit Attempt`, `Back`, `Skip`, `Random`, `Next`).
+- Added bottom-left settings gear and moved Quick Start guidance from the old `i` helper into Settings.
+- Added Settings controls for:
+  - show/hide launch tip banner
+  - enable/disable sidebar media player
+  - enable/disable bundled Alpha Waves concentration track
+  - live volume slider
+- Added sidebar media player (enabled via Settings) with:
+  - `Play`, `Pause`, `Prev`, `Next`
+  - scrolling now-playing title
+  - multi-file `Browse` picker for local audio/video files
+  - playlist controls (`Select All`, `Deselect All`, remove selected, move up/down, `Play Next`, `+` queue)
+  - queued-items list management
+  - auto-hidden mini-screen for audio-only tracks (visible only for video tracks)
+- Standardized new overlays/pop-ups to use blurred backdrop styling for visual consistency.
+
 ## v2.10.4 Practice Navigation + Random Lock + Summary Modal
 
 - Replaced `Load Another Question` with `Next` in Practice workflow actions.
@@ -162,8 +182,8 @@ Current extraction output (`2026-03-03`):
 - Practice displays `Prompt`, `Response`, and `Study Cue` as section labels in the UI.
 - Retyping and accuracy scoring are performed against the section text only (labels are excluded).
 - Users retype section values in order: `Prompt` text, then `Response` text, then `Study Cue` text.
-- Practice actions include `Back`, `Skip`, and `Load Another Question`.
-- On first app launch, a quick-start instruction bubble explains the workflow and can be reopened with the floating `i` help button.
+- Practice actions include `Submit Attempt`, `Back`, `Skip`, `Random`, and `Next`.
+- On first app launch, a quick-start instruction bubble explains the workflow and can be reopened from the bottom-left settings gear.
 - Character-level scoring uses edit-distance logic, so one missing character/newline no longer collapses the entire score.
 - Prompt/response normalization removes malformed forced question stems (for example `What is is ...`) and uses clean term-identification phrasing.
 

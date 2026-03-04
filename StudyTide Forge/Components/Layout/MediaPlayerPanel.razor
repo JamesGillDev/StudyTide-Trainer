@@ -1,0 +1,595 @@
+@implements IDisposable
+@implements IAsyncDisposable
+@using Microsoft.JSInterop
+@inject IJSRuntime JS
+@inject AppShellStateService ShellState
+
+<section class="panel media-player-panel">
+    <h2>Media Player</h2>
+
+    @if (!string.IsNullOrWhiteSpace(_statusMessage))
+    {
+        <p class="meta-text">@_statusMessage</p>
+    }
+
+    <video @ref="_mediaElement" class="@GetMiniScreenClass()" preload="metadata"></video>
+
+    <div class="player-title-marquee" title="@GetNowPlayingTitle()">
+        <span>@GetNowPlayingTitle()</span>
+    </div>
+
+    <div class="actions player-actions">
+        <button type="button" class="secondary" @onclick="PlayPreviousAsync">Prev</button>
+        <button type="button" @onclick="TogglePlayPauseAsync">@(_isPlaying ? "Pause" : "Play")</button>
+        <button type="button" class="secondary" @onclick="PlayNextAsync">Next</button>
+    </div>
+
+    <details class="player-browse">
+        <summary>Browse</summary>
+        <input type="file"
+               multiple
+               accept="audio/*,video/*,*/*"
+               @ref="_browseInput"
+               @onchange="OnBrowseChangedAsync" />
+        <p class="meta-text">Select one or more local audio/video files to add to the playlist.</p>
+    </details>
+
+    @if (_playlist.Count == 0)
+    {
+        <p class="meta-text">No playlist items yet.</p>
+    }
+    else
+    {
+        <div class="actions compact-actions">
+            <button type="button" class="secondary" @onclick="SelectAll">Select All</button>
+            <button type="button" class="secondary" @onclick="DeselectAll">Deselect All</button>
+            <button type="button" class="danger" @onclick="RemoveSelectedAsync" disabled="@(_selectedTrackIds.Count == 0)">Remove Selected</button>
+        </div>
+
+        <ol class="playlist-list">
+            @for (var index = 0; index < _playlist.Count; index++)
+            {
+                var track = _playlist[index];
+                <li class="playlist-item @(track.Id == _currentTrackId ? "active" : string.Empty)">
+                    <input type="checkbox"
+                           checked="@_selectedTrackIds.Contains(track.Id)"
+                           @onchange="eventArgs => ToggleTrackSelection(track.Id, eventArgs)" />
+                    <button type="button" class="secondary" @onclick="() => MoveTrackUp(index)" disabled="@(index == 0)">Up</button>
+                    <button type="button" class="secondary" @onclick="() => MoveTrackDown(index)" disabled="@(index >= _playlist.Count - 1)">Down</button>
+                    <button type="button" class="secondary" @onclick="() => QueuePlayNext(track.Id)">Play Next</button>
+                    <button type="button" class="secondary" @onclick="() => QueueTrack(track.Id)">+</button>
+                    <button type="button" @onclick="() => PlayTrackAsync(track.Id)">Play</button>
+                    <span class="playlist-track-title">@track.Title</span>
+                </li>
+            }
+        </ol>
+    }
+
+    @if (_queuedTrackIds.Count > 0)
+    {
+        <h3>Queue</h3>
+        <ul class="queue-list">
+            @foreach (var queued in _queuedTrackIds)
+            {
+                var track = _playlist.FirstOrDefault(x => x.Id == queued);
+                if (track is null)
+                {
+                    continue;
+                }
+
+                <li>
+                    <span>@track.Title</span>
+                    <button type="button" class="secondary" @onclick="() => RemoveQueuedTrack(track.Id)">Remove</button>
+                </li>
+            }
+        </ul>
+    }
+</section>
+
+@code {
+    private const string AlphaWavesTitle = "8_Hour_Alpha_Waves.mp3";
+
+    private readonly List<MediaTrack> _playlist = [];
+    private readonly List<Guid> _queuedTrackIds = [];
+    private readonly HashSet<Guid> _selectedTrackIds = [];
+
+    private ElementReference _mediaElement;
+    private ElementReference _browseInput;
+    private DotNetObjectReference<MediaPlayerPanel>? _selfReference;
+    private IJSObjectReference? _module;
+
+    private bool _isPlaying;
+    private bool _handlersAttached;
+    private bool _isDisposed;
+    private Guid? _currentTrackId;
+    private int _lastAlphaStamp;
+    private string? _statusMessage;
+
+    protected override void OnInitialized()
+    {
+        _lastAlphaStamp = ShellState.AlphaWavesActivationStamp;
+        ShellState.Changed += HandleShellStateChanged;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await EnsureModuleAsync();
+            await EnsureHandlersAttachedAsync();
+
+            if (ShellState.AlphaWavesEnabled)
+            {
+                await EnsureAlphaTrackAsync(playImmediately: true);
+            }
+        }
+    }
+
+    public void Dispose()
+    {
+        _isDisposed = true;
+        ShellState.Changed -= HandleShellStateChanged;
+        _selfReference?.Dispose();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_module is null)
+        {
+            return;
+        }
+
+        foreach (var track in _playlist.Where(x => x.IsObjectUrl))
+        {
+            await _module.InvokeVoidAsync("revokeObjectUrl", track.SourceUrl);
+        }
+
+        await _module.DisposeAsync();
+    }
+
+    private async Task OnBrowseChangedAsync(ChangeEventArgs _)
+    {
+        try
+        {
+            await EnsureModuleAsync();
+            if (_module is null)
+            {
+                return;
+            }
+
+            var picked = await _module.InvokeAsync<List<PickedMediaFile>>("collectSelectedFiles", _browseInput);
+
+            if (picked.Count == 0)
+            {
+                _statusMessage = "No files selected.";
+                return;
+            }
+
+            foreach (var file in picked)
+            {
+                _playlist.Add(new MediaTrack
+                {
+                    Title = file.Name,
+                    SourceUrl = file.ObjectUrl,
+                    IsVideo = file.IsVideo,
+                    IsObjectUrl = true
+                });
+            }
+
+            await _module.InvokeVoidAsync("clearInput", _browseInput);
+            _statusMessage = $"Added {picked.Count} item(s) to playlist.";
+
+            if (_currentTrackId is null && _playlist.Count > 0)
+            {
+                await PlayTrackAsync(_playlist[0].Id);
+            }
+        }
+        catch (Exception exception)
+        {
+            _statusMessage = $"Unable to browse media. {exception.Message}";
+        }
+    }
+
+    private async Task TogglePlayPauseAsync()
+    {
+        if (_playlist.Count == 0)
+        {
+            _statusMessage = "Playlist is empty.";
+            return;
+        }
+
+        await EnsureModuleAsync();
+        if (_module is null)
+        {
+            return;
+        }
+
+        if (_currentTrackId is null)
+        {
+            await PlayTrackAsync(_playlist[0].Id);
+            return;
+        }
+
+        if (_isPlaying)
+        {
+            await _module.InvokeVoidAsync("pause", _mediaElement);
+            _isPlaying = false;
+            return;
+        }
+
+        var resumed = await _module.InvokeAsync<bool>("play", _mediaElement);
+        _isPlaying = resumed;
+    }
+
+    private async Task PlayTrackAsync(Guid trackId)
+    {
+        var track = _playlist.FirstOrDefault(x => x.Id == trackId);
+        if (track is null)
+        {
+            return;
+        }
+
+        await EnsureModuleAsync();
+        if (_module is null)
+        {
+            return;
+        }
+
+        var started = await _module.InvokeAsync<bool>(
+            "setSourceAndPlay",
+            _mediaElement,
+            track.SourceUrl,
+            ShellState.MediaVolume);
+
+        _currentTrackId = track.Id;
+        _isPlaying = started;
+        _statusMessage = started
+            ? $"Now playing: {track.Title}"
+            : $"Unable to play: {track.Title}";
+    }
+
+    private async Task PlayNextAsync()
+    {
+        var nextId = ResolveNextTrackId();
+        if (nextId is null)
+        {
+            _isPlaying = false;
+            _statusMessage = "End of playlist.";
+            return;
+        }
+
+        await PlayTrackAsync(nextId.Value);
+    }
+
+    private async Task PlayPreviousAsync()
+    {
+        if (_playlist.Count == 0)
+        {
+            return;
+        }
+
+        var previousId = ResolvePreviousTrackId();
+        if (previousId is null)
+        {
+            return;
+        }
+
+        await PlayTrackAsync(previousId.Value);
+    }
+
+    private void MoveTrackUp(int index)
+    {
+        if (index <= 0 || index >= _playlist.Count)
+        {
+            return;
+        }
+
+        (_playlist[index - 1], _playlist[index]) = (_playlist[index], _playlist[index - 1]);
+    }
+
+    private void MoveTrackDown(int index)
+    {
+        if (index < 0 || index >= _playlist.Count - 1)
+        {
+            return;
+        }
+
+        (_playlist[index], _playlist[index + 1]) = (_playlist[index + 1], _playlist[index]);
+    }
+
+    private void QueuePlayNext(Guid trackId)
+    {
+        _queuedTrackIds.Remove(trackId);
+        _queuedTrackIds.Insert(0, trackId);
+    }
+
+    private void QueueTrack(Guid trackId)
+    {
+        _queuedTrackIds.Add(trackId);
+    }
+
+    private void RemoveQueuedTrack(Guid trackId)
+    {
+        _queuedTrackIds.Remove(trackId);
+    }
+
+    private void ToggleTrackSelection(Guid trackId, ChangeEventArgs eventArgs)
+    {
+        var isSelected = ParseCheckboxValue(eventArgs.Value);
+        if (isSelected)
+        {
+            _selectedTrackIds.Add(trackId);
+            return;
+        }
+
+        _selectedTrackIds.Remove(trackId);
+    }
+
+    private async Task RemoveSelectedAsync()
+    {
+        if (_selectedTrackIds.Count == 0)
+        {
+            return;
+        }
+
+        await EnsureModuleAsync();
+
+        var tracksToRemove = _playlist
+            .Where(x => _selectedTrackIds.Contains(x.Id))
+            .ToList();
+
+        foreach (var track in tracksToRemove)
+        {
+            if (_module is not null && track.IsObjectUrl)
+            {
+                await _module.InvokeVoidAsync("revokeObjectUrl", track.SourceUrl);
+            }
+
+            _queuedTrackIds.Remove(track.Id);
+            _playlist.Remove(track);
+        }
+
+        var removedCurrent = _currentTrackId.HasValue && _selectedTrackIds.Contains(_currentTrackId.Value);
+        _selectedTrackIds.Clear();
+
+        if (removedCurrent)
+        {
+            _currentTrackId = null;
+            _isPlaying = false;
+            if (_playlist.Count > 0)
+            {
+                await PlayTrackAsync(_playlist[0].Id);
+            }
+        }
+    }
+
+    private void SelectAll()
+    {
+        _selectedTrackIds.Clear();
+        foreach (var track in _playlist)
+        {
+            _selectedTrackIds.Add(track.Id);
+        }
+    }
+
+    private void DeselectAll()
+    {
+        _selectedTrackIds.Clear();
+    }
+
+    private Guid? ResolveNextTrackId()
+    {
+        while (_queuedTrackIds.Count > 0)
+        {
+            var queuedId = _queuedTrackIds[0];
+            _queuedTrackIds.RemoveAt(0);
+
+            if (_playlist.Any(x => x.Id == queuedId))
+            {
+                return queuedId;
+            }
+        }
+
+        if (_playlist.Count == 0)
+        {
+            return null;
+        }
+
+        if (_currentTrackId is null)
+        {
+            return _playlist[0].Id;
+        }
+
+        var currentIndex = _playlist.FindIndex(x => x.Id == _currentTrackId.Value);
+        if (currentIndex < 0)
+        {
+            return _playlist[0].Id;
+        }
+
+        var nextIndex = (currentIndex + 1) % _playlist.Count;
+        return _playlist[nextIndex].Id;
+    }
+
+    private Guid? ResolvePreviousTrackId()
+    {
+        if (_playlist.Count == 0)
+        {
+            return null;
+        }
+
+        if (_currentTrackId is null)
+        {
+            return _playlist[0].Id;
+        }
+
+        var currentIndex = _playlist.FindIndex(x => x.Id == _currentTrackId.Value);
+        if (currentIndex < 0)
+        {
+            return _playlist[0].Id;
+        }
+
+        var previousIndex = currentIndex == 0 ? _playlist.Count - 1 : currentIndex - 1;
+        return _playlist[previousIndex].Id;
+    }
+
+    private string GetNowPlayingTitle()
+    {
+        var current = _playlist.FirstOrDefault(x => x.Id == _currentTrackId);
+        return current?.Title ?? "No media selected.";
+    }
+
+    private string GetMiniScreenClass()
+    {
+        var current = _playlist.FirstOrDefault(x => x.Id == _currentTrackId);
+        return current?.IsVideo == true
+            ? "media-mini-screen"
+            : "media-mini-screen media-mini-screen-hidden";
+    }
+
+    private async Task EnsureModuleAsync()
+    {
+        if (_module is not null || _isDisposed)
+        {
+            return;
+        }
+
+        _module = await JS.InvokeAsync<IJSObjectReference>("import", "./js/mediaPlayer.js");
+    }
+
+    private async Task EnsureHandlersAttachedAsync()
+    {
+        if (_handlersAttached || _module is null)
+        {
+            return;
+        }
+
+        _selfReference ??= DotNetObjectReference.Create(this);
+        await _module.InvokeVoidAsync("attachMediaHandlers", _mediaElement, _selfReference);
+        _handlersAttached = true;
+        await _module.InvokeVoidAsync("setVolume", _mediaElement, ShellState.MediaVolume);
+    }
+
+    private async void HandleShellStateChanged()
+    {
+        await InvokeAsync(HandleShellStateChangedAsync);
+    }
+
+    private async Task HandleShellStateChangedAsync()
+    {
+        if (_isDisposed)
+        {
+            return;
+        }
+
+        await EnsureModuleAsync();
+        if (_module is not null)
+        {
+            await _module.InvokeVoidAsync("setVolume", _mediaElement, ShellState.MediaVolume);
+        }
+
+        if (ShellState.AlphaWavesEnabled && ShellState.AlphaWavesActivationStamp != _lastAlphaStamp)
+        {
+            _lastAlphaStamp = ShellState.AlphaWavesActivationStamp;
+            await EnsureAlphaTrackAsync(playImmediately: true);
+        }
+
+        StateHasChanged();
+    }
+
+    private async Task EnsureAlphaTrackAsync(bool playImmediately)
+    {
+        var alphaTrack = _playlist.FirstOrDefault(x => x.IsBundledAlpha);
+        if (alphaTrack is null)
+        {
+            alphaTrack = new MediaTrack
+            {
+                Title = AlphaWavesTitle,
+                SourceUrl = BuildAlphaTrackSource(),
+                IsVideo = false,
+                IsObjectUrl = false,
+                IsBundledAlpha = true
+            };
+
+            _playlist.Insert(0, alphaTrack);
+        }
+
+        if (!playImmediately)
+        {
+            return;
+        }
+
+        await PlayTrackAsync(alphaTrack.Id);
+    }
+
+    private static string BuildAlphaTrackSource()
+    {
+        try
+        {
+            return new Uri(AppShellStateService.AlphaWavesDefaultPath).AbsoluteUri;
+        }
+        catch
+        {
+            return AppShellStateService.AlphaWavesDefaultPath;
+        }
+    }
+
+    [JSInvokable]
+    public async Task HandleMediaEnded()
+    {
+        await PlayNextAsync();
+    }
+
+    [JSInvokable]
+    public Task HandleMediaError()
+    {
+        _isPlaying = false;
+        _statusMessage = "Media playback failed for the current track.";
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
+
+    private static bool ParseCheckboxValue(object? value)
+    {
+        if (value is bool boolValue)
+        {
+            return boolValue;
+        }
+
+        if (value is string stringValue && bool.TryParse(stringValue, out var parsed))
+        {
+            return parsed;
+        }
+
+        return false;
+    }
+
+    private sealed class MediaTrack
+    {
+        public Guid Id { get; init; } = Guid.NewGuid();
+
+        public string Title { get; init; } = string.Empty;
+
+        public string SourceUrl { get; init; } = string.Empty;
+
+        public bool IsVideo { get; init; }
+
+        public bool IsObjectUrl { get; init; }
+
+        public bool IsBundledAlpha { get; init; }
+    }
+
+    private sealed class PickedMediaFile
+    {
+        [System.Text.Json.Serialization.JsonPropertyName("name")]
+        public string Name { get; init; } = string.Empty;
+
+        [System.Text.Json.Serialization.JsonPropertyName("mimeType")]
+        public string MimeType { get; init; } = string.Empty;
+
+        [System.Text.Json.Serialization.JsonPropertyName("objectUrl")]
+        public string ObjectUrl { get; init; } = string.Empty;
+
+        [System.Text.Json.Serialization.JsonPropertyName("isVideo")]
+        public bool IsVideo { get; init; }
+    }
+}

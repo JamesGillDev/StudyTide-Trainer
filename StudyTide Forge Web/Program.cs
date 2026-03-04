@@ -36,6 +36,7 @@ builder.Services.AddScoped<PracticeService>();
 builder.Services.AddScoped<FlashcardService>();
 builder.Services.AddScoped<DashboardService>();
 builder.Services.AddScoped<StudyLibraryService>();
+builder.Services.AddScoped<AppShellStateService>();
 
 var app = builder.Build();
 

@@ -1,5 +1,6 @@
 @inherits LayoutComponentBase
 @inject NavigationManager Navigation
+@inject AppShellStateService ShellState
 
 <div class="app-shell">
     <aside class="sidebar">
@@ -7,9 +8,12 @@
     </aside>
 
     <main class="main-panel">
-        <div class="launch-tip-banner">
-            <strong>Retype rule:</strong> Type the text values only. `Prompt`, `Response`, and `Study Cue` labels are display guides.
-        </div>
+        @if (ShellState.ShowLaunchTipBanner)
+        {
+            <div class="launch-tip-banner">
+                <strong>Retype rule:</strong> Type the text values only. `Prompt`, `Response`, and `Study Cue` labels are display guides.
+            </div>
+        }
         @Body
     </main>
 </div>
@@ -35,10 +39,66 @@
     </div>
 }
 
-<button type="button" class="help-fab" title="Show training instructions" @onclick="ShowWelcome">i</button>
+@if (_showSettingsModal)
+{
+    <div class="modal-overlay summary-overlay" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+        <section class="modal-panel settings-modal">
+            <h2 id="settingsTitle">Settings</h2>
+
+            <div class="settings-group">
+                <h3>Experience</h3>
+                <label class="checkbox-inline">
+                    <input type="checkbox" checked="@ShellState.ShowLaunchTipBanner" @onchange="OnLaunchTipChanged" />
+                    Show launch tip banner
+                </label>
+            </div>
+
+            <div class="settings-group">
+                <h3>Media</h3>
+                <label class="checkbox-inline">
+                    <input type="checkbox" checked="@ShellState.ShowMediaPlayer" @onchange="OnMediaPlayerChanged" />
+                    Enable sidebar media player
+                </label>
+                <label class="checkbox-inline">
+                    <input type="checkbox" checked="@ShellState.AlphaWavesEnabled" @onchange="OnAlphaWavesChanged" />
+                    Alpha Waves concentration music
+                </label>
+                <label for="mediaVolume">Volume: @((ShellState.MediaVolume * 100).ToString("0"))%</label>
+                <input id="mediaVolume"
+                       type="range"
+                       min="0"
+                       max="100"
+                       step="1"
+                       value="@GetVolumePercent()"
+                       @onchange="OnVolumeChanged" />
+            </div>
+
+            <div class="settings-group">
+                <h3>Training Guide</h3>
+                <p>Use this sequence for best results and consistent scoring.</p>
+                <ol class="welcome-steps">
+                    <li>Open <strong>Practice</strong> and load a due training item.</li>
+                    <li>Read the three sections: <strong>Prompt</strong>, <strong>Response</strong>, <strong>Study Cue</strong>.</li>
+                    <li>Retype only the section text values in the same order.</li>
+                    <li>Submit and review mismatch feedback before loading the next item.</li>
+                </ol>
+                <div class="actions">
+                    <button type="button" class="secondary" @onclick="ShowWelcome">Show Quick Start Pop-up</button>
+                </div>
+            </div>
+
+            <div class="actions">
+                <button type="button" class="secondary" @onclick="CloseSettings">Close</button>
+            </div>
+        </section>
+    </div>
+}
+
+<button type="button" class="settings-fab" title="Open settings" @onclick="OpenSettings">⚙</button>
 
 @code {
     private bool _showWelcomeBubble = true;
+    private bool _showSettingsModal;
 
     private void DismissWelcome()
     {
@@ -54,5 +114,64 @@
     {
         _showWelcomeBubble = false;
         Navigation.NavigateTo("/practice");
+    }
+
+    private void OpenSettings()
+    {
+        _showSettingsModal = true;
+    }
+
+    private void CloseSettings()
+    {
+        _showSettingsModal = false;
+    }
+
+    private void OnLaunchTipChanged(ChangeEventArgs eventArgs)
+    {
+        ShellState.SetShowLaunchTipBanner(ParseCheckboxValue(eventArgs.Value));
+    }
+
+    private void OnMediaPlayerChanged(ChangeEventArgs eventArgs)
+    {
+        ShellState.SetShowMediaPlayer(ParseCheckboxValue(eventArgs.Value));
+    }
+
+    private void OnAlphaWavesChanged(ChangeEventArgs eventArgs)
+    {
+        ShellState.SetAlphaWavesEnabled(ParseCheckboxValue(eventArgs.Value));
+    }
+
+    private void OnVolumeChanged(ChangeEventArgs eventArgs)
+    {
+        if (eventArgs.Value is null)
+        {
+            return;
+        }
+
+        var parsed = double.TryParse(eventArgs.Value.ToString(), out var percent)
+            ? percent
+            : 45;
+
+        ShellState.SetMediaVolume(parsed / 100d);
+    }
+
+    private string GetVolumePercent()
+    {
+        return Math.Round(ShellState.MediaVolume * 100).ToString("0");
+    }
+
+    private static bool ParseCheckboxValue(object? value)
+    {
+        if (value is bool boolValue)
+        {
+            return boolValue;
+        }
+
+        if (value is string stringValue && bool.TryParse(stringValue, out var parsed))
+        {
+            return parsed;
+        }
+
+        return false;
     }
 }

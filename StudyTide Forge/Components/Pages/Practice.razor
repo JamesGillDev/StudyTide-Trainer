@@ -6,13 +6,26 @@
 
 <h1>Verbatim Practice</h1>
 
+<section class="practice-progress">
+    <div class="practice-progress-head">
+        <span>Session Progress</span>
+        <span>@GetProgressLabel()</span>
+    </div>
+    <div class="practice-progress-bar">
+        <span style="width:@GetProgressWidth()"></span>
+    </div>
+</section>
+
 @if (!string.IsNullOrWhiteSpace(_statusMessage))
 {
     <p class="status-message">@_statusMessage</p>
 }
 
 <section class="panel">
-    <h2>Scope</h2>
+    <div class="scope-header">
+        <h2>Scope</h2>
+        <button type="button" class="danger" @onclick="ShowResetWarning">Reset</button>
+    </div>
 
     <div class="filter-grid">
         <div>
@@ -40,7 +53,6 @@
 
     <div class="actions">
         <button @onclick="LoadScopeDueBlockAsync">Load Next Due Question</button>
-        <button class="secondary" @onclick="StartRandomModeAsync">Random</button>
         <span class="meta-text">Mode: @(_isRandomMode ? "Random Lock" : "Due")</span>
     </div>
 </section>
@@ -145,6 +157,7 @@ else
             <button @onclick="SubmitAttemptAsync">Submit Attempt</button>
             <button class="secondary" @onclick="GoBack" disabled="@(!CanGoBack)">Back</button>
             <button class="secondary" @onclick="SkipCurrentBlockAsync">Skip</button>
+            <button class="secondary" @onclick="StartRandomModeAsync">Random</button>
             <button @onclick="LoadNextQuestionAsync">Next</button>
         </div>
     </section>
@@ -203,11 +216,29 @@ else
     </div>
 }
 
+@if (_showResetWarning)
+{
+    <div class="modal-overlay summary-overlay" role="dialog" aria-modal="true" aria-labelledby="resetWarningTitle">
+        <section class="modal-panel reset-warning-modal">
+            <h2 id="resetWarningTitle">Reset Practice Session</h2>
+            <p class="reset-warning-text">
+                <span class="warning-bang">!</span>
+                WARNING! Resetting will restart the entire Practice session. Do you wish to continue?
+            </p>
+            <div class="actions">
+                <button class="secondary" @onclick="CloseResetWarning">Cancel</button>
+                <button class="danger" @onclick="ResetPracticeSessionAsync">Reset Now</button>
+            </div>
+        </section>
+    </div>
+}
+
 @code {
     private readonly List<ModuleOption> _modules = [];
     private readonly List<LessonOption> _lessons = [];
     private readonly List<TrainingBlock> _history = [];
     private readonly HashSet<int> _excludedBlockIds = [];
+    private readonly HashSet<int> _sessionVisitedBlockIds = [];
 
     private int? _selectedModuleId;
     private int? _selectedLessonId;
@@ -221,6 +252,8 @@ else
     private bool _isCurrentLessonFlagged;
     private bool _isRandomMode;
     private bool _isSummaryModalVisible;
+    private bool _showResetWarning;
+    private int _scopeTotalCount;
 
     private bool CanGoBack => _historyIndex > 0;
 
@@ -305,18 +338,16 @@ else
     private async Task LoadScopeDueBlockAsync()
     {
         _isRandomMode = false;
-        _history.Clear();
-        _excludedBlockIds.Clear();
-        _historyIndex = -1;
+        ResetSessionState();
+        await RefreshScopeCountAsync();
         await LoadDueBlockCoreAsync(excludeCurrent: false, "Training question loaded.");
     }
 
     private async Task StartRandomModeAsync()
     {
         _isRandomMode = true;
-        _history.Clear();
-        _excludedBlockIds.Clear();
-        _historyIndex = -1;
+        ResetSessionState();
+        await RefreshScopeCountAsync();
         await LoadRandomBlockCoreAsync(excludeCurrent: true, "Random lock started.");
     }
 
@@ -478,6 +509,26 @@ else
         await LoadNextQuestionAsync();
     }
 
+    private void ShowResetWarning()
+    {
+        _showResetWarning = true;
+    }
+
+    private void CloseResetWarning()
+    {
+        _showResetWarning = false;
+    }
+
+    private async Task ResetPracticeSessionAsync()
+    {
+        _showResetWarning = false;
+        _isSummaryModalVisible = false;
+        _isRandomMode = false;
+        ResetSessionState();
+        await RefreshScopeCountAsync();
+        await LoadDueBlockCoreAsync(excludeCurrent: false, "Practice session reset.");
+    }
+
     private async Task OnCurrentLessonFlagChangedAsync(ChangeEventArgs eventArgs)
     {
         if (_currentBlock?.LessonId is not int lessonId)
@@ -553,6 +604,7 @@ else
 
         _parsedContent = ParseTrainingContent(block.Content);
         _isCurrentLessonFlagged = block.Lesson?.IsFlagged ?? false;
+        _sessionVisitedBlockIds.Add(block.Id);
 
         if (!appendToHistory)
         {
@@ -646,6 +698,29 @@ else
         return _currentBlock?.Title ?? "Practice";
     }
 
+    private string GetProgressLabel()
+    {
+        if (_scopeTotalCount <= 0)
+        {
+            return "0 / 0";
+        }
+
+        var visitedCount = Math.Min(_sessionVisitedBlockIds.Count, _scopeTotalCount);
+        return $"{visitedCount} / {_scopeTotalCount}";
+    }
+
+    private string GetProgressWidth()
+    {
+        if (_scopeTotalCount <= 0)
+        {
+            return "0%";
+        }
+
+        var visitedCount = Math.Min(_sessionVisitedBlockIds.Count, _scopeTotalCount);
+        var percent = (visitedCount / (double)_scopeTotalCount) * 100;
+        return $"{percent:0.##}%";
+    }
+
     private string GetSummaryBrief()
     {
         if (_evaluation is null)
@@ -665,6 +740,29 @@ else
     {
         _statusMessage = $"{context} {exception.Message}";
         Console.Error.WriteLine($"[StudyTide] {context} {exception}");
+    }
+
+    private void ResetSessionState()
+    {
+        _history.Clear();
+        _excludedBlockIds.Clear();
+        _sessionVisitedBlockIds.Clear();
+        _historyIndex = -1;
+        _typedText = string.Empty;
+        _evaluation = null;
+    }
+
+    private async Task RefreshScopeCountAsync()
+    {
+        try
+        {
+            _scopeTotalCount = await PracticeService.GetBlockCountAsync(_selectedModuleId, _selectedLessonId);
+        }
+        catch (Exception exception)
+        {
+            _scopeTotalCount = 0;
+            HandleUiException("Unable to load practice progress.", exception);
+        }
     }
 
     private readonly record struct DisplayTrainingContent(

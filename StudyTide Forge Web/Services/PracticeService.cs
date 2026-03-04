@@ -114,6 +114,27 @@ public sealed class PracticeService(IDbContextFactory<ForgeDbContext> dbFactory)
         await db.SaveChangesAsync();
     }
 
+    public async Task<int> GetBlockCountAsync(int? moduleId, int? lessonId)
+    {
+        await using var db = await dbFactory.CreateDbContextAsync();
+
+        var query = db.TrainingBlocks
+            .AsNoTracking()
+            .AsQueryable();
+
+        if (moduleId.HasValue)
+        {
+            query = query.Where(x => x.Lesson!.ModuleId == moduleId.Value);
+        }
+
+        if (lessonId.HasValue)
+        {
+            query = query.Where(x => x.LessonId == lessonId.Value);
+        }
+
+        return await query.CountAsync();
+    }
+
     public async Task<TrainingBlock?> GetRandomBlockAsync(
         int? moduleId,
         int? lessonId,

@@ -1,5 +1,32 @@
 # Release Notes
 
+## v2.10.5 (2026-03-04)
+
+This release is **in Public Release**.
+
+### Highlights
+
+- Added a Practice session progress bar below the `Verbatim Practice` header.
+- Added a `Reset` control next to `Scope` with a warning bubble (`!` indicator), blurred backdrop, and explicit `Reset Now` confirmation action.
+- Moved `Random` into the main Practice action row with `Submit Attempt`, `Back`, `Skip`, and `Next`.
+- Added bottom-left settings gear and moved prior quick-start/help guidance into the Settings modal.
+- Added Settings controls for launch tip visibility, media-player visibility, Alpha Waves on/off, and volume.
+- Added sidebar media player (toggle-enabled) with:
+  - `Prev`, `Play/Pause`, `Next`
+  - scrolling now-playing title
+  - local multi-file browse for audio/video
+  - playlist controls (select/deselect, move up/down, play next, queue)
+  - queue management
+  - mini-screen hidden for audio-only and shown for video playback.
+- Standardized new modal/pop-up experiences to use blurred backdrop styling for UI consistency.
+
+### Local Publish Outputs
+
+- Desktop publish target:
+  - `StudyTide Forge\bin\Release\net10.0-windows10.0.19041.0\win-x64\StudyTideForge.exe`
+- Web publish target:
+  - `artifacts\publish\studytide-forge-web-win-x64\StudyTideForgeWeb.exe`
+
 ## v2.10.4 (2026-03-04)
 
 This release is **ready for public release**.
