@@ -16,6 +16,7 @@ The format is based on semantic versioning (`MAJOR.MINOR.PATCH`).
 
 ### Release
 - Marked `v2.10.6` as **in Public Release** on `2026-03-04`.
+- Refreshed local publish verification on `2026-03-04` after VS Code update.
 
 ## [2.10.5] - 2026-03-04
 

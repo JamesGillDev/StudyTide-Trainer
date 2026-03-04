@@ -60,6 +60,115 @@ h3 {
     gap: 0.55rem;
 }
 
+.media-player-panel {
+    margin-top: 0.55rem;
+    padding: 0.75rem;
+    background: linear-gradient(180deg, #0f1f30 0%, #0c1827 100%);
+    border-color: #2b4f6a;
+}
+
+.media-player-panel h2 {
+    margin-bottom: 0.6rem;
+    font-size: 1rem;
+}
+
+.player-actions {
+    margin-bottom: 0.6rem;
+}
+
+.media-mini-screen {
+    width: 100%;
+    max-height: 180px;
+    border-radius: 0.55rem;
+    border: 1px solid #2f5978;
+    background: #04101b;
+    margin-bottom: 0.55rem;
+}
+
+.media-mini-screen-hidden {
+    display: none;
+}
+
+.player-title-marquee {
+    border: 1px solid #2c4f69;
+    border-radius: 0.5rem;
+    background: #0a1725;
+    overflow: hidden;
+    white-space: nowrap;
+    margin-bottom: 0.55rem;
+    padding: 0.35rem 0;
+}
+
+.player-title-marquee span {
+    display: inline-block;
+    padding-left: 100%;
+    animation: player-marquee 14s linear infinite;
+    color: #d5e9f9;
+}
+
+@keyframes player-marquee {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-100%);
+    }
+}
+
+.player-browse {
+    margin-bottom: 0.6rem;
+}
+
+.player-browse summary {
+    cursor: pointer;
+    color: #d7edff;
+    margin-bottom: 0.4rem;
+}
+
+.playlist-list {
+    list-style: decimal;
+    padding-left: 1.1rem;
+    margin: 0.55rem 0 0.3rem;
+    max-height: 220px;
+    overflow-y: auto;
+}
+
+.playlist-item {
+    display: grid;
+    grid-template-columns: auto auto auto auto auto auto 1fr;
+    gap: 0.35rem;
+    align-items: center;
+    margin-bottom: 0.4rem;
+    border: 1px solid #29465d;
+    border-radius: 0.5rem;
+    background: #0b1a29;
+    padding: 0.35rem;
+}
+
+.playlist-item.active {
+    border-color: #28a69a;
+    background: #0f2435;
+}
+
+.playlist-track-title {
+    font-size: 0.84rem;
+    color: #d4e8f8;
+    word-break: break-word;
+}
+
+.queue-list {
+    margin: 0.45rem 0 0;
+    padding-left: 1.1rem;
+}
+
+.queue-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.35rem;
+}
+
 .brand-panel {
     border-bottom: 1px solid #1e3348;
     padding-bottom: 0.8rem;
@@ -83,6 +192,24 @@ h3 {
     padding: 0.65rem 0.85rem;
     background: linear-gradient(90deg, rgba(36, 89, 132, 0.45), rgba(17, 58, 92, 0.25));
     color: #d9eeff;
+}
+
+.settings-modal {
+    width: min(700px, 96vw);
+    max-height: min(88vh, 780px);
+    overflow-y: auto;
+}
+
+.settings-group {
+    border: 1px solid #32566f;
+    border-radius: 0.65rem;
+    background: #0e1d2d;
+    padding: 0.75rem;
+    margin-bottom: 0.7rem;
+}
+
+.settings-group h3 {
+    margin: 0 0 0.45rem;
 }
 
 .nav-link {
@@ -237,6 +364,49 @@ button.danger {
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: 0.8rem;
     margin-bottom: 0.8rem;
+}
+
+.scope-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.45rem;
+}
+
+.scope-header h2 {
+    margin: 0;
+}
+
+.practice-progress {
+    border: 1px solid #2f5c7d;
+    border-radius: 0.7rem;
+    background: linear-gradient(180deg, #102235 0%, #0d1d2e 100%);
+    padding: 0.65rem 0.8rem;
+    margin-bottom: 0.85rem;
+}
+
+.practice-progress-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.8rem;
+    color: #c7def0;
+    font-size: 0.9rem;
+    margin-bottom: 0.4rem;
+}
+
+.practice-progress-bar {
+    height: 0.58rem;
+    border-radius: 999px;
+    border: 1px solid #2a4f68;
+    background: #0a1625;
+    overflow: hidden;
+}
+
+.practice-progress-bar span {
+    display: block;
+    height: 100%;
+    background: linear-gradient(90deg, #4db9d7, #20c7b7);
 }
 
 .data-table {
@@ -702,6 +872,8 @@ button.danger {
     position: fixed;
     inset: 0;
     background: rgba(5, 11, 17, 0.55);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
     display: grid;
     place-items: center;
     padding: 1rem;
@@ -753,6 +925,20 @@ button.danger {
     z-index: 1500;
 }
 
+.settings-fab {
+    position: fixed;
+    left: 1rem;
+    bottom: 1rem;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 999px;
+    padding: 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
+    z-index: 1600;
+}
+
 @keyframes welcome-pop {
     from {
         opacity: 0;
@@ -780,6 +966,8 @@ button.danger {
     position: fixed;
     inset: 0;
     background: rgba(4, 10, 17, 0.62);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
     display: grid;
     place-items: center;
     z-index: 2500;
@@ -796,8 +984,95 @@ button.danger {
     animation: welcome-pop 180ms ease-out;
 }
 
+.modal-shell {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.modal-shell > h2 {
+    margin: 0;
+}
+
+.modal-shell-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+}
+
+.modal-shell-actions {
+    margin-top: 0.15rem;
+}
+
 .answer-modal p {
     white-space: pre-wrap;
+}
+
+.summary-overlay {
+    background: rgba(4, 10, 17, 0.56);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+}
+
+.summary-modal {
+    width: min(700px, 95vw);
+    max-height: min(86vh, 760px);
+    overflow-y: auto;
+}
+
+.summary-brief {
+    margin: 0 0 0.8rem;
+    color: #d3e9fb;
+}
+
+.summary-metrics {
+    margin-bottom: 0.8rem;
+}
+
+.summary-diff-list {
+    margin: 0.45rem 0 0.9rem;
+    padding-left: 1.15rem;
+    max-height: 180px;
+    overflow-y: auto;
+}
+
+.summary-diff-list li {
+    margin-bottom: 0.6rem;
+    color: #d8e8f7;
+}
+
+.summary-diff-list span {
+    display: block;
+    word-break: break-word;
+}
+
+.reset-warning-modal {
+    width: min(560px, 94vw);
+}
+
+.reset-warning-text {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.55rem;
+    color: #ffd9df;
+    border: 1px solid #904452;
+    border-radius: 0.6rem;
+    background: rgba(131, 42, 62, 0.27);
+    padding: 0.7rem 0.75rem;
+}
+
+.warning-bang {
+    display: inline-flex;
+    width: 1.4rem;
+    height: 1.4rem;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    font-weight: 700;
+    color: #ffe6eb;
+    background: #b4485d;
+    border: 1px solid #f39aaa;
+    flex-shrink: 0;
 }
 
 .meta-text {
@@ -847,6 +1122,15 @@ code {
     .help-fab {
         right: 0.8rem;
         bottom: 0.8rem;
+    }
+
+    .settings-fab {
+        left: 0.8rem;
+        bottom: 0.8rem;
+    }
+
+    .playlist-item {
+        grid-template-columns: auto auto auto;
     }
 
     .study-layout {

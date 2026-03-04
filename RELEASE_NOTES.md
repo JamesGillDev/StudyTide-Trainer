@@ -3,6 +3,7 @@
 ## v2.10.6 (2026-03-04)
 
 This release is **in Public Release**.
+Public release verification refreshed on `2026-03-04` after local republish in updated VS Code.
 
 ### Highlights
 

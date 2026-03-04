@@ -5,7 +5,7 @@ StudyTide Forge is structured cognitive reinforcement training for software engi
 ## Release Status
 
 StudyTide Forge desktop (`v2.10.6`) is marked **in Public Release** as of `2026-03-04`.
-Public release verification refreshed on `2026-03-04` after local desktop/web publish validation.
+Public release verification refreshed on `2026-03-04` after local desktop/web publish validation in updated VS Code.
 
 ## Solution Layout
 
