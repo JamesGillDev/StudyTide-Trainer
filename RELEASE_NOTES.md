@@ -1,5 +1,22 @@
 # Release Notes
 
+## v2.10.3 (2026-03-04)
+
+This release is **ready for public release**.
+
+### Highlights
+
+- Updated Study Library lesson view to hide the Outline panel automatically when a lesson is opened.
+- Added lesson-load reset behavior so Outline always starts hidden, even after previously toggling it visible.
+- Preserved manual control with the existing `Show Outline` / `Hide Outline` toggle.
+
+### Local Publish Outputs
+
+- Desktop publish target:
+  - `StudyTide Forge\bin\Release\net10.0-windows10.0.19041.0\win-x64\StudyTideForge.exe`
+- Web publish target:
+  - `artifacts\publish\studytide-forge-web-win-x64\StudyTideForgeWeb.exe`
+
 ## v2.10.2 (2026-03-04)
 
 This release is **ready for public release**.

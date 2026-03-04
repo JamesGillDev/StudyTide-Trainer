@@ -4,6 +4,16 @@ All notable changes to this project are documented in this file.
 
 The format is based on semantic versioning (`MAJOR.MINOR.PATCH`).
 
+## [2.10.3] - 2026-03-04
+
+### Changed
+- Lesson Study now defaults to hidden Outline on page load for Study Library lessons.
+- Outline visibility is reset to hidden during lesson parameter initialization so each lesson opens focused on core study content.
+- App version bumped to `2.10.3` (`ApplicationVersion` `21003`).
+
+### Release
+- Marked `v2.10.3` as **ready for public release** on `2026-03-04`.
+
 ## [2.10.2] - 2026-03-04
 
 ### Added

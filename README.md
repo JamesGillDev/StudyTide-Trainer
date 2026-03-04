@@ -4,7 +4,7 @@ StudyTide Forge is structured cognitive reinforcement training for software engi
 
 ## Release Status
 
-StudyTide Forge desktop (`v2.10.2`) is marked **ready for public release** as of `2026-03-04`.
+StudyTide Forge desktop (`v2.10.3`) is marked **ready for public release** as of `2026-03-04`.
 Public release verification refreshed on `2026-03-04` after local desktop/web publish validation.
 
 ## Solution Layout
@@ -89,6 +89,12 @@ Current extraction output (`2026-03-03`):
 - Mapped all new blocks into the existing `Azure` module category while preserving lesson titles and concept prompts.
 - Updated seeding to add matching flashcards for supplemental/generated seed blocks when missing, so training-item and flashcard coverage stay aligned.
 - Deduplicated overlapping ingress prompt input during import-to-seed translation to avoid redundant same-lesson/same-title collisions.
+
+## v2.10.3 Study Library Outline Auto-Hide
+
+- Lesson Study now opens with the Outline hidden by default.
+- Outline visibility is reset to hidden each time a lesson page loads so focus stays on Prompt/Response/Study Cue content.
+- `Show Outline` remains available for manual expansion at any time.
 
 ## v2.10.1 Study Library Cleanup + Footer Pinning
 

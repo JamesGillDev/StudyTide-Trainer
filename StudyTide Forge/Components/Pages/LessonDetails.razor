@@ -126,7 +126,7 @@ else
     private string? _statusMessage;
     private ElementReference _studyContainer;
     private bool _requestFocus;
-    private bool _isOutlineVisible = true;
+    private bool _isOutlineVisible = false;
 
     private StudyBlockView? CurrentBlock
         => _session is { Blocks.Count: > 0 }
@@ -140,6 +140,7 @@ else
     protected override async Task OnParametersSetAsync()
     {
         var resume = ResumeQuery is not false;
+        _isOutlineVisible = false;
 
         _session = await StudyLibraryService.GetLessonStudySessionAsync(ModuleId, LessonId, resume);
 
