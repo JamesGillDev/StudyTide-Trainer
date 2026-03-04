@@ -984,6 +984,26 @@ button.danger {
     animation: welcome-pop 180ms ease-out;
 }
 
+.modal-shell {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.modal-shell > h2 {
+    margin: 0;
+}
+
+.modal-shell-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+}
+
+.modal-shell-actions {
+    margin-top: 0.15rem;
+}
+
 .answer-modal p {
     white-space: pre-wrap;
 }

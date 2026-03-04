@@ -1,5 +1,28 @@
 # Release Notes
 
+## v2.10.6 (2026-03-04)
+
+This release is **in Public Release**.
+
+### Highlights
+
+- Added persistent app settings via local JSON storage so shell preferences survive app restarts:
+  - launch tip banner visibility
+  - sidebar media player visibility
+  - Alpha Waves on/off
+  - media volume
+- Added a centralized `ModalShell` component and migrated popup dialogs to it for consistent spacing, blur backdrop behavior, and shared action layout.
+- Added explicit media capability note in settings and media player:
+  - file selection supports any audio/video type
+  - playback support depends on codecs available on the OS/browser engine.
+
+### Local Publish Outputs
+
+- Desktop publish target:
+  - `StudyTide Forge\bin\Release\net10.0-windows10.0.19041.0\win-x64\StudyTideForge.exe`
+- Web publish target:
+  - `artifacts\publish\studytide-forge-web-win-x64\StudyTideForgeWeb.exe`
+
 ## v2.10.5 (2026-03-04)
 
 This release is **in Public Release**.

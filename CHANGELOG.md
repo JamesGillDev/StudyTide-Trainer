@@ -4,6 +4,19 @@ All notable changes to this project are documented in this file.
 
 The format is based on semantic versioning (`MAJOR.MINOR.PATCH`).
 
+## [2.10.6] - 2026-03-04
+
+### Added
+- Persistent app-shell settings backed by local JSON storage so settings survive restart.
+- Shared `ModalShell` component used across popup dialogs for consistent blur overlay, panel spacing, and action footer structure.
+- Media capability note clarifying codec-dependent playback behavior even when file selection accepts broad audio/video types.
+
+### Changed
+- App version bumped to `2.10.6` (`ApplicationVersion` `21006`).
+
+### Release
+- Marked `v2.10.6` as **in Public Release** on `2026-03-04`.
+
 ## [2.10.5] - 2026-03-04
 
 ### Added

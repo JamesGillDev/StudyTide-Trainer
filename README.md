@@ -4,7 +4,7 @@ StudyTide Forge is structured cognitive reinforcement training for software engi
 
 ## Release Status
 
-StudyTide Forge desktop (`v2.10.5`) is marked **in Public Release** as of `2026-03-04`.
+StudyTide Forge desktop (`v2.10.6`) is marked **in Public Release** as of `2026-03-04`.
 Public release verification refreshed on `2026-03-04` after local desktop/web publish validation.
 
 ## Solution Layout
@@ -95,6 +95,14 @@ Current extraction output (`2026-03-03`):
 - Lesson Study now opens with the Outline hidden by default.
 - Outline visibility is reset to hidden each time a lesson page loads so focus stays on Prompt/Response/Study Cue content.
 - `Show Outline` remains available for manual expansion at any time.
+
+## v2.10.6 Persistent Settings + Shared Modal Shell
+
+- App shell settings now persist across restarts using local JSON storage (`Show launch tip`, `Show media player`, `Alpha Waves`, `Volume`).
+- Added a shared `ModalShell` component and migrated popups to it so spacing, blur backdrop, and action layout are consistent.
+- Added media capability guidance in settings/player UI:
+  - File selection accepts any audio/video type.
+  - Playback still depends on codecs available in the host OS/browser engine.
 
 ## v2.10.5 Practice Session Controls + Settings + Media Sidebar
 

@@ -165,9 +165,10 @@ else
 
 @if (_isSummaryModalVisible && _evaluation is not null)
 {
-    <div class="modal-overlay summary-overlay" role="dialog" aria-modal="true" aria-labelledby="summaryTitle">
-        <section class="modal-panel summary-modal">
-            <h2 id="summaryTitle">Summary</h2>
+    <ModalShell IsVisible="_isSummaryModalVisible"
+                Title="Summary"
+                PanelClass="summary-modal">
+        <ChildContent>
             <p class="summary-brief">@GetSummaryBrief()</p>
 
             <div class="metric-grid summary-metrics">
@@ -207,30 +208,30 @@ else
                     }
                 </ul>
             }
-
-            <div class="actions">
-                <button class="secondary" @onclick="CloseSummaryModal">Close</button>
-                <button @onclick="OnSummaryNextAsync">Next</button>
-            </div>
-        </section>
-    </div>
+        </ChildContent>
+        <Actions>
+            <button class="secondary" @onclick="CloseSummaryModal">Close</button>
+            <button @onclick="OnSummaryNextAsync">Next</button>
+        </Actions>
+    </ModalShell>
 }
 
 @if (_showResetWarning)
 {
-    <div class="modal-overlay summary-overlay" role="dialog" aria-modal="true" aria-labelledby="resetWarningTitle">
-        <section class="modal-panel reset-warning-modal">
-            <h2 id="resetWarningTitle">Reset Practice Session</h2>
+    <ModalShell IsVisible="_showResetWarning"
+                Title="Reset Practice Session"
+                PanelClass="reset-warning-modal">
+        <ChildContent>
             <p class="reset-warning-text">
                 <span class="warning-bang">!</span>
                 WARNING! Resetting will restart the entire Practice session. Do you wish to continue?
             </p>
-            <div class="actions">
-                <button class="secondary" @onclick="CloseResetWarning">Cancel</button>
-                <button class="danger" @onclick="ResetPracticeSessionAsync">Reset Now</button>
-            </div>
-        </section>
-    </div>
+        </ChildContent>
+        <Actions>
+            <button class="secondary" @onclick="CloseResetWarning">Cancel</button>
+            <button class="danger" @onclick="ResetPracticeSessionAsync">Reset Now</button>
+        </Actions>
+    </ModalShell>
 }
 
 @code {

@@ -85,15 +85,16 @@ else
 
 @if (_isAnswerModalVisible && _currentCard is not null)
 {
-    <div class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="answerTitle">
-        <section class="modal-panel answer-modal">
-            <h2 id="answerTitle">Answer</h2>
+    <ModalShell IsVisible="_isAnswerModalVisible"
+                Title="Answer"
+                PanelClass="answer-modal">
+        <ChildContent>
             <p>@_currentCard.Answer</p>
-            <div class="actions">
-                <button @onclick="CloseAnswerModal">OK</button>
-            </div>
-        </section>
-    </div>
+        </ChildContent>
+        <Actions>
+            <button @onclick="CloseAnswerModal">OK</button>
+        </Actions>
+    </ModalShell>
 }
 
 @code {
