@@ -1,5 +1,24 @@
 # Release Notes
 
+## v2.10.4 (2026-03-04)
+
+This release is **ready for public release**.
+
+### Highlights
+
+- Replaced Practice `Load Another Question` with `Next`.
+- Added a `Random` Practice mode with locked non-repeating question selection on `Skip` and `Next` until the lock pool is exhausted.
+- Renamed Practice `Diff Summary` to `Summary`.
+- `Submit Attempt` now opens a compact summary bubble with blurred background and key accuracy/difference metrics.
+- Added `Next` inside the summary bubble to close the modal and advance to the next question in the active mode.
+
+### Local Publish Outputs
+
+- Desktop publish target:
+  - `StudyTide Forge\bin\Release\net10.0-windows10.0.19041.0\win-x64\StudyTideForge.exe`
+- Web publish target:
+  - `artifacts\publish\studytide-forge-web-win-x64\StudyTideForgeWeb.exe`
+
 ## v2.10.3 (2026-03-04)
 
 This release is **ready for public release**.

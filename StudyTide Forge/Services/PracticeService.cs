@@ -114,6 +114,62 @@ public sealed class PracticeService(IDbContextFactory<ForgeDbContext> dbFactory)
         await db.SaveChangesAsync();
     }
 
+    public async Task<TrainingBlock?> GetRandomBlockAsync(
+        int? moduleId,
+        int? lessonId,
+        bool dueOnly,
+        IReadOnlyCollection<int>? excludedBlockIds = null)
+    {
+        await using var db = await dbFactory.CreateDbContextAsync();
+        var now = DateTime.UtcNow;
+
+        var query = db.TrainingBlocks
+            .AsNoTracking()
+            .Include(x => x.Lesson)
+            .ThenInclude(x => x!.Module)
+            .AsQueryable();
+
+        if (moduleId.HasValue)
+        {
+            query = query.Where(x => x.Lesson!.ModuleId == moduleId.Value);
+        }
+
+        if (lessonId.HasValue)
+        {
+            query = query.Where(x => x.LessonId == lessonId.Value);
+        }
+
+        if (excludedBlockIds is { Count: > 0 })
+        {
+            query = query.Where(x => !excludedBlockIds.Contains(x.Id));
+        }
+
+        if (dueOnly)
+        {
+            query = query.Where(x => !x.NextDueAt.HasValue || x.NextDueAt <= now);
+        }
+
+        var candidateIds = await query.Select(x => x.Id).ToListAsync();
+
+        if (candidateIds.Count == 0 && dueOnly)
+        {
+            return await GetRandomBlockAsync(moduleId, lessonId, dueOnly: false, excludedBlockIds);
+        }
+
+        if (candidateIds.Count == 0)
+        {
+            return null;
+        }
+
+        var chosenId = candidateIds[Random.Shared.Next(candidateIds.Count)];
+
+        return await db.TrainingBlocks
+            .AsNoTracking()
+            .Include(x => x.Lesson)
+            .ThenInclude(x => x!.Module)
+            .FirstOrDefaultAsync(x => x.Id == chosenId);
+    }
+
     private static string NormalizeLineEndings(string text)
     {
         return text.Replace("\r\n", "\n").Replace("\r", "\n");

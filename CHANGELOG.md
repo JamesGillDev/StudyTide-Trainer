@@ -4,6 +4,20 @@ All notable changes to this project are documented in this file.
 
 The format is based on semantic versioning (`MAJOR.MINOR.PATCH`).
 
+## [2.10.4] - 2026-03-04
+
+### Added
+- Added Practice `Random` mode with locked non-repeating question selection for `Skip` and `Next` actions until the randomized scope pool is exhausted.
+- Added a Practice summary modal bubble (blurred backdrop) after `Submit Attempt` with key metrics and a modal `Next` action.
+
+### Changed
+- Replaced Practice `Load Another Question` button with `Next`.
+- Renamed Practice `Diff Summary` label to `Summary`.
+- App version bumped to `2.10.4` (`ApplicationVersion` `21004`).
+
+### Release
+- Marked `v2.10.4` as **ready for public release** on `2026-03-04`.
+
 ## [2.10.3] - 2026-03-04
 
 ### Changed

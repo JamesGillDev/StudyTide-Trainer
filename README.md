@@ -4,7 +4,7 @@ StudyTide Forge is structured cognitive reinforcement training for software engi
 
 ## Release Status
 
-StudyTide Forge desktop (`v2.10.3`) is marked **ready for public release** as of `2026-03-04`.
+StudyTide Forge desktop (`v2.10.4`) is marked **ready for public release** as of `2026-03-04`.
 Public release verification refreshed on `2026-03-04` after local desktop/web publish validation.
 
 ## Solution Layout
@@ -95,6 +95,14 @@ Current extraction output (`2026-03-03`):
 - Lesson Study now opens with the Outline hidden by default.
 - Outline visibility is reset to hidden each time a lesson page loads so focus stays on Prompt/Response/Study Cue content.
 - `Show Outline` remains available for manual expansion at any time.
+
+## v2.10.4 Practice Navigation + Random Lock + Summary Modal
+
+- Replaced `Load Another Question` with `Next` in Practice workflow actions.
+- Added `Random` mode in Practice scope controls with locked non-repeating question rotation on `Skip` and `Next` until the random lock set is exhausted.
+- Renamed `Diff Summary` to `Summary`.
+- Updated `Submit Attempt` behavior to open a compact summary bubble with blurred background and key accuracy/mismatch metrics.
+- Added `Next` action inside the summary bubble to close the modal and immediately load the next question using the active mode (`Due` or `Random Lock`).
 
 ## v2.10.1 Study Library Cleanup + Footer Pinning
 

@@ -40,6 +40,8 @@
 
     <div class="actions">
         <button @onclick="LoadScopeDueBlockAsync">Load Next Due Question</button>
+        <button class="secondary" @onclick="StartRandomModeAsync">Random</button>
+        <span class="meta-text">Mode: @(_isRandomMode ? "Random Lock" : "Due")</span>
     </div>
 </section>
 
@@ -63,8 +65,8 @@
         </article>
         <article class="instruction-step">
             <span class="step-badge">4</span>
-            <h3>Use Diff Summary</h3>
-            <p>Fix weak spots by checking line differences and first mismatch index.</p>
+            <h3>Use Summary</h3>
+            <p>Submit to view a brief summary bubble and move directly to the next question.</p>
         </article>
     </div>
 </section>
@@ -143,68 +145,62 @@ else
             <button @onclick="SubmitAttemptAsync">Submit Attempt</button>
             <button class="secondary" @onclick="GoBack" disabled="@(!CanGoBack)">Back</button>
             <button class="secondary" @onclick="SkipCurrentBlockAsync">Skip</button>
-            <button @onclick="LoadAnotherQuestionAsync">Load Another Question</button>
+            <button @onclick="LoadNextQuestionAsync">Next</button>
         </div>
     </section>
 }
 
-@if (_evaluation is not null)
+@if (_isSummaryModalVisible && _evaluation is not null)
 {
-    <section class="panel">
-        <h2>Diff Summary</h2>
+    <div class="modal-overlay summary-overlay" role="dialog" aria-modal="true" aria-labelledby="summaryTitle">
+        <section class="modal-panel summary-modal">
+            <h2 id="summaryTitle">Summary</h2>
+            <p class="summary-brief">@GetSummaryBrief()</p>
 
-        <div class="metric-grid">
-            <article class="metric-card">
-                <h3>Accuracy</h3>
-                <p>@_evaluation.AccuracyPercent.ToString("0.00")%</p>
-            </article>
-            <article class="metric-card">
-                <h3>Error count</h3>
-                <p>@_evaluation.ErrorCount</p>
-            </article>
-            <article class="metric-card">
-                <h3>Missing chars</h3>
-                <p>@_evaluation.MissingCharacters</p>
-            </article>
-            <article class="metric-card">
-                <h3>Extra chars</h3>
-                <p>@_evaluation.ExtraCharacters</p>
-            </article>
-            <article class="metric-card">
-                <h3>First mismatch index</h3>
-                <p>@(_evaluation.FirstMismatchIndex?.ToString() ?? "None")</p>
-            </article>
-        </div>
+            <div class="metric-grid summary-metrics">
+                <article class="metric-card">
+                    <h3>Accuracy</h3>
+                    <p>@_evaluation.AccuracyPercent.ToString("0.00")%</p>
+                </article>
+                <article class="metric-card">
+                    <h3>Error count</h3>
+                    <p>@_evaluation.ErrorCount</p>
+                </article>
+                <article class="metric-card">
+                    <h3>Missing chars</h3>
+                    <p>@_evaluation.MissingCharacters</p>
+                </article>
+                <article class="metric-card">
+                    <h3>Extra chars</h3>
+                    <p>@_evaluation.ExtraCharacters</p>
+                </article>
+                <article class="metric-card">
+                    <h3>First mismatch index</h3>
+                    <p>@(_evaluation.FirstMismatchIndex?.ToString() ?? "None")</p>
+                </article>
+            </div>
 
-        <h3>Line differences</h3>
-
-        @if (_evaluation.MismatchedLines.Count == 0)
-        {
-            <p>No line-level differences detected.</p>
-        }
-        else
-        {
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>Line</th>
-                        <th>Expected</th>
-                        <th>Typed</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var mismatch in _evaluation.MismatchedLines)
+            @if (_evaluation.MismatchedLines.Count > 0)
+            {
+                <h3>Top line differences</h3>
+                <ul class="summary-diff-list">
+                    @foreach (var mismatch in _evaluation.MismatchedLines.Take(3))
                     {
-                        <tr>
-                            <td>@mismatch.LineNumber</td>
-                            <td><code>@mismatch.SourceLine</code></td>
-                            <td><code>@mismatch.TypedLine</code></td>
-                        </tr>
+                        <li>
+                            <strong>Line @mismatch.LineNumber</strong><br />
+                            <span>Expected: @mismatch.SourceLine</span><br />
+                            <span>Typed: @mismatch.TypedLine</span>
+                        </li>
                     }
-                </tbody>
-            </table>
-        }
-    </section>
+                </ul>
+            }
+
+            <div class="actions">
+                <button class="secondary" @onclick="CloseSummaryModal">Close</button>
+                <button @onclick="OnSummaryNextAsync">Next</button>
+            </div>
+        </section>
+    </div>
 }
 
 @code {
@@ -223,6 +219,8 @@ else
     private string? _statusMessage;
     private int _historyIndex = -1;
     private bool _isCurrentLessonFlagged;
+    private bool _isRandomMode;
+    private bool _isSummaryModalVisible;
 
     private bool CanGoBack => _historyIndex > 0;
 
@@ -306,15 +304,37 @@ else
 
     private async Task LoadScopeDueBlockAsync()
     {
+        _isRandomMode = false;
         _history.Clear();
         _excludedBlockIds.Clear();
         _historyIndex = -1;
-        await LoadNextBlockCoreAsync(excludeCurrent: false, "Training question loaded.");
+        await LoadDueBlockCoreAsync(excludeCurrent: false, "Training question loaded.");
     }
 
-    private async Task LoadAnotherQuestionAsync()
+    private async Task StartRandomModeAsync()
     {
-        await LoadNextBlockCoreAsync(excludeCurrent: true, "Loaded another question.");
+        _isRandomMode = true;
+        _history.Clear();
+        _excludedBlockIds.Clear();
+        _historyIndex = -1;
+        await LoadRandomBlockCoreAsync(excludeCurrent: true, "Random lock started.");
+    }
+
+    private async Task LoadNextQuestionAsync()
+    {
+        if (_currentBlock is null)
+        {
+            _statusMessage = "Load a training question first.";
+            return;
+        }
+
+        if (_isRandomMode)
+        {
+            await LoadRandomBlockCoreAsync(excludeCurrent: true, "Loaded next random question.");
+            return;
+        }
+
+        await LoadDueBlockCoreAsync(excludeCurrent: true, "Loaded next due question.");
     }
 
     private async Task SkipCurrentBlockAsync()
@@ -325,13 +345,21 @@ else
             return;
         }
 
-        await LoadNextBlockCoreAsync(excludeCurrent: true, "Question skipped. Loaded another question.");
+        if (_isRandomMode)
+        {
+            await LoadRandomBlockCoreAsync(excludeCurrent: true, "Question skipped. Loaded next random question.");
+            return;
+        }
+
+        await LoadDueBlockCoreAsync(excludeCurrent: true, "Question skipped. Loaded next due question.");
     }
 
-    private async Task LoadNextBlockCoreAsync(bool excludeCurrent, string successMessage)
+    private async Task LoadDueBlockCoreAsync(bool excludeCurrent, string successMessage)
     {
         try
         {
+            _isSummaryModalVisible = false;
+
             if (excludeCurrent && _currentBlock is not null)
             {
                 _excludedBlockIds.Add(_currentBlock.Id);
@@ -364,6 +392,45 @@ else
         }
     }
 
+    private async Task LoadRandomBlockCoreAsync(bool excludeCurrent, string successMessage)
+    {
+        try
+        {
+            _isSummaryModalVisible = false;
+
+            if (excludeCurrent && _currentBlock is not null)
+            {
+                _excludedBlockIds.Add(_currentBlock.Id);
+            }
+
+            var block = await PracticeService.GetRandomBlockAsync(
+                _selectedModuleId,
+                _selectedLessonId,
+                dueOnly: true,
+                excludedBlockIds: _excludedBlockIds);
+
+            if (block is null)
+            {
+                if (_excludedBlockIds.Count == 0)
+                {
+                    SetCurrentBlock(null, appendToHistory: false);
+                    _statusMessage = "No training item available in this scope.";
+                    return;
+                }
+
+                _statusMessage = "Random lock complete for this scope. Click Random to reshuffle.";
+                return;
+            }
+
+            SetCurrentBlock(block, appendToHistory: true);
+            _statusMessage = successMessage;
+        }
+        catch (Exception exception)
+        {
+            HandleUiException("Unable to load a random training item.", exception);
+        }
+    }
+
     private void GoBack()
     {
         if (!CanGoBack)
@@ -371,6 +438,7 @@ else
             return;
         }
 
+        _isSummaryModalVisible = false;
         _historyIndex--;
         var previous = _history[_historyIndex];
         SetCurrentBlock(previous, appendToHistory: false);
@@ -390,12 +458,24 @@ else
             _evaluation = PracticeService.Evaluate(_parsedContent.RetypeTarget, _typedText);
             await PracticeService.SaveAttemptAsync(_currentBlock.Id, _typedText, _evaluation);
 
+            _isSummaryModalVisible = true;
             _statusMessage = "Attempt saved and schedule updated.";
         }
         catch (Exception exception)
         {
             HandleUiException("Unable to submit this attempt.", exception);
         }
+    }
+
+    private void CloseSummaryModal()
+    {
+        _isSummaryModalVisible = false;
+    }
+
+    private async Task OnSummaryNextAsync()
+    {
+        _isSummaryModalVisible = false;
+        await LoadNextQuestionAsync();
     }
 
     private async Task OnCurrentLessonFlagChangedAsync(ChangeEventArgs eventArgs)
@@ -462,6 +542,7 @@ else
         _currentBlock = block;
         _typedText = string.Empty;
         _evaluation = null;
+        _isSummaryModalVisible = false;
 
         if (block is null)
         {
@@ -563,6 +644,21 @@ else
         }
 
         return _currentBlock?.Title ?? "Practice";
+    }
+
+    private string GetSummaryBrief()
+    {
+        if (_evaluation is null)
+        {
+            return "No summary available.";
+        }
+
+        if (_evaluation.ErrorCount == 0)
+        {
+            return "Perfect attempt. All characters and lines matched exactly.";
+        }
+
+        return $"Accuracy {_evaluation.AccuracyPercent:0.00}% with {_evaluation.ErrorCount} total edits needed.";
     }
 
     private void HandleUiException(string context, Exception exception)
