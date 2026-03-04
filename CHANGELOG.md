@@ -4,6 +4,19 @@ All notable changes to this project are documented in this file.
 
 The format is based on semantic versioning (`MAJOR.MINOR.PATCH`).
 
+## [2.10.1] - 2026-03-03
+
+### Fixed
+- Removed explicit non-training artifact `A practical arc for CAD Month 1-2` from Study Library and Flashcards during startup cleanup.
+- Ensured the same artifact is removed after reseed/import so it does not reappear.
+- Pinned Lesson Study action buttons (`Previous`, `Next`, `Practice`, `Flashcards`) to a fixed footer position while slide content scrolls.
+
+### Changed
+- App version bumped to `2.10.1` (`ApplicationVersion` `21001`).
+
+### Release
+- Marked `v2.10.1` as **ready for public release** on `2026-03-03`.
+
 ## [2.10.0] - 2026-03-03
 
 ### Added

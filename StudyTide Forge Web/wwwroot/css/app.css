@@ -535,7 +535,38 @@ button.danger {
 .lesson-study-page .study-slide-panel {
     min-height: 0;
     max-height: 100%;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+}
+
+.lesson-study-page .study-slide-panel > h2 {
+    margin-bottom: 0;
+    flex: 0 0 auto;
+}
+
+.study-slide-body {
+    flex: 1 1 auto;
+    min-height: 0;
     overflow: auto;
+    padding-right: 0.12rem;
+}
+
+.study-slide-footer {
+    flex: 0 0 auto;
+    margin-top: auto;
+    border-top: 1px solid #2a4d67;
+    padding-top: 0.65rem;
+    background: linear-gradient(180deg, rgba(11, 27, 43, 0), rgba(11, 27, 43, 0.95) 35%, #0b1b2b 100%);
+}
+
+.study-slide-actions {
+    margin-bottom: 0.35rem;
+}
+
+.study-slide-footer .meta-text {
+    margin: 0;
 }
 
 .study-outline-panel {
@@ -834,5 +865,13 @@ code {
     .lesson-study-page .study-slide-panel,
     .lesson-study-page .study-outline-panel {
         max-height: none;
+    }
+
+    .lesson-study-page .study-slide-panel {
+        overflow: visible;
+    }
+
+    .lesson-study-page .study-slide-body {
+        overflow: visible;
     }
 }

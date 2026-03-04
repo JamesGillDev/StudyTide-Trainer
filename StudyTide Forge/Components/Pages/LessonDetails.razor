@@ -49,38 +49,41 @@ else
             <section class="panel study-slide-panel">
                 <h2>@CurrentBlock!.Title</h2>
 
-                <div class="training-sections">
-                    <section class="training-section">
-                        <h4>Prompt</h4>
-                        <pre class="training-content">@CurrentBlock.Prompt</pre>
-                    </section>
-                    <section class="training-section">
-                        <h4>Response</h4>
-                        <pre class="training-content">@CurrentBlock.Response</pre>
-                    </section>
-                    <section class="training-section">
-                        <h4>Study Cue</h4>
-                        <pre class="training-content">@CurrentBlock.Example</pre>
-                    </section>
-                    <section class="training-section study-expanded">
-                        <h4>Expanded Context</h4>
-                        <ul class="study-cue-list">
-                            @foreach (var point in CurrentBlock.ExpandedExample)
-                            {
-                                <li>@point</li>
-                            }
-                        </ul>
-                    </section>
+                <div class="study-slide-body">
+                    <div class="training-sections">
+                        <section class="training-section">
+                            <h4>Prompt</h4>
+                            <pre class="training-content">@CurrentBlock.Prompt</pre>
+                        </section>
+                        <section class="training-section">
+                            <h4>Response</h4>
+                            <pre class="training-content">@CurrentBlock.Response</pre>
+                        </section>
+                        <section class="training-section">
+                            <h4>Study Cue</h4>
+                            <pre class="training-content">@CurrentBlock.Example</pre>
+                        </section>
+                        <section class="training-section study-expanded">
+                            <h4>Expanded Context</h4>
+                            <ul class="study-cue-list">
+                                @foreach (var point in CurrentBlock.ExpandedExample)
+                                {
+                                    <li>@point</li>
+                                }
+                            </ul>
+                        </section>
+                    </div>
                 </div>
 
-                <div class="actions">
-                    <button class="secondary" @onclick="GoPreviousAsync" disabled="@(!CanGoPrevious)">Previous</button>
-                    <button @onclick="GoNextAsync" disabled="@(!CanGoNext)">Next</button>
-                    <a class="button-link secondary" href="/practice">Practice</a>
-                    <a class="button-link secondary" href="/modules/flashcards">Flashcards</a>
+                <div class="study-slide-footer">
+                    <div class="actions study-slide-actions">
+                        <button class="secondary" @onclick="GoPreviousAsync" disabled="@(!CanGoPrevious)">Previous</button>
+                        <button @onclick="GoNextAsync" disabled="@(!CanGoNext)">Next</button>
+                        <a class="button-link secondary" href="/practice">Practice</a>
+                        <a class="button-link secondary" href="/modules/flashcards">Flashcards</a>
+                    </div>
+                    <p class="meta-text">Use Left/Right arrow keys to navigate slides.</p>
                 </div>
-
-                <p class="meta-text">Use Left/Right arrow keys to navigate slides.</p>
             </section>
 
             @if (_isOutlineVisible)

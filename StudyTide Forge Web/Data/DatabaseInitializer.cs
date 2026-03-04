@@ -81,6 +81,11 @@ public static class DatabaseInitializer
         "now fill them: date"
     ];
 
+    private static readonly string[] ExplicitRemovalTerms =
+    [
+        "a practical arc for cad month 1-2"
+    ];
+
     private static readonly HashSet<string> NonTrainingExactTitles = new(StringComparer.OrdinalIgnoreCase)
     {
         "A practical arc for CAD Month 1-2",
@@ -393,6 +398,7 @@ public static class DatabaseInitializer
         await ApplyPromptResponseOrientationMigrationAsync(db);
         await ApplyGeneratedTitleCleanupAsync(db);
         await ApplyConcreteExampleMigrationAsync(db);
+        await ApplyExplicitRemovalCleanupAsync(db);
         await ReplaceDuplicateTrainingBlocksAsync(db);
         await ApplyTargetedCoverageBoostAsync(db);
     }
@@ -1926,6 +1932,88 @@ public static class DatabaseInitializer
             await db.SaveChangesAsync();
             Console.WriteLine($"[StudyTide] Regenerated concrete examples for {updated} training items.");
         }
+    }
+
+    private static async Task ApplyExplicitRemovalCleanupAsync(ForgeDbContext db)
+    {
+        if (ExplicitRemovalTerms.Length == 0)
+        {
+            return;
+        }
+
+        var terms = ExplicitRemovalTerms
+            .Where(x => !string.IsNullOrWhiteSpace(x))
+            .Select(x => x.Trim().ToLowerInvariant())
+            .Distinct(StringComparer.Ordinal)
+            .ToArray();
+
+        if (terms.Length == 0)
+        {
+            return;
+        }
+
+        var trainingBlocks = await db.TrainingBlocks.ToListAsync();
+        var blocksToRemove = trainingBlocks
+            .Where(block =>
+            {
+                var title = block.Title.ToLowerInvariant();
+                var content = block.Content.ToLowerInvariant();
+                return terms.Any(term => title.Contains(term, StringComparison.Ordinal) || content.Contains(term, StringComparison.Ordinal));
+            })
+            .ToList();
+
+        var flashcards = await db.Flashcards.ToListAsync();
+        var flashcardsToRemove = flashcards
+            .Where(card =>
+            {
+                var question = card.Question.ToLowerInvariant();
+                var answer = card.Answer.ToLowerInvariant();
+                return terms.Any(term => question.Contains(term, StringComparison.Ordinal) || answer.Contains(term, StringComparison.Ordinal));
+            })
+            .ToList();
+
+        if (blocksToRemove.Count > 0)
+        {
+            db.TrainingBlocks.RemoveRange(blocksToRemove);
+        }
+
+        if (flashcardsToRemove.Count > 0)
+        {
+            db.Flashcards.RemoveRange(flashcardsToRemove);
+        }
+
+        if (blocksToRemove.Count == 0 && flashcardsToRemove.Count == 0)
+        {
+            return;
+        }
+
+        await db.SaveChangesAsync();
+
+        var emptyLessons = await db.TrainingLessons
+            .Include(x => x.TrainingBlocks)
+            .Include(x => x.Flashcards)
+            .Where(x => !x.TrainingBlocks.Any() && !x.Flashcards.Any())
+            .ToListAsync();
+
+        if (emptyLessons.Count > 0)
+        {
+            db.TrainingLessons.RemoveRange(emptyLessons);
+            await db.SaveChangesAsync();
+        }
+
+        var emptyModules = await db.TrainingModules
+            .Include(x => x.Lessons)
+            .Where(x => !x.Lessons.Any())
+            .ToListAsync();
+
+        if (emptyModules.Count > 0)
+        {
+            db.TrainingModules.RemoveRange(emptyModules);
+            await db.SaveChangesAsync();
+        }
+
+        Console.WriteLine(
+            $"[StudyTide] Removed explicit non-training material: blocks={blocksToRemove.Count}, flashcards={flashcardsToRemove.Count}, empty lessons={emptyLessons.Count}, empty modules={emptyModules.Count}.");
     }
 
     private static async Task ApplyNonTrainingMaterialCleanupAsync(ForgeDbContext db)

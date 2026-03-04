@@ -1,5 +1,26 @@
 # Release Notes
 
+## v2.10.1 (2026-03-03)
+
+This release is **ready for public release**.
+
+### Highlights
+
+- Removed non-training item `"A practical arc for CAD Month 1-2"` from Study Library and Flashcards with explicit startup cleanup.
+- Added safeguard cleanup pass so the same artifact is removed automatically if it appears in future reseeds/imports.
+- Updated Lesson Study layout to pin `Previous`, `Next`, `Practice`, and `Flashcards` actions in a fixed footer area while training content scrolls.
+- Verified local inventory after cleanup:
+  - `3702` training items
+  - `3698` flashcards
+  - `7400` combined entries
+
+### Local Publish Outputs
+
+- Desktop publish target:
+  - `StudyTide Forge\bin\Release\net10.0-windows10.0.19041.0\win-x64\StudyTideForge.exe`
+- Web publish target:
+  - `artifacts\publish\studytide-forge-web-win-x64\StudyTideForgeWeb.exe`
+
 ## v2.10.0 (2026-03-03)
 
 This release is **ready for public release**.

@@ -4,7 +4,7 @@ StudyTide Forge is structured cognitive reinforcement training for software engi
 
 ## Release Status
 
-StudyTide Forge desktop (`v2.10.0`) is marked **ready for public release** as of `2026-03-03`.
+StudyTide Forge desktop (`v2.10.1`) is marked **ready for public release** as of `2026-03-03`.
 Public release verification refreshed on `2026-03-03` after local desktop/web publish validation.
 
 ## Solution Layout
@@ -77,11 +77,17 @@ Current extraction output (`2026-03-03`):
 
 - Training item examples were regenerated to remove the old generic `When practicing...` template.
 - Current seeded inventory now contains concrete examples across all combined entries:
-  - `3703` training items
-  - `3699` flashcards
-  - `7402` combined entries
+  - `3702` training items
+  - `3698` flashcards
+  - `7400` combined entries
 - Example migration runs at startup and rewrites existing training item `Example` sections from Prompt/Response context when needed.
 - Study-view action buttons use a fixed minimum height for consistent visual alignment (`Previous`, `Next`, `Practice`, `Flashcards`).
+
+## v2.10.1 Study Library Cleanup + Footer Pinning
+
+- Removed explicit non-training artifact `"A practical arc for CAD Month 1-2"` from both Study Library and Flashcards through startup cleanup.
+- Added persistent targeted removal logic so this artifact does not reappear after reseed/import.
+- Updated lesson study slide layout so `Previous`, `Next`, `Practice`, and `Flashcards` stay pinned in a fixed footer position while slide content scrolls independently.
 
 ## v2.10.0 Archive Ingestion + Coverage Completion
 
