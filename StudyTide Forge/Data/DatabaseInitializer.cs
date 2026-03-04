@@ -187,6 +187,272 @@ public static class DatabaseInitializer
             Title: "C# numeric types by bit size",
             Response: "byte/8 unsigned, sbyte/8 signed, short/16 signed, ushort/16 unsigned, int/32 signed, uint/32 unsigned, long/64 signed, ulong/64 unsigned, float/32 signed, double/64 signed, decimal/128 signed.",
             Example: "Pick numeric types by size and sign needs; use decimal for high-precision base-10 values such as currency.",
+            Difficulty: 2),
+        new(
+            ModuleCategory: "Azure",
+            LessonTitle: "Observability and Monitoring",
+            Title: "Telemetry and Performance Monitoring",
+            Response: "Azure Application Insights",
+            Example: "Application Insights collects telemetry such as request rates, response times, failures, and distributed traces from containerized applications running in Azure Container Apps.",
+            Difficulty: 1),
+        new(
+            ModuleCategory: "Azure",
+            LessonTitle: "Microservice Communication",
+            Title: "Internal Service Communication Between Microservices",
+            Response: "Internal Service Discovery",
+            Example: "Internal Service Discovery allows container apps within the same environment to communicate with each other using internal DNS names without exposing them publicly.",
+            Difficulty: 2),
+        new(
+            ModuleCategory: "Azure",
+            LessonTitle: "Container Apps vs Kubernetes",
+            Title: "API Access Differences",
+            Response: "Azure Container Apps does not provide direct access to Kubernetes APIs, while Azure Kubernetes Service allows full access to them.",
+            Example: "Azure Container Apps abstracts the Kubernetes layer while AKS exposes the Kubernetes control plane and APIs for full cluster management.",
+            Difficulty: 2),
+        new(
+            ModuleCategory: "Azure",
+            LessonTitle: "Platform Selection",
+            Title: "Managed Microservices Without Kubernetes Access",
+            Response: "Azure Container Apps",
+            Example: "Container Apps provides a serverless container hosting platform that removes the need to manage Kubernetes infrastructure.",
+            Difficulty: 1),
+        new(
+            ModuleCategory: "Azure",
+            LessonTitle: "Spring Boot Hosting",
+            Title: "Running Spring Boot Applications",
+            Response: "Azure Spring Apps",
+            Example: "Azure Spring Apps provides lifecycle management, configuration management, and monitoring for Java Spring Boot applications.",
+            Difficulty: 1),
+        new(
+            ModuleCategory: "Azure",
+            LessonTitle: "Deployment Strategies",
+            Title: "Safe Updates for Microservices",
+            Response: "Revisions",
+            Example: "Revisions allow multiple versions of a container app to run simultaneously, enabling safe rollouts, traffic splitting, and rollbacks.",
+            Difficulty: 2),
+        new(
+            ModuleCategory: "Azure",
+            LessonTitle: "Serverless Microservices",
+            Title: "Event Driven Scaling",
+            Response: "Azure Container Apps",
+            Example: "Container Apps automatically scales based on HTTP traffic, events, or queue messages and can scale down to zero instances.",
+            Difficulty: 1),
+        new(
+            ModuleCategory: "Azure",
+            LessonTitle: "Container Image Storage",
+            Title: "Where Container Images Are Stored",
+            Response: "Azure Container Registry",
+            Example: "Azure Container Registry stores Docker container images that are pulled during deployments to Azure Container Apps.",
+            Difficulty: 1),
+        new(
+            ModuleCategory: "Azure",
+            LessonTitle: "OpenShift",
+            Title: "Managed Kubernetes OpenShift Platform",
+            Response: "Azure Red Hat OpenShift",
+            Example: "Azure Red Hat OpenShift is a fully managed OpenShift platform jointly operated by Microsoft and Red Hat.",
+            Difficulty: 2),
+        new(
+            ModuleCategory: "Azure",
+            LessonTitle: "Container Image Management",
+            Title: "Role of Azure Container Registry in Container App Deployments",
+            Response: "To securely store and manage container images and related artifacts.",
+            Example: "Azure Container Registry stores container images used during deployment of Azure Container Apps.",
+            Difficulty: 1),
+        new(
+            ModuleCategory: "Azure",
+            LessonTitle: "Networking and Security",
+            Title: "Secure Communication Between Container Registry and Container Apps",
+            Response: "An Azure Virtual Network.",
+            Example: "A Virtual Network enables secure communication between Azure Container Apps and Azure Container Registry.",
+            Difficulty: 2),
+        new(
+            ModuleCategory: "Azure",
+            LessonTitle: "Container Registries",
+            Title: "Definition of Azure Container Registry",
+            Response: "A private registry service for building, storing, and managing container images and related artifacts.",
+            Example: "Azure Container Registry provides a private Docker-compatible registry for container images.",
+            Difficulty: 1),
+        new(
+            ModuleCategory: "Azure",
+            LessonTitle: "Azure CLI Operations",
+            Title: "Purpose of Logging in to a Container Registry Using Azure CLI",
+            Response: "To push and pull container images.",
+            Example: "Developers log in using 'az acr login' so they can upload or download container images.",
+            Difficulty: 1),
+        new(
+            ModuleCategory: "Azure",
+            LessonTitle: "Identity and Security",
+            Title: "Benefit of Using Managed Identity With Container Registry",
+            Response: "To authenticate to an Azure container registry from another Azure resource, without needing to provide or manage registry credentials.",
+            Example: "Managed identities allow services like Azure Container Apps to pull images securely without storing passwords.",
+            Difficulty: 2),
+        new(
+            ModuleCategory: "Azure",
+            LessonTitle: "Access Control",
+            Title: "Purpose of Azure Role-Based Access Control (Azure RBAC)",
+            Response: "To manage access to Azure resources using built-in roles.",
+            Example: "Azure RBAC lets administrators control who can access resources such as container registries using predefined roles.",
+            Difficulty: 2),
+        new(
+            ModuleCategory: "Azure",
+            LessonTitle: "Virtual Networks",
+            Title: "Key Scenarios Enabled by Azure Virtual Networks",
+            Response: "Communication of Azure resources with each other, the internet, and on-premises networks; Filtering and routing of network traffic; Integration with Azure services.",
+            Example: "Virtual Networks enable secure connectivity between Azure services, external networks, and on-premises environments.",
+            Difficulty: 2),
+        new(
+            ModuleCategory: "Azure",
+            LessonTitle: "Use Cases",
+            Title: "Common Uses of Azure Container Apps",
+            Response: "Deploying API endpoints, hosting background processing jobs, handling event-driven processing, running microservices.",
+            Example: "Azure Container Apps is commonly used for microservices, background jobs, and event-driven workloads triggered by HTTP, queues, or events.",
+            Difficulty: 1),
+        new(
+            ModuleCategory: "Azure",
+            LessonTitle: "Platform Overview",
+            Title: "Purpose of Azure Container Apps",
+            Response: "To run microservices and containerized applications on a serverless platform while leaving behind the concerns of manually configuring cloud infrastructure and complex container orchestrators.",
+            Example: "Azure Container Apps abstracts Kubernetes complexity and provides a serverless environment for running containerized applications.",
+            Difficulty: 1),
+        new(
+            ModuleCategory: "Azure",
+            LessonTitle: "Identity and Security",
+            Title: "Benefit of Using Managed Identity in Container Apps",
+            Response: "Your app connects to resources with the managed identity. You don't need to manage credentials in your container app.",
+            Example: "A container app can use a managed identity to securely access services like Azure Key Vault or Azure Storage without storing secrets.",
+            Difficulty: 2),
+        new(
+            ModuleCategory: "Azure",
+            LessonTitle: "Networking",
+            Title: "Purpose of Enabling Ingress",
+            Response: "To expose the container app to the public web, virtual network, and other container apps within the environment.",
+            Example: "Ingress allows HTTP traffic from the internet, internal environment, or VNet to reach the container app.",
+            Difficulty: 1),
+        new(
+            ModuleCategory: "Azure",
+            LessonTitle: "Secrets Management",
+            Title: "What Happens When a Secret is Updated or Deleted",
+            Response: "A new revision must be deployed or an existing revision must be restarted.",
+            Example: "When secrets change, running revisions do not automatically update. You must redeploy or restart revisions to use the new secret.",
+            Difficulty: 2),
+        new(
+            ModuleCategory: "Azure",
+            LessonTitle: "Storage",
+            Title: "Difference Between Container File System and Ephemeral Storage",
+            Response: "Ephemeral storage is scoped to a single replica, while container file system storage is scoped to the local container.",
+            Example: "Ephemeral storage is temporary storage tied to the lifecycle of a replica and disappears when the replica is destroyed.",
+            Difficulty: 2),
+        new(
+            ModuleCategory: "Azure",
+            LessonTitle: "Service Integration",
+            Title: "Purpose of Service Connector",
+            Response: "Service Connector is used to connect Azure services together and manage the configuration of the network settings and connection information between different services.",
+            Example: "Service Connector simplifies connecting services such as Container Apps to databases, storage accounts, or messaging services.",
+            Difficulty: 1),
+        new(
+            ModuleCategory: "Azure",
+            LessonTitle: "Azure Pipelines Overview",
+            Title: "What Azure Pipelines Provides for CI/CD",
+            Response: "Build and release services.",
+            Example: "Azure Pipelines automates building, testing, and deploying applications using CI/CD workflows.",
+            Difficulty: 1),
+        new(
+            ModuleCategory: "Azure",
+            LessonTitle: "Azure Pipelines Concepts",
+            Title: "Definition of a Pipeline in Azure Pipelines",
+            Response: "Defines the continuous integration and deployment process for your app, made up of one or more stages.",
+            Example: "A pipeline can contain stages like build, test, and deploy, which automate the lifecycle of application delivery.",
+            Difficulty: 1),
+        new(
+            ModuleCategory: "Azure",
+            LessonTitle: "Azure Pipelines Concepts",
+            Title: "Purpose of an Agent in Azure Pipelines",
+            Response: "To run one or more jobs during pipeline execution.",
+            Example: "Agents execute tasks defined in pipeline jobs, such as compiling code, running tests, or deploying applications.",
+            Difficulty: 1),
+        new(
+            ModuleCategory: "Azure",
+            LessonTitle: "Azure Pipelines Variables",
+            Title: "Common Use of Variables in Azure Pipelines",
+            Response: "To define a value that you can then use in your pipeline.",
+            Example: "Variables allow reuse of values like connection strings, environment names, or configuration settings across pipeline tasks.",
+            Difficulty: 1),
+        new(
+            ModuleCategory: "Azure",
+            LessonTitle: "Azure DevOps Services",
+            Title: "Automating Build and Test Processes",
+            Response: "Azure Pipelines.",
+            Example: "Development teams use Azure Pipelines to automatically build code, run tests, and deploy applications.",
+            Difficulty: 1),
+        new(
+            ModuleCategory: "Azure",
+            LessonTitle: "Azure Pipelines Triggers",
+            Title: "Purpose of a Trigger in Azure Pipelines",
+            Response: "A trigger is something that's set up to tell the pipeline when to run.",
+            Example: "Triggers can start pipelines automatically when code is pushed to a repository or on a scheduled basis.",
+            Difficulty: 1),
+        new(
+            ModuleCategory: "Azure",
+            LessonTitle: "Revisions",
+            Title: "What Is a Revision in Azure Container Apps",
+            Response: "An immutable snapshot of your container app.",
+            Example: "Each time you deploy a change to an Azure Container App, a new revision is created representing the exact configuration and container image used at that moment.",
+            Difficulty: 1),
+        new(
+            ModuleCategory: "Azure",
+            LessonTitle: "Revisions",
+            Title: "Purpose of Revisions in Azure Container Apps",
+            Response: "To manage the release of updates to your container app by creating a new revision each time you make a revision-scope change to your app.",
+            Example: "Revisions allow safe deployments, rollbacks, and traffic splitting between versions of a container app.",
+            Difficulty: 2),
+        new(
+            ModuleCategory: "Azure",
+            LessonTitle: "Scaling",
+            Title: "Scaling Behavior in Azure Container Apps",
+            Response: "Azure Container Apps manages automatic horizontal scaling through a set of declarative scaling rules.",
+            Example: "Scaling rules can respond to HTTP traffic, queue messages, or events to automatically increase or decrease replicas.",
+            Difficulty: 2),
+        new(
+            ModuleCategory: "Azure",
+            LessonTitle: "Access Control",
+            Title: "Principle of Least Privilege",
+            Response: "Limiting access to only the resources necessary to complete a user's task.",
+            Example: "The principle of least privilege ensures users and services receive only the permissions required to perform their tasks, reducing security risks.",
+            Difficulty: 1),
+        new(
+            ModuleCategory: "Azure",
+            LessonTitle: "Continuous Integration",
+            Title: "Purpose of Configuring a Continuous Integration Environment for Container Apps",
+            Response: "To automate and validate the deployment of a container image from a container registry to a container app using a self-hosted agent pool.",
+            Example: "A CI environment builds the container image, runs tests, and verifies deployment automatically using pipeline automation.",
+            Difficulty: 2),
+        new(
+            ModuleCategory: "Azure",
+            LessonTitle: "Revisions",
+            Title: "Purpose of Setting Revision Management to Multiple",
+            Response: "To allow several revisions to be active simultaneously.",
+            Example: "Multiple revision mode allows you to run different versions of a container app at the same time for safe deployment and testing.",
+            Difficulty: 1),
+        new(
+            ModuleCategory: "Azure",
+            LessonTitle: "Container Image Management",
+            Title: "Tool Required to Create and Manage Container Images",
+            Response: "Install Docker Desktop.",
+            Example: "Docker Desktop provides the tools needed to build, package, and manage container images before pushing them to Azure Container Registry.",
+            Difficulty: 1),
+        new(
+            ModuleCategory: "Azure",
+            LessonTitle: "Managed Identities",
+            Title: "Purpose of Configuring a User Assigned Managed Identity",
+            Response: "To enable the container registry to use the managed identity to pull artifacts.",
+            Example: "A user-assigned managed identity allows secure authentication between Azure services without storing credentials.",
+            Difficulty: 2),
+        new(
+            ModuleCategory: "Azure",
+            LessonTitle: "Pipelines",
+            Title: "Purpose of Configuring Pipeline 1 to Use a Self Hosted Agent Pool",
+            Response: "To enable Pipeline 1 to deploy a container image from the container registry to the container app using a self-hosted agent pool.",
+            Example: "Self-hosted agents allow pipelines to run jobs in a controlled environment with required tools and network access.",
             Difficulty: 2)
     ];
 
@@ -1655,24 +1921,55 @@ public static class DatabaseInitializer
         foreach (var seedBlock in seedBlocks)
         {
             var lesson = await EnsureLessonAsync(db, seedBlock.ModuleCategory, seedBlock.LessonTitle);
+            var content = BuildSeedBlockContent(seedBlock);
+            var difficulty = Math.Clamp(seedBlock.Difficulty, 1, 5);
             var blockExists = await db.TrainingBlocks
                 .AnyAsync(x => x.LessonId == lesson.Id && x.Title == seedBlock.Title);
 
-            if (blockExists)
+            if (!blockExists)
+            {
+                db.TrainingBlocks.Add(new TrainingBlock
+                {
+                    LessonId = lesson.Id,
+                    Title = seedBlock.Title,
+                    Content = content,
+                    Difficulty = difficulty,
+                    TimesPracticed = 0,
+                    TimesPerfect = 0,
+                    LastPracticedAt = null,
+                    NextDueAt = now
+                });
+            }
+
+            if (!TrainingContentFormatter.TryParseLabeledSections(content, out var sections))
             {
                 continue;
             }
 
-            db.TrainingBlocks.Add(new TrainingBlock
+            var question = TruncateValue(sections.Prompt, 500);
+            var answer = TruncateValue(sections.Response, 500);
+
+            if (string.IsNullOrWhiteSpace(question) || string.IsNullOrWhiteSpace(answer))
+            {
+                continue;
+            }
+
+            var flashcardExists = await db.Flashcards
+                .AnyAsync(x => x.LessonId == lesson.Id && x.Question == question && x.Answer == answer);
+
+            if (flashcardExists)
+            {
+                continue;
+            }
+
+            db.Flashcards.Add(new Flashcard
             {
                 LessonId = lesson.Id,
-                Title = seedBlock.Title,
-                Content = BuildSeedBlockContent(seedBlock),
-                Difficulty = Math.Clamp(seedBlock.Difficulty, 1, 5),
-                TimesPracticed = 0,
-                TimesPerfect = 0,
-                LastPracticedAt = null,
-                NextDueAt = now
+                Question = question,
+                Answer = answer,
+                Difficulty = difficulty,
+                TimesCorrect = 0,
+                TimesIncorrect = 0
             });
         }
 

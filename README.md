@@ -4,8 +4,8 @@ StudyTide Forge is structured cognitive reinforcement training for software engi
 
 ## Release Status
 
-StudyTide Forge desktop (`v2.10.1`) is marked **ready for public release** as of `2026-03-03`.
-Public release verification refreshed on `2026-03-03` after local desktop/web publish validation.
+StudyTide Forge desktop (`v2.10.2`) is marked **ready for public release** as of `2026-03-04`.
+Public release verification refreshed on `2026-03-04` after local desktop/web publish validation.
 
 ## Solution Layout
 
@@ -82,6 +82,13 @@ Current extraction output (`2026-03-03`):
   - `7400` combined entries
 - Example migration runs at startup and rewrites existing training item `Example` sections from Prompt/Response context when needed.
 - Study-view action buttons use a fixed minimum height for consistent visual alignment (`Previous`, `Next`, `Practice`, `Flashcards`).
+
+## v2.10.2 Azure Supplemental Pack + Flashcard Sync
+
+- Added `38` Azure supplemental seed blocks from the requested Azure Container Apps, Azure Container Registry, Azure DevOps, Azure Identity, Azure Networking, and Azure Security topics.
+- Mapped all new blocks into the existing `Azure` module category while preserving lesson titles and concept prompts.
+- Updated seeding to add matching flashcards for supplemental/generated seed blocks when missing, so training-item and flashcard coverage stay aligned.
+- Deduplicated overlapping ingress prompt input during import-to-seed translation to avoid redundant same-lesson/same-title collisions.
 
 ## v2.10.1 Study Library Cleanup + Footer Pinning
 

@@ -1,5 +1,22 @@
 # Release Notes
 
+## v2.10.2 (2026-03-04)
+
+This release is **ready for public release**.
+
+### Highlights
+
+- Added `38` requested Azure supplemental seed blocks under the existing `Azure` category, spanning Azure Container Apps, Container Registry, DevOps/Pipelines, Identity, Networking, and Security topics.
+- Updated supplemental seeding so each added training block also backfills a matching flashcard when missing.
+- Kept desktop and web seeders aligned by applying the same data-initialization changes in both projects.
+
+### Local Publish Outputs
+
+- Desktop publish target:
+  - `StudyTide Forge\bin\Release\net10.0-windows10.0.19041.0\win-x64\StudyTideForge.exe`
+- Web publish target:
+  - `artifacts\publish\studytide-forge-web-win-x64\StudyTideForgeWeb.exe`
+
 ## v2.10.1 (2026-03-03)
 
 This release is **ready for public release**.

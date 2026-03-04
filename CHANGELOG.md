@@ -4,6 +4,18 @@ All notable changes to this project are documented in this file.
 
 The format is based on semantic versioning (`MAJOR.MINOR.PATCH`).
 
+## [2.10.2] - 2026-03-04
+
+### Added
+- Added `38` Azure supplemental seed blocks based on requested Azure Container Apps, Azure Container Registry, Azure DevOps, Azure Identity, Azure Networking, and Azure Security topics.
+- Supplemental/generated seeding now backfills matching flashcards when missing so added training material appears in both Study Library and Flashcards.
+
+### Changed
+- App version bumped to `2.10.2` (`ApplicationVersion` `21002`).
+
+### Release
+- Marked `v2.10.2` as **ready for public release** on `2026-03-04`.
+
 ## [2.10.1] - 2026-03-03
 
 ### Fixed
