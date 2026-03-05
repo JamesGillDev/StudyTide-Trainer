@@ -308,6 +308,9 @@
             return;
         }
 
+        _currentTrackId = track.Id;
+        _isPlaying = false;
+
         bool started;
         try
         {
@@ -327,7 +330,6 @@
             return;
         }
 
-        _currentTrackId = track.Id;
         _isPlaying = started;
         if (started)
         {
@@ -727,17 +729,7 @@
     [JSInvokable]
     public Task HandleMediaPlay()
     {
-        if (_currentTrackId is null)
-        {
-            return InvokeAsync(async () =>
-            {
-                await StopPlaybackAsync(clearCurrentTrack: true);
-                _statusMessage = "Recovered media state at startup.";
-                StateHasChanged();
-            });
-        }
-
-        _isPlaying = true;
+        _isPlaying = _currentTrackId is not null;
         StateHasChanged();
         return Task.CompletedTask;
     }

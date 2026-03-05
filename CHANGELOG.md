@@ -4,6 +4,19 @@ All notable changes to this project are documented in this file.
 
 The format is based on semantic versioning (`MAJOR.MINOR.PATCH`).
 
+## [2.10.12] - 2026-03-05
+
+### Fixed
+- Resolved startup Alpha Waves race where media `onplay` could fire before current-track assignment and falsely trigger bundled-track failure flow.
+- Updated playback initialization order so current track is assigned before JS `play()` call.
+- Adjusted media play-state handler so UI play/pause state only reflects active-track playback identity.
+
+### Changed
+- App version bumped to `2.10.12` (`ApplicationVersion` `21012`).
+
+### Release
+- Marked `v2.10.12` as **in Public Release** on `2026-03-05`.
+
 ## [2.10.11] - 2026-03-05
 
 ### Fixed

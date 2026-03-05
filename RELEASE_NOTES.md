@@ -1,5 +1,23 @@
 # Release Notes
 
+## v2.10.12 (2026-03-05)
+
+This release is **in Public Release**.
+Public release verification refreshed on `2026-03-05` after local desktop/web publish.
+
+### Highlights
+
+- Fixed startup Alpha Waves playback race where `onplay` could occur before current-track identity assignment and trigger false startup failure.
+- Updated playback initialization sequence to set current track before invoking media `play()`.
+- Updated media `play` event handling so UI play/pause state only reflects active-track playback.
+
+### Local Publish Outputs
+
+- Desktop publish target:
+  - `StudyTide Forge\bin\Release\net10.0-windows10.0.19041.0\win-x64\StudyTideForge.exe`
+- Web publish target:
+  - `artifacts\publish\studytide-forge-web-win-x64\StudyTideForgeWeb.exe`
+
 ## v2.10.11 (2026-03-05)
 
 This release is **in Public Release**.

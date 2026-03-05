@@ -4,7 +4,7 @@ StudyTide Forge is structured cognitive reinforcement training for software engi
 
 ## Release Status
 
-StudyTide Forge desktop (`v2.10.11`) is marked **in Public Release** as of `2026-03-05`.
+StudyTide Forge desktop (`v2.10.12`) is marked **in Public Release** as of `2026-03-05`.
 Public release verification refreshed on `2026-03-05` after local desktop/web publish validation.
 
 ## Solution Layout
@@ -82,6 +82,12 @@ Current extraction output (`2026-03-03`):
   - `7400` combined entries
 - Example migration runs at startup and rewrites existing training item `Example` sections from Prompt/Response context when needed.
 - Study-view action buttons use a fixed minimum height for consistent visual alignment (`Previous`, `Next`, `Practice`, `Flashcards`).
+
+## v2.10.12 Alpha Startup Race Fix
+
+- Fixed startup playback race where `onplay` could fire before current-track assignment and prematurely stop bundled Alpha Waves.
+- Updated playback initialization order so current track is assigned before JS `play()` invocation.
+- Updated runtime play-state handling so UI `Pause` only reflects confirmed active-track playback state.
 
 ## v2.10.11 Startup Media State Recovery + Player UI Refresh
 
