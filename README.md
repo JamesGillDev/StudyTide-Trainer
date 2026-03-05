@@ -4,7 +4,7 @@ StudyTide Forge is structured cognitive reinforcement training for software engi
 
 ## Release Status
 
-StudyTide Forge desktop (`v2.10.7`) is marked **in Public Release** as of `2026-03-04`.
+StudyTide Forge desktop (`v2.10.8`) is marked **in Public Release** as of `2026-03-04`.
 Public release verification refreshed on `2026-03-04` after local desktop/web publish validation.
 
 ## Solution Layout
@@ -82,6 +82,18 @@ Current extraction output (`2026-03-03`):
   - `7400` combined entries
 - Example migration runs at startup and rewrites existing training item `Example` sections from Prompt/Response context when needed.
 - Study-view action buttons use a fixed minimum height for consistent visual alignment (`Previous`, `Next`, `Practice`, `Flashcards`).
+
+## v2.10.8 Media Player Stability + Alpha Waves Bundling
+
+- Added a bundled local alpha-wave audio file (`wwwroot/audio/8_Hour_Alpha_Waves.wav`) to both desktop and web apps so Alpha Waves playback has an in-project source.
+- Updated Alpha Waves default source path to `/audio/8_Hour_Alpha_Waves.wav`.
+- Hardened media-player startup and settings-event handling to avoid first-open crashes from JS interop initialization failures.
+- Removed fragile preflight source probing and switched to direct playback attempt flow with clear fallback messaging if playback fails.
+- Refined sidebar media-player layout sizing for desktop widths:
+  - wider sidebar base width
+  - stable one-line now-playing title
+  - grid-based action rows sized to sidebar width
+  - improved playlist controls/title sizing to avoid overflow/wrapping artifacts in narrow side panels.
 
 ## v2.10.7 Media Player MP3 Playback + Playlist Layout Fixes
 

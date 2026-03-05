@@ -103,41 +103,6 @@ export async function setSourceAndPlay(media, sourceUrl, mimeType, volume) {
     }
 }
 
-export async function sourceExists(sourceUrl) {
-    if (!sourceUrl) {
-        return false;
-    }
-
-    if (sourceUrl.startsWith("blob:") || sourceUrl.startsWith("data:")) {
-        return true;
-    }
-
-    try {
-        const headResponse = await fetch(sourceUrl, {
-            method: "HEAD",
-            cache: "no-store"
-        });
-
-        if (headResponse.ok) {
-            return true;
-        }
-
-        if (headResponse.status !== 405) {
-            return false;
-        }
-
-        const getResponse = await fetch(sourceUrl, {
-            method: "GET",
-            cache: "no-store"
-        });
-
-        return getResponse.ok;
-    }
-    catch {
-        return false;
-    }
-}
-
 export async function play(media) {
     if (!media) {
         return false;

@@ -1,5 +1,31 @@
 # Release Notes
 
+## v2.10.8 (2026-03-04)
+
+This release is **in Public Release**.
+Public release verification refreshed on `2026-03-04` after local desktop/web publish.
+
+### Highlights
+
+- Added bundled Alpha Waves audio asset at:
+  - `StudyTide Forge\wwwroot\audio\8_Hour_Alpha_Waves.wav`
+  - `StudyTide Forge Web\wwwroot\audio\8_Hour_Alpha_Waves.wav`
+- Updated default bundled Alpha Waves source path to `/audio/8_Hour_Alpha_Waves.wav`.
+- Hardened media panel startup and shell-state update flows with defensive JS interop error handling to prevent first-open crashes.
+- Removed fragile bundled-track source preflight checks and switched to direct playback attempts with clearer error/fallback behavior.
+- Reworked sidebar media-player sizing and control layout:
+  - wider left navigation rail
+  - fixed one-line now-playing title
+  - grid-based control groups tuned for sidebar width
+  - improved playlist row sizing to avoid collapsed/overflowed controls and title rendering artifacts.
+
+### Local Publish Outputs
+
+- Desktop publish target:
+  - `StudyTide Forge\bin\Release\net10.0-windows10.0.19041.0\win-x64\StudyTideForge.exe`
+- Web publish target:
+  - `artifacts\publish\studytide-forge-web-win-x64\StudyTideForgeWeb.exe`
+
 ## v2.10.7 (2026-03-04)
 
 This release is **in Public Release**.

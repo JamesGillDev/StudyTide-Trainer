@@ -14,9 +14,7 @@
 
     <video @ref="_mediaElement" class="@GetMiniScreenClass()" preload="metadata"></video>
 
-    <div class="player-title-marquee" title="@GetNowPlayingTitle()">
-        <span>@GetNowPlayingTitle()</span>
-    </div>
+    <div class="player-title" title="@GetNowPlayingTitle()">@GetNowPlayingTitle()</div>
 
     <div class="actions player-actions">
         <button type="button" class="secondary" @onclick="PlayPreviousAsync">Prev</button>
@@ -58,7 +56,7 @@
                                @onchange="eventArgs => ToggleTrackSelection(track.Id, eventArgs)" />
                         <button type="button" class="secondary" @onclick="() => MoveTrackUp(index)" disabled="@(index == 0)">Up</button>
                         <button type="button" class="secondary" @onclick="() => MoveTrackDown(index)" disabled="@(index >= _playlist.Count - 1)">Down</button>
-                        <button type="button" class="secondary" @onclick="() => QueuePlayNext(track.Id)">Play Next</button>
+                        <button type="button" class="secondary" @onclick="() => QueuePlayNext(track.Id)">Next +</button>
                         <button type="button" class="secondary" @onclick="() => QueueTrack(track.Id)">+</button>
                         <button type="button" @onclick="() => PlayTrackAsync(track.Id)">Play</button>
                     </div>
@@ -90,7 +88,7 @@
 </section>
 
 @code {
-    private const string AlphaWavesTitle = "8_Hour_Alpha_Waves.mp3";
+    private const string AlphaWavesTitle = "8_Hour_Alpha_Waves.wav";
 
     private readonly List<MediaTrack> _playlist = [];
     private readonly List<Guid> _queuedTrackIds = [];
@@ -116,7 +114,12 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender)
+        if (!firstRender)
+        {
+            return;
+        }
+
+        try
         {
             await EnsureModuleAsync();
             await EnsureHandlersAttachedAsync();
@@ -125,6 +128,12 @@
             {
                 await EnsureAlphaTrackAsync(playImmediately: true);
             }
+        }
+        catch (Exception exception)
+        {
+            _statusMessage = "Media player startup issue detected. Toggle the player in Settings to retry.";
+            Console.Error.WriteLine($"[StudyTide] Media player startup failed. {exception}");
+            StateHasChanged();
         }
     }
 
@@ -142,12 +151,26 @@
             return;
         }
 
-        foreach (var track in _playlist.Where(x => x.IsObjectUrl))
+        try
         {
-            await _module.InvokeVoidAsync("revokeObjectUrl", track.SourceUrl);
+            foreach (var track in _playlist.Where(x => x.IsObjectUrl))
+            {
+                await _module.InvokeVoidAsync("revokeObjectUrl", track.SourceUrl);
+            }
+        }
+        catch (Exception exception)
+        {
+            Console.Error.WriteLine($"[StudyTide] Media player cleanup warning. {exception.Message}");
         }
 
-        await _module.DisposeAsync();
+        try
+        {
+            await _module.DisposeAsync();
+        }
+        catch (Exception exception)
+        {
+            Console.Error.WriteLine($"[StudyTide] Media module dispose warning. {exception.Message}");
+        }
     }
 
     private async Task OnBrowseChangedAsync(ChangeEventArgs _)
@@ -233,6 +256,10 @@
 
         var resumed = await _module.InvokeAsync<bool>("play", _mediaElement);
         _isPlaying = resumed;
+        if (!resumed)
+        {
+            _statusMessage = "Unable to resume the current track.";
+        }
     }
 
     private async Task PlayTrackAsync(Guid trackId)
@@ -249,12 +276,23 @@
             return;
         }
 
-        var started = await _module.InvokeAsync<bool>(
-            "setSourceAndPlay",
-            _mediaElement,
-            track.SourceUrl,
-            track.MimeType,
-            ShellState.MediaVolume);
+        bool started;
+        try
+        {
+            started = await _module.InvokeAsync<bool>(
+                "setSourceAndPlay",
+                _mediaElement,
+                track.SourceUrl,
+                track.MimeType,
+                ShellState.MediaVolume);
+        }
+        catch (Exception exception)
+        {
+            _isPlaying = false;
+            _statusMessage = $"Unable to initialize playback. {exception.Message}";
+            Console.Error.WriteLine($"[StudyTide] Playback initialization error for {track.Title}. {exception}");
+            return;
+        }
 
         _currentTrackId = track.Id;
         _isPlaying = started;
@@ -267,7 +305,13 @@
         if (track.IsBundledAlpha)
         {
             _currentTrackId = null;
-            _statusMessage = "Bundled Alpha Waves track is unavailable. Use Browse to add a local .mp3.";
+            _statusMessage = "Bundled Alpha Waves could not be played. Use Browse to add a local audio file.";
+
+            if (ShellState.AlphaWavesEnabled)
+            {
+                ShellState.SetAlphaWavesEnabled(false);
+            }
+
             return;
         }
 
@@ -479,7 +523,15 @@
             return;
         }
 
-        _module = await JS.InvokeAsync<IJSObjectReference>("import", "./js/mediaPlayer.js");
+        try
+        {
+            _module = await JS.InvokeAsync<IJSObjectReference>("import", "./js/mediaPlayer.js");
+        }
+        catch (Exception exception)
+        {
+            _statusMessage = "Media player module failed to load.";
+            Console.Error.WriteLine($"[StudyTide] Failed to import media module. {exception}");
+        }
     }
 
     private async Task EnsureHandlersAttachedAsync()
@@ -489,15 +541,35 @@
             return;
         }
 
-        _selfReference ??= DotNetObjectReference.Create(this);
-        await _module.InvokeVoidAsync("attachMediaHandlers", _mediaElement, _selfReference);
-        _handlersAttached = true;
-        await _module.InvokeVoidAsync("setVolume", _mediaElement, ShellState.MediaVolume);
+        try
+        {
+            _selfReference ??= DotNetObjectReference.Create(this);
+            await _module.InvokeVoidAsync("attachMediaHandlers", _mediaElement, _selfReference);
+            _handlersAttached = true;
+            await _module.InvokeVoidAsync("setVolume", _mediaElement, ShellState.MediaVolume);
+        }
+        catch (Exception exception)
+        {
+            _statusMessage = "Unable to wire media events.";
+            Console.Error.WriteLine($"[StudyTide] Failed to attach media handlers. {exception}");
+        }
     }
 
-    private async void HandleShellStateChanged()
+    private void HandleShellStateChanged()
     {
-        await InvokeAsync(HandleShellStateChangedAsync);
+        _ = InvokeAsync(async () =>
+        {
+            try
+            {
+                await HandleShellStateChangedAsync();
+            }
+            catch (Exception exception)
+            {
+                _statusMessage = "Media settings update failed.";
+                Console.Error.WriteLine($"[StudyTide] Media settings update error. {exception}");
+                StateHasChanged();
+            }
+        });
     }
 
     private async Task HandleShellStateChangedAsync()
@@ -510,7 +582,14 @@
         await EnsureModuleAsync();
         if (_module is not null)
         {
-            await _module.InvokeVoidAsync("setVolume", _mediaElement, ShellState.MediaVolume);
+            try
+            {
+                await _module.InvokeVoidAsync("setVolume", _mediaElement, ShellState.MediaVolume);
+            }
+            catch (Exception exception)
+            {
+                Console.Error.WriteLine($"[StudyTide] Volume update warning. {exception.Message}");
+            }
         }
 
         if (ShellState.AlphaWavesEnabled && ShellState.AlphaWavesActivationStamp != _lastAlphaStamp)
@@ -525,29 +604,7 @@
     private async Task EnsureAlphaTrackAsync(bool playImmediately)
     {
         await EnsureModuleAsync();
-
         var alphaSource = BuildAlphaTrackSource();
-        var alphaSourceAvailable = !string.IsNullOrWhiteSpace(alphaSource)
-            && _module is not null
-            && await _module.InvokeAsync<bool>("sourceExists", alphaSource);
-
-        if (!alphaSourceAvailable)
-        {
-            var removedCurrent = RemoveBundledAlphaTracks();
-            _statusMessage = "Bundled Alpha Waves track is unavailable in this build. Use Browse to add a local .mp3.";
-
-            if (ShellState.AlphaWavesEnabled)
-            {
-                ShellState.SetAlphaWavesEnabled(false);
-            }
-
-            if (removedCurrent && _playlist.Count > 0)
-            {
-                await PlayTrackAsync(_playlist[0].Id);
-            }
-
-            return;
-        }
 
         var alphaTrack = _playlist.FirstOrDefault(x => x.IsBundledAlpha);
         if (alphaTrack is null)
@@ -556,7 +613,7 @@
             {
                 Title = AlphaWavesTitle,
                 SourceUrl = alphaSource,
-                MimeType = "audio/mpeg",
+                MimeType = "audio/wav",
                 IsVideo = false,
                 IsObjectUrl = false,
                 IsBundledAlpha = true
@@ -571,33 +628,6 @@
         }
 
         await PlayTrackAsync(alphaTrack.Id);
-    }
-
-    private bool RemoveBundledAlphaTracks()
-    {
-        var alphaTrackIds = _playlist
-            .Where(x => x.IsBundledAlpha)
-            .Select(x => x.Id)
-            .ToHashSet();
-
-        if (alphaTrackIds.Count == 0)
-        {
-            return false;
-        }
-
-        var removedCurrent = _currentTrackId.HasValue && alphaTrackIds.Contains(_currentTrackId.Value);
-
-        _playlist.RemoveAll(x => alphaTrackIds.Contains(x.Id));
-        _queuedTrackIds.RemoveAll(x => alphaTrackIds.Contains(x));
-        _selectedTrackIds.RemoveWhere(x => alphaTrackIds.Contains(x));
-
-        if (removedCurrent)
-        {
-            _currentTrackId = null;
-            _isPlaying = false;
-        }
-
-        return removedCurrent;
     }
 
     private static string BuildAlphaTrackSource()
@@ -615,7 +645,22 @@
     public Task HandleMediaError()
     {
         _isPlaying = false;
-        _statusMessage = "Media playback failed for the current track.";
+        var current = _playlist.FirstOrDefault(x => x.Id == _currentTrackId);
+        if (current?.IsBundledAlpha == true)
+        {
+            _currentTrackId = null;
+            _statusMessage = "Bundled Alpha Waves could not be played. Use Browse to add a local audio file.";
+
+            if (ShellState.AlphaWavesEnabled)
+            {
+                ShellState.SetAlphaWavesEnabled(false);
+            }
+        }
+        else
+        {
+            _statusMessage = "Media playback failed for the current track.";
+        }
+
         StateHasChanged();
         return Task.CompletedTask;
     }

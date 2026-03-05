@@ -4,6 +4,23 @@ All notable changes to this project are documented in this file.
 
 The format is based on semantic versioning (`MAJOR.MINOR.PATCH`).
 
+## [2.10.8] - 2026-03-04
+
+### Added
+- Bundled Alpha Waves audio asset in both apps at `wwwroot/audio/8_Hour_Alpha_Waves.wav` so built-in playback has a local packaged source.
+
+### Fixed
+- Hardened media player initialization and shell-settings event handling to reduce first-open startup crash risk caused by JS interop failures.
+- Removed fragile bundled-track source preflight checks that could misreport availability in host-specific runtime schemes.
+- Updated sidebar media-player sizing/layout to prevent compressed controls, overflow artifacts, and inconsistent title rendering in narrow side rails.
+
+### Changed
+- Updated bundled Alpha Waves default source path to `/audio/8_Hour_Alpha_Waves.wav`.
+- App version bumped to `2.10.8` (`ApplicationVersion` `21008`).
+
+### Release
+- Marked `v2.10.8` as **in Public Release** on `2026-03-04`.
+
 ## [2.10.7] - 2026-03-04
 
 ### Fixed
