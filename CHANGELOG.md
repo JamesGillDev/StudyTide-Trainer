@@ -4,6 +4,21 @@ All notable changes to this project are documented in this file.
 
 The format is based on semantic versioning (`MAJOR.MINOR.PATCH`).
 
+## [2.10.11] - 2026-03-05
+
+### Fixed
+- Added startup media-element cleanup to stop stale hidden playback before media player initialization.
+- Added guard handling for `onplay` events without an active current track so playback is force-stopped and state is recovered.
+- Updated media-player JS module loading to use a versioned import path, forcing fresh script resolution after app updates.
+- Corrected async-disposal cleanup path to unsubscribe shell-state events and dispose component references.
+
+### Changed
+- Refreshed media-player playlist control layout and styling for a cleaner professional presentation with larger action controls.
+- App version bumped to `2.10.11` (`ApplicationVersion` `21011`).
+
+### Release
+- Marked `v2.10.11` as **in Public Release** on `2026-03-05`.
+
 ## [2.10.10] - 2026-03-05
 
 ### Fixed

@@ -194,22 +194,49 @@ h3 {
 
 .playlist-item-controls {
     display: grid;
-    grid-template-columns: auto repeat(5, minmax(0, 1fr));
+    gap: 0.38rem;
+}
+
+.playlist-item-primary {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.25fr);
     gap: 0.4rem;
     align-items: center;
 }
 
-.playlist-item-controls input[type="checkbox"] {
-    width: 1rem;
-    height: 1rem;
-    margin: 0 0.2rem 0 0;
+.playlist-item-secondary {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.4rem;
 }
 
-.playlist-item-controls button {
+.track-select {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    min-height: 2rem;
+    border: 1px solid #3b607c;
+    border-radius: 0.5rem;
+    padding: 0 0.5rem;
+    color: #cee8fb;
+    font-size: 0.75rem;
+    font-weight: 620;
+    background: #0a1a29;
+}
+
+.track-select input[type="checkbox"] {
+    width: 0.95rem;
+    height: 0.95rem;
+    margin: 0;
+    accent-color: #1bb3a6;
+}
+
+.playlist-item-primary button,
+.playlist-item-secondary button {
     min-height: 2rem;
     width: 100%;
     min-width: 0;
-    font-size: 0.74rem;
+    font-size: 0.76rem;
     font-weight: 620;
     padding: 0.3rem 0.4rem;
 }

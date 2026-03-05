@@ -1,5 +1,28 @@
 # Release Notes
 
+## v2.10.11 (2026-03-05)
+
+This release is **in Public Release**.
+Public release verification refreshed on `2026-03-05` after local desktop/web publish.
+
+### Highlights
+
+- Added startup media recovery that clears all in-DOM audio/video elements before player initialization to prevent stale hidden playback.
+- Added startup state guard so `onplay` events without an active current track are force-stopped and UI state is recovered.
+- Versioned JS module import for the media player to force fresh runtime script loading after updates.
+- Hardened component lifecycle cleanup by unsubscribing shell-state events in async disposal path.
+- Refreshed media-player playlist UI for a cleaner production look:
+  - primary/secondary control rows
+  - explicit styled `Select` control
+  - larger and more legible queue/reorder actions.
+
+### Local Publish Outputs
+
+- Desktop publish target:
+  - `StudyTide Forge\bin\Release\net10.0-windows10.0.19041.0\win-x64\StudyTideForge.exe`
+- Web publish target:
+  - `artifacts\publish\studytide-forge-web-win-x64\StudyTideForgeWeb.exe`
+
 ## v2.10.10 (2026-03-05)
 
 This release is **in Public Release**.

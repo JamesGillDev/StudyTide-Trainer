@@ -150,6 +150,21 @@ export function stopAndClear(media) {
     media.load();
 }
 
+export function stopAllMediaElements() {
+    const mediaNodes = document.querySelectorAll("audio,video");
+    for (const media of mediaNodes) {
+        media.pause();
+        media.loop = false;
+        media.removeAttribute("src");
+
+        while (media.firstChild) {
+            media.removeChild(media.firstChild);
+        }
+
+        media.load();
+    }
+}
+
 export function setVolume(media, volume) {
     if (!media) {
         return;

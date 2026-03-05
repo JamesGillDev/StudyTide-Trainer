@@ -21,7 +21,7 @@
 
     <div class="actions player-actions">
         <button type="button" class="secondary" @onclick="PlayPreviousAsync">Prev</button>
-        <button type="button" @onclick="TogglePlayPauseAsync">@(_isPlaying ? "Pause" : "Play")</button>
+        <button type="button" @onclick="TogglePlayPauseAsync">@(_currentTrackId is not null && _isPlaying ? "Pause" : "Play")</button>
         <button type="button" class="secondary" @onclick="PlayNextAsync">Next</button>
     </div>
 
@@ -54,14 +54,21 @@
                 var track = _playlist[index];
                 <li class="playlist-item @(track.Id == _currentTrackId ? "active" : string.Empty)">
                     <div class="playlist-item-controls">
-                        <input type="checkbox"
-                               checked="@_selectedTrackIds.Contains(track.Id)"
-                               @onchange="eventArgs => ToggleTrackSelection(track.Id, eventArgs)" />
-                        <button type="button" class="secondary" @onclick="() => MoveTrackUp(index)" disabled="@(index == 0)">Up</button>
-                        <button type="button" class="secondary" @onclick="() => MoveTrackDown(index)" disabled="@(index >= _playlist.Count - 1)">Down</button>
-                        <button type="button" class="secondary" @onclick="() => QueuePlayNext(track.Id)">Queue Next</button>
-                        <button type="button" class="secondary" @onclick="() => QueueTrack(track.Id)">+</button>
-                        <button type="button" @onclick="() => PlayTrackAsync(track.Id)">Play</button>
+                        <div class="playlist-item-primary">
+                            <label class="track-select">
+                                <input type="checkbox"
+                                       checked="@_selectedTrackIds.Contains(track.Id)"
+                                       @onchange="eventArgs => ToggleTrackSelection(track.Id, eventArgs)" />
+                                <span>Select</span>
+                            </label>
+                            <button type="button" @onclick="() => PlayTrackAsync(track.Id)">Play</button>
+                            <button type="button" class="secondary" @onclick="() => QueuePlayNext(track.Id)">Queue Next</button>
+                        </div>
+                        <div class="playlist-item-secondary">
+                            <button type="button" class="secondary" @onclick="() => MoveTrackUp(index)" disabled="@(index == 0)">Up</button>
+                            <button type="button" class="secondary" @onclick="() => MoveTrackDown(index)" disabled="@(index >= _playlist.Count - 1)">Down</button>
+                            <button type="button" class="secondary" @onclick="() => QueueTrack(track.Id)">Queue +</button>
+                        </div>
                     </div>
                     <span class="playlist-track-title" title="@track.Title">@track.Title</span>
                 </li>
@@ -92,6 +99,7 @@
 
 @code {
     private const string AlphaWavesTitle = "8_Hour_Alpha_Waves.wav";
+    private const string ModuleImportPath = "./js/mediaPlayer.js?v=2.10.11";
 
     private readonly List<MediaTrack> _playlist = [];
     private readonly List<Guid> _queuedTrackIds = [];
@@ -125,11 +133,21 @@
         try
         {
             await EnsureModuleAsync();
+            if (_module is not null)
+            {
+                await _module.InvokeVoidAsync("stopAllMediaElements");
+            }
+
             await EnsureHandlersAttachedAsync();
+            await StopPlaybackAsync(clearCurrentTrack: true);
 
             if (ShellState.AlphaWavesEnabled)
             {
                 await EnsureAlphaTrackAsync(playImmediately: true);
+            }
+            else
+            {
+                await RemoveBundledAlphaTracksAsync();
             }
         }
         catch (Exception exception)
@@ -149,6 +167,10 @@
 
     public async ValueTask DisposeAsync()
     {
+        _isDisposed = true;
+        ShellState.Changed -= HandleShellStateChanged;
+        _selfReference?.Dispose();
+
         if (_module is null)
         {
             return;
@@ -244,6 +266,11 @@
         if (_module is null)
         {
             return;
+        }
+
+        if (_currentTrackId is null && _isPlaying)
+        {
+            await StopPlaybackAsync(clearCurrentTrack: true);
         }
 
         if (_currentTrackId is null)
@@ -539,7 +566,7 @@
 
         try
         {
-            _module = await JS.InvokeAsync<IJSObjectReference>("import", "./js/mediaPlayer.js");
+            _module = await JS.InvokeAsync<IJSObjectReference>("import", ModuleImportPath);
         }
         catch (Exception exception)
         {
@@ -700,6 +727,16 @@
     [JSInvokable]
     public Task HandleMediaPlay()
     {
+        if (_currentTrackId is null)
+        {
+            return InvokeAsync(async () =>
+            {
+                await StopPlaybackAsync(clearCurrentTrack: true);
+                _statusMessage = "Recovered media state at startup.";
+                StateHasChanged();
+            });
+        }
+
         _isPlaying = true;
         StateHasChanged();
         return Task.CompletedTask;
@@ -812,6 +849,11 @@
         {
             await StopPlaybackAsync(clearCurrentTrack: true);
             _statusMessage = "Alpha Waves stopped.";
+        }
+        else if (_currentTrackId is null && _isPlaying)
+        {
+            await StopPlaybackAsync(clearCurrentTrack: true);
+            _statusMessage = "Recovered media state.";
         }
     }
 }
