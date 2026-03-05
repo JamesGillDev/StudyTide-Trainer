@@ -9,12 +9,15 @@
 
     @if (!string.IsNullOrWhiteSpace(_statusMessage))
     {
-        <p class="meta-text">@_statusMessage</p>
+        <p class="meta-text player-status">@_statusMessage</p>
     }
 
     <video @ref="_mediaElement" class="@GetMiniScreenClass()" preload="metadata"></video>
 
-    <div class="player-title" title="@GetNowPlayingTitle()">@GetNowPlayingTitle()</div>
+    <div class="player-now-playing">
+        <span class="player-now-label">Now Playing</span>
+        <div class="player-title" title="@GetNowPlayingTitle()">@GetNowPlayingTitle()</div>
+    </div>
 
     <div class="actions player-actions">
         <button type="button" class="secondary" @onclick="PlayPreviousAsync">Prev</button>
@@ -56,7 +59,7 @@
                                @onchange="eventArgs => ToggleTrackSelection(track.Id, eventArgs)" />
                         <button type="button" class="secondary" @onclick="() => MoveTrackUp(index)" disabled="@(index == 0)">Up</button>
                         <button type="button" class="secondary" @onclick="() => MoveTrackDown(index)" disabled="@(index >= _playlist.Count - 1)">Down</button>
-                        <button type="button" class="secondary" @onclick="() => QueuePlayNext(track.Id)">Next +</button>
+                        <button type="button" class="secondary" @onclick="() => QueuePlayNext(track.Id)">Queue Next</button>
                         <button type="button" class="secondary" @onclick="() => QueueTrack(track.Id)">+</button>
                         <button type="button" @onclick="() => PlayTrackAsync(track.Id)">Play</button>
                     </div>
@@ -279,6 +282,7 @@
         bool started;
         try
         {
+            await _module.InvokeVoidAsync("setLoop", _mediaElement, track.IsBundledAlpha);
             started = await _module.InvokeAsync<bool>(
                 "setSourceAndPlay",
                 _mediaElement,
@@ -305,13 +309,7 @@
         if (track.IsBundledAlpha)
         {
             _currentTrackId = null;
-            _statusMessage = "Bundled Alpha Waves could not be played. Use Browse to add a local audio file.";
-
-            if (ShellState.AlphaWavesEnabled)
-            {
-                ShellState.SetAlphaWavesEnabled(false);
-            }
-
+            _statusMessage = "Bundled Alpha Waves failed to start. Keep enabled and press Play to retry.";
             return;
         }
 
@@ -320,7 +318,7 @@
 
     private async Task PlayNextAsync()
     {
-        var nextId = ResolveNextTrackId();
+        var nextId = ResolveNextTrackId(wrapAtEnd: true);
         if (nextId is null)
         {
             _isPlaying = false;
@@ -447,7 +445,7 @@
         _selectedTrackIds.Clear();
     }
 
-    private Guid? ResolveNextTrackId()
+    private Guid? ResolveNextTrackId(bool wrapAtEnd)
     {
         while (_queuedTrackIds.Count > 0)
         {
@@ -476,7 +474,12 @@
             return _playlist[0].Id;
         }
 
-        var nextIndex = (currentIndex + 1) % _playlist.Count;
+        var nextIndex = currentIndex + 1;
+        if (nextIndex >= _playlist.Count)
+        {
+            return wrapAtEnd ? _playlist[0].Id : null;
+        }
+
         return _playlist[nextIndex].Id;
     }
 
@@ -638,7 +641,16 @@
     [JSInvokable]
     public async Task HandleMediaEnded()
     {
-        await PlayNextAsync();
+        var nextId = ResolveNextTrackId(wrapAtEnd: false);
+        if (nextId is null)
+        {
+            _isPlaying = false;
+            _statusMessage = "Playback complete.";
+            StateHasChanged();
+            return;
+        }
+
+        await PlayTrackAsync(nextId.Value);
     }
 
     [JSInvokable]
@@ -649,12 +661,7 @@
         if (current?.IsBundledAlpha == true)
         {
             _currentTrackId = null;
-            _statusMessage = "Bundled Alpha Waves could not be played. Use Browse to add a local audio file.";
-
-            if (ShellState.AlphaWavesEnabled)
-            {
-                ShellState.SetAlphaWavesEnabled(false);
-            }
+            _statusMessage = "Bundled Alpha Waves hit a playback error. Keep enabled and press Play to retry.";
         }
         else
         {

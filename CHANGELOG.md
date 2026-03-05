@@ -4,6 +4,20 @@ All notable changes to this project are documented in this file.
 
 The format is based on semantic versioning (`MAJOR.MINOR.PATCH`).
 
+## [2.10.9] - 2026-03-05
+
+### Fixed
+- Updated automatic track-end handling so playlist playback no longer force-wraps to the first track on end events, preventing repeated restart artifacts.
+- Added bundled Alpha Waves loop behavior in media runtime wiring to reduce restart churn while focus audio is active.
+- Improved media source reset flow in `mediaPlayer.js` before loading a new source.
+
+### Changed
+- Refined sidebar media panel visual design (status treatment, now-playing hierarchy, control sizing, and focus visibility) for a cleaner production UI.
+- App version bumped to `2.10.9` (`ApplicationVersion` `21009`).
+
+### Release
+- Marked `v2.10.9` as **in Public Release** on `2026-03-05`.
+
 ## [2.10.8] - 2026-03-04
 
 ### Added

@@ -4,8 +4,8 @@ StudyTide Forge is structured cognitive reinforcement training for software engi
 
 ## Release Status
 
-StudyTide Forge desktop (`v2.10.8`) is marked **in Public Release** as of `2026-03-04`.
-Public release verification refreshed on `2026-03-04` after local desktop/web publish validation.
+StudyTide Forge desktop (`v2.10.9`) is marked **in Public Release** as of `2026-03-05`.
+Public release verification refreshed on `2026-03-05` after local desktop/web publish validation.
 
 ## Solution Layout
 
@@ -82,6 +82,17 @@ Current extraction output (`2026-03-03`):
   - `7400` combined entries
 - Example migration runs at startup and rewrites existing training item `Example` sections from Prompt/Response context when needed.
 - Study-view action buttons use a fixed minimum height for consistent visual alignment (`Previous`, `Next`, `Practice`, `Flashcards`).
+
+## v2.10.9 Audio Playback Reliability + Media UI Polish
+
+- Fixed media auto-advance behavior so track-end events no longer force-wrap to the first item during automatic playback, preventing rapid restart artifacts.
+- Added bundled-track loop handling for Alpha Waves playback so the focus track can continue without repeated source reinitialization.
+- Updated media source switching behavior in JS to reset element source state cleanly before loading the next track.
+- Refined sidebar media panel styling for cleaner hierarchy and more professional presentation:
+  - improved typography and spacing
+  - clearer status and now-playing treatment
+  - stronger control sizing/readability in playlist rows
+  - improved focus styling for keyboard navigation.
 
 ## v2.10.8 Media Player Stability + Alpha Waves Bundling
 

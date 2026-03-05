@@ -78,6 +78,7 @@ export async function setSourceAndPlay(media, sourceUrl, mimeType, volume) {
     }
 
     media.pause();
+    media.removeAttribute("src");
 
     while (media.firstChild) {
         media.removeChild(media.firstChild);
@@ -90,7 +91,6 @@ export async function setSourceAndPlay(media, sourceUrl, mimeType, volume) {
     }
 
     media.appendChild(sourceElement);
-    media.src = sourceUrl;
     media.volume = normalizeVolume(volume);
     media.load();
 
@@ -123,6 +123,14 @@ export function pause(media) {
     }
 
     media.pause();
+}
+
+export function setLoop(media, shouldLoop) {
+    if (!media) {
+        return;
+    }
+
+    media.loop = Boolean(shouldLoop);
 }
 
 export function setVolume(media, volume) {

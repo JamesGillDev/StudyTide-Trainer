@@ -1,5 +1,28 @@
 # Release Notes
 
+## v2.10.9 (2026-03-05)
+
+This release is **in Public Release**.
+Public release verification refreshed on `2026-03-05` after local desktop/web publish.
+
+### Highlights
+
+- Fixed media auto-advance so playback completion no longer force-wraps to the first playlist item during automatic end-of-track handling.
+- Added bundled Alpha Waves loop handling to prevent repeated source reset/reload cycles while concentration audio is active.
+- Updated media source switching to clear prior source state before loading new tracks, improving startup/resume stability.
+- Applied sidebar media-player visual cleanup for a more professional UI:
+  - cleaner status presentation
+  - clearer now-playing hierarchy
+  - improved control sizing and playlist legibility
+  - explicit keyboard focus styling.
+
+### Local Publish Outputs
+
+- Desktop publish target:
+  - `StudyTide Forge\bin\Release\net10.0-windows10.0.19041.0\win-x64\StudyTideForge.exe`
+- Web publish target:
+  - `artifacts\publish\studytide-forge-web-win-x64\StudyTideForgeWeb.exe`
+
 ## v2.10.8 (2026-03-04)
 
 This release is **in Public Release**.
