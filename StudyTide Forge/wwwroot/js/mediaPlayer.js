@@ -70,6 +70,8 @@ export function attachMediaHandlers(media, dotNetRef) {
 
     media.onended = () => dotNetRef.invokeMethodAsync("HandleMediaEnded");
     media.onerror = () => dotNetRef.invokeMethodAsync("HandleMediaError");
+    media.onplay = () => dotNetRef.invokeMethodAsync("HandleMediaPlay");
+    media.onpause = () => dotNetRef.invokeMethodAsync("HandleMediaPause");
 }
 
 export async function setSourceAndPlay(media, sourceUrl, mimeType, volume) {
@@ -131,6 +133,21 @@ export function setLoop(media, shouldLoop) {
     }
 
     media.loop = Boolean(shouldLoop);
+}
+
+export function stopAndClear(media) {
+    if (!media) {
+        return;
+    }
+
+    media.pause();
+    media.removeAttribute("src");
+
+    while (media.firstChild) {
+        media.removeChild(media.firstChild);
+    }
+
+    media.load();
 }
 
 export function setVolume(media, volume) {

@@ -4,7 +4,7 @@ StudyTide Forge is structured cognitive reinforcement training for software engi
 
 ## Release Status
 
-StudyTide Forge desktop (`v2.10.9`) is marked **in Public Release** as of `2026-03-05`.
+StudyTide Forge desktop (`v2.10.10`) is marked **in Public Release** as of `2026-03-05`.
 Public release verification refreshed on `2026-03-05` after local desktop/web publish validation.
 
 ## Solution Layout
@@ -82,6 +82,14 @@ Current extraction output (`2026-03-03`):
   - `7400` combined entries
 - Example migration runs at startup and rewrites existing training item `Example` sections from Prompt/Response context when needed.
 - Study-view action buttons use a fixed minimum height for consistent visual alignment (`Previous`, `Next`, `Practice`, `Flashcards`).
+
+## v2.10.10 Alpha Waves State Sync Fix
+
+- Fixed Alpha Waves static-state drift where audio could continue while UI state fell back to `No media selected`.
+- Added explicit media stop/reset on bundled-track playback errors, on bundled-track disable, and when removing the currently playing item from playlist.
+- Synced media `play`/`pause` events from JS back into Blazor state so button label/state reflects actual runtime playback.
+- Removed bundled-track auto-loop behavior to prevent repeated restart artifacts from short/invalid audio content.
+- Alpha Waves now auto-disables after bundled-track runtime errors to prevent repeated startup retry loops.
 
 ## v2.10.9 Audio Playback Reliability + Media UI Polish
 

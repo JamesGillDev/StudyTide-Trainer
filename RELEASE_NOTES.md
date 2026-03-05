@@ -1,5 +1,28 @@
 # Release Notes
 
+## v2.10.10 (2026-03-05)
+
+This release is **in Public Release**.
+Public release verification refreshed on `2026-03-05` after local desktop/web publish.
+
+### Highlights
+
+- Fixed Alpha Waves startup/static-state drift where audio could continue while UI no longer had an active current-track identity.
+- Added explicit media stop/reset behavior for:
+  - bundled-track playback error events
+  - Alpha Waves toggle-off state changes
+  - removing the currently playing track from playlist.
+- Synced runtime media `play`/`pause` events back into component state so `Play/Pause` UI state reflects actual playback.
+- Removed bundled-track auto-loop behavior to prevent repeated restart artifacts from short/invalid bundled audio.
+- Alpha Waves now auto-disables after bundled-track runtime errors to prevent repeated startup retry loops.
+
+### Local Publish Outputs
+
+- Desktop publish target:
+  - `StudyTide Forge\bin\Release\net10.0-windows10.0.19041.0\win-x64\StudyTideForge.exe`
+- Web publish target:
+  - `artifacts\publish\studytide-forge-web-win-x64\StudyTideForgeWeb.exe`
+
 ## v2.10.9 (2026-03-05)
 
 This release is **in Public Release**.

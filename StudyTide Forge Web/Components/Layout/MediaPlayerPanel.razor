@@ -156,6 +156,8 @@
 
         try
         {
+            await _module.InvokeVoidAsync("stopAndClear", _mediaElement);
+
             foreach (var track in _playlist.Where(x => x.IsObjectUrl))
             {
                 await _module.InvokeVoidAsync("revokeObjectUrl", track.SourceUrl);
@@ -282,7 +284,7 @@
         bool started;
         try
         {
-            await _module.InvokeVoidAsync("setLoop", _mediaElement, track.IsBundledAlpha);
+            await _module.InvokeVoidAsync("setLoop", _mediaElement, false);
             started = await _module.InvokeAsync<bool>(
                 "setSourceAndPlay",
                 _mediaElement,
@@ -308,8 +310,14 @@
 
         if (track.IsBundledAlpha)
         {
-            _currentTrackId = null;
-            _statusMessage = "Bundled Alpha Waves failed to start. Keep enabled and press Play to retry.";
+            await StopPlaybackAsync(clearCurrentTrack: true);
+            _statusMessage = "Bundled Alpha Waves failed to start and was stopped.";
+
+            if (ShellState.AlphaWavesEnabled)
+            {
+                ShellState.SetAlphaWavesEnabled(false);
+            }
+
             return;
         }
 
@@ -427,7 +435,10 @@
             if (_playlist.Count > 0)
             {
                 await PlayTrackAsync(_playlist[0].Id);
+                return;
             }
+
+            await StopPlaybackAsync(clearCurrentTrack: true);
         }
     }
 
@@ -595,6 +606,13 @@
             }
         }
 
+        if (!ShellState.AlphaWavesEnabled)
+        {
+            await RemoveBundledAlphaTracksAsync();
+            StateHasChanged();
+            return;
+        }
+
         if (ShellState.AlphaWavesEnabled && ShellState.AlphaWavesActivationStamp != _lastAlphaStamp)
         {
             _lastAlphaStamp = ShellState.AlphaWavesActivationStamp;
@@ -656,18 +674,41 @@
     [JSInvokable]
     public Task HandleMediaError()
     {
-        _isPlaying = false;
-        var current = _playlist.FirstOrDefault(x => x.Id == _currentTrackId);
-        if (current?.IsBundledAlpha == true)
+        return InvokeAsync(async () =>
         {
-            _currentTrackId = null;
-            _statusMessage = "Bundled Alpha Waves hit a playback error. Keep enabled and press Play to retry.";
-        }
-        else
-        {
-            _statusMessage = "Media playback failed for the current track.";
-        }
+            _isPlaying = false;
+            var current = _playlist.FirstOrDefault(x => x.Id == _currentTrackId);
+            if (current?.IsBundledAlpha == true)
+            {
+                await StopPlaybackAsync(clearCurrentTrack: true);
+                _statusMessage = "Bundled Alpha Waves playback error. Auto-play disabled for now.";
 
+                if (ShellState.AlphaWavesEnabled)
+                {
+                    ShellState.SetAlphaWavesEnabled(false);
+                }
+            }
+            else
+            {
+                _statusMessage = "Media playback failed for the current track.";
+            }
+
+            StateHasChanged();
+        });
+    }
+
+    [JSInvokable]
+    public Task HandleMediaPlay()
+    {
+        _isPlaying = true;
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
+
+    [JSInvokable]
+    public Task HandleMediaPause()
+    {
+        _isPlaying = false;
         StateHasChanged();
         return Task.CompletedTask;
     }
@@ -717,5 +758,60 @@
 
         [System.Text.Json.Serialization.JsonPropertyName("isVideo")]
         public bool IsVideo { get; init; }
+    }
+
+    private async Task StopPlaybackAsync(bool clearCurrentTrack)
+    {
+        await EnsureModuleAsync();
+        if (_module is null)
+        {
+            _isPlaying = false;
+            if (clearCurrentTrack)
+            {
+                _currentTrackId = null;
+            }
+
+            return;
+        }
+
+        try
+        {
+            await _module.InvokeVoidAsync("stopAndClear", _mediaElement);
+        }
+        catch (Exception exception)
+        {
+            Console.Error.WriteLine($"[StudyTide] Stop playback warning. {exception.Message}");
+        }
+
+        _isPlaying = false;
+        if (clearCurrentTrack)
+        {
+            _currentTrackId = null;
+        }
+    }
+
+    private async Task RemoveBundledAlphaTracksAsync()
+    {
+        var alphaIds = _playlist
+            .Where(x => x.IsBundledAlpha)
+            .Select(x => x.Id)
+            .ToHashSet();
+
+        if (alphaIds.Count == 0)
+        {
+            return;
+        }
+
+        var removedCurrent = _currentTrackId.HasValue && alphaIds.Contains(_currentTrackId.Value);
+
+        _playlist.RemoveAll(x => alphaIds.Contains(x.Id));
+        _queuedTrackIds.RemoveAll(x => alphaIds.Contains(x));
+        _selectedTrackIds.RemoveWhere(x => alphaIds.Contains(x));
+
+        if (removedCurrent)
+        {
+            await StopPlaybackAsync(clearCurrentTrack: true);
+            _statusMessage = "Alpha Waves stopped.";
+        }
     }
 }

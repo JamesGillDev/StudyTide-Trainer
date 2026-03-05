@@ -4,6 +4,21 @@ All notable changes to this project are documented in this file.
 
 The format is based on semantic versioning (`MAJOR.MINOR.PATCH`).
 
+## [2.10.10] - 2026-03-05
+
+### Fixed
+- Resolved Alpha Waves state drift where playback could continue while UI track state showed no active media.
+- Added explicit stop/reset handling for bundled-track errors, Alpha Waves disable actions, and current-track removals.
+- Synced media `play` and `pause` runtime events back into Blazor state to keep button label/state aligned with actual playback.
+- Removed bundled-track auto-loop behavior to prevent repeated restart artifacts from short/invalid bundled audio.
+
+### Changed
+- Alpha Waves now auto-disables when bundled-track runtime errors occur, preventing repeated startup retry loops.
+- App version bumped to `2.10.10` (`ApplicationVersion` `21010`).
+
+### Release
+- Marked `v2.10.10` as **in Public Release** on `2026-03-05`.
+
 ## [2.10.9] - 2026-03-05
 
 ### Fixed
