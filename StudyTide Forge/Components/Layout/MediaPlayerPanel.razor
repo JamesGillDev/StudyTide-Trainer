@@ -98,8 +98,8 @@
 </section>
 
 @code {
-    private const string AlphaWavesTitle = "8_Hour_Alpha_Waves.wav";
-    private const string ModuleImportPath = "./js/mediaPlayer.js?v=2.10.11";
+    private const string AlphaWavesTitle = "8_Hour_Alpha_Waves.mp3";
+    private const string ModuleImportPath = "./js/mediaPlayer.js?v=2.10.13";
 
     private readonly List<MediaTrack> _playlist = [];
     private readonly List<Guid> _queuedTrackIds = [];
@@ -663,7 +663,7 @@
             {
                 Title = AlphaWavesTitle,
                 SourceUrl = alphaSource,
-                MimeType = "audio/wav",
+                MimeType = "audio/mpeg",
                 IsVideo = false,
                 IsObjectUrl = false,
                 IsBundledAlpha = true

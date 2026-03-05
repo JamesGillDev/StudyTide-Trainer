@@ -4,7 +4,7 @@ StudyTide Forge is structured cognitive reinforcement training for software engi
 
 ## Release Status
 
-StudyTide Forge desktop (`v2.10.12`) is marked **in Public Release** as of `2026-03-05`.
+StudyTide Forge desktop (`v2.10.13`) is marked **in Public Release** as of `2026-03-05`.
 Public release verification refreshed on `2026-03-05` after local desktop/web publish validation.
 
 ## Solution Layout
@@ -82,6 +82,12 @@ Current extraction output (`2026-03-03`):
   - `7400` combined entries
 - Example migration runs at startup and rewrites existing training item `Example` sections from Prompt/Response context when needed.
 - Study-view action buttons use a fixed minimum height for consistent visual alignment (`Previous`, `Next`, `Practice`, `Flashcards`).
+
+## v2.10.13 Bundled Alpha Waves Asset Replacement
+
+- Replaced the broken bundled Alpha Waves WAV with the validated user-provided 8-hour MP3 source.
+- Standardized bundled Alpha Waves to a single canonical asset path: `wwwroot/audio/8_Hour_Alpha_Waves.mp3`.
+- Updated desktop and web apps to load the bundled source as `audio/mpeg`.
 
 ## v2.10.12 Alpha Startup Race Fix
 

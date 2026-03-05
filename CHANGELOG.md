@@ -4,6 +4,18 @@ All notable changes to this project are documented in this file.
 
 The format is based on semantic versioning (`MAJOR.MINOR.PATCH`).
 
+## [2.10.13] - 2026-03-05
+
+### Fixed
+- Replaced the broken bundled Alpha Waves WAV asset with the validated 8-hour MP3 provided for the app.
+- Updated bundled-track metadata and source path to use `audio/mpeg` from `/audio/8_Hour_Alpha_Waves.mp3`.
+
+### Changed
+- App version bumped to `2.10.13` (`ApplicationVersion` `21013`).
+
+### Release
+- Marked `v2.10.13` as **in Public Release** on `2026-03-05`.
+
 ## [2.10.12] - 2026-03-05
 
 ### Fixed

@@ -1,5 +1,25 @@
 # Release Notes
 
+## v2.10.13 (2026-03-05)
+
+This release is **in Public Release**.
+Public release verification refreshed on `2026-03-05` after local desktop/web publish.
+
+### Highlights
+
+- Replaced the broken bundled Alpha Waves WAV with the validated user-provided 8-hour MP3.
+- Standardized the bundled concentration track to one canonical source path:
+  - `StudyTide Forge\wwwroot\audio\8_Hour_Alpha_Waves.mp3`
+  - `StudyTide Forge Web\wwwroot\audio\8_Hour_Alpha_Waves.mp3`
+- Updated desktop and web bundled-track playback metadata from `audio/wav` to `audio/mpeg`.
+
+### Local Publish Outputs
+
+- Desktop publish target:
+  - `StudyTide Forge\bin\Release\net10.0-windows10.0.19041.0\win-x64\StudyTideForge.exe`
+- Web publish target:
+  - `artifacts\publish\studytide-forge-web-win-x64\StudyTideForgeWeb.exe`
+
 ## v2.10.12 (2026-03-05)
 
 This release is **in Public Release**.

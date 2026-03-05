@@ -4,7 +4,7 @@ namespace StudyTideForge.Services;
 
 public sealed class AppShellStateService
 {
-    public const string AlphaWavesDefaultPath = "/audio/8_Hour_Alpha_Waves.wav";
+    public const string AlphaWavesDefaultPath = "/audio/8_Hour_Alpha_Waves.mp3";
     private static readonly JsonSerializerOptions JsonOptions = new() { WriteIndented = true };
     private readonly string _settingsPath = ResolveSettingsPath();
 
